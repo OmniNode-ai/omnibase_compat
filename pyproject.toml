@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "omnibase-compat"
+version = "0.1.0"
+description = "Thin shared structural package for cross-repo enums, wire DTOs, event envelopes, primitives, and experimental schemas."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.11.7",
+    "typing-extensions>=4.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov",
+    "mypy>=1.9",
+    "ruff>=0.4",
+    "pre-commit",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/omnibase_compat"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["src/omnibase_compat/tests"]
+markers = [
+    "unit: unit tests",
+    "integration: integration tests",
+]
+addopts = "--tb=short"
+
+[tool.coverage.report]
+fail_under = 80
