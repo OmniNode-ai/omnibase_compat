@@ -1,5 +1,6 @@
 import pytest
 from pydantic import ValidationError
+
 from omnibase_compat.metadata.artifact_status import ArtifactStatus
 from omnibase_compat.metadata.transitional import TransitionalMeta
 

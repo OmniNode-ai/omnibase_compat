@@ -1,8 +1,8 @@
 import pytest
 
+from omnibase_compat.enums.enum_execution_status import EnumExecutionStatus
 from omnibase_compat.enums.enum_message_category import EnumMessageCategory
 from omnibase_compat.enums.enum_node_kind import EnumNodeKind
-from omnibase_compat.enums.enum_execution_status import EnumExecutionStatus
 
 
 @pytest.mark.unit
