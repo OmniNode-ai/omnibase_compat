@@ -55,3 +55,4 @@ addopts = "--tb=short"
 
 [tool.coverage.report]
 fail_under = 80
+

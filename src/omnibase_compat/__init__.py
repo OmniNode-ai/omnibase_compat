@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
+# SPDX-License-Identifier: MIT
+
 """omnibase_compat — thin shared structural package.
 
 Zero omnibase_core dependency.

@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
+# SPDX-License-Identifier: MIT
+
 """Validate that omnibase_compat has no forbidden upstream dependencies.
 
 Run: python scripts/validate_no_upstream_deps.py
 Exits 1 if any forbidden import is found.
 """
+
 import ast
 import sys
 from pathlib import Path
