@@ -29,6 +29,7 @@ dev = [
     "mypy>=1.9",
     "ruff>=0.4",
     "pre-commit",
+    "omnibase-core",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -55,3 +56,6 @@ addopts = "--tb=short"
 
 [tool.coverage.report]
 fail_under = 80
+
+[tool.uv.sources]
+omnibase-core = { path = "../../../omni_home/omnibase_core" }

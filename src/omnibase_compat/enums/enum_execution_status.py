@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
+# SPDX-License-Identifier: MIT
+
 # SOURCE: omnibase_core/src/omnibase_core/enums/enum_execution_status.py
 # SOURCE VERSION: omnibase-core==0.24.1
 # SOURCE COMMIT: a39b9e953c73e33370a87bc3664460e29d1a729c

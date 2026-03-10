@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
+# SPDX-License-Identifier: MIT
+
 import pytest
 
 from omnibase_compat.enums.enum_execution_status import EnumExecutionStatus

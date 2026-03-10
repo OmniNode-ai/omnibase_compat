@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
+# SPDX-License-Identifier: MIT
+
 """Phase-1 local artifact registry.
 
 This is scaffolding, not final governance policy.
@@ -20,9 +23,7 @@ def register_experimental(
     if not ticket:
         raise ValueError(f"Experimental artifact '{name}' requires a non-empty ticket.")
     if not review_milestone:
-        raise ValueError(
-            f"Experimental artifact '{name}' requires a non-empty review_milestone."
-        )
+        raise ValueError(f"Experimental artifact '{name}' requires a non-empty review_milestone.")
     _registry[name] = {
         "status": status.value,
         "ticket": ticket,
