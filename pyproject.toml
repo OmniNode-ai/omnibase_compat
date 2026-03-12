@@ -56,3 +56,10 @@ addopts = "--tb=short"
 [tool.coverage.report]
 fail_under = 80
 
+
+[tool.uv]
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'darwin'",
+    "sys_platform == 'win32'",
+]
