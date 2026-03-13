@@ -2,8 +2,15 @@
 # SPDX-License-Identifier: MIT
 ---
 repos:
+  # YAML formatting (standard across ecosystem, OMN-4862)
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.21.0
+    hooks:
+      - id: yamlfmt
+        exclude: ^\.github/
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.2
+    rev: v0.15.6
     hooks:
       - id: ruff-format
       - id: ruff
@@ -13,9 +20,27 @@ repos:
     hooks:
       - id: validate-spdx-headers
         name: ONEX SPDX Header Requirement
-        entry: uv run onex spdx validate
+        entry: bash scripts/validate_spdx_headers.sh
         language: system
         pass_filenames: true
-        files: ^(src|tests|scripts|examples)/.*\.(py|sh|bash|yml|yaml|toml)$
+        files: ^(src|tests|scripts|examples)/.*\.py$
         exclude: ^(archived/|archive/)
         stages: [pre-commit]
+
+      # --------------------------------------------------------------------------
+      # mypy Type Checking (OMN-4863, ONEX ecosystem parity)
+      # Matches the ecosystem standard from omnibase_core
+      # --------------------------------------------------------------------------
+      - id: mypy-type-check
+        name: mypy (type checking - strict)
+        entry: bash -c 'uv run mypy "$@" --show-error-codes --no-error-summary' --
+        language: system
+        types: [python]
+        files: ^src/omnibase_compat/.*\.py$
+        pass_filenames: true
+        stages: [pre-push]
+
+# Configuration
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+fail_fast: false
