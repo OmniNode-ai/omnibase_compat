@@ -16,6 +16,13 @@ repos:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
 
+  # Cross-repo enforcement hooks from onex_change_control
+  - repo: https://github.com/OmniNode-ai/onex_change_control
+    rev: 8d7e85bc00e7f1b1306d1cb40949be1ab6e7e91a
+    hooks:
+      - id: no-untracked-todos
+        stages: [pre-commit]
+
   - repo: local
     hooks:
       - id: validate-spdx-headers
