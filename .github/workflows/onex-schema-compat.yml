@@ -104,7 +104,7 @@ jobs:
 
       - name: Check schema version compatibility
         run: |
-          OCC_VERSION=$(uv run python3 -c "
+          OCC_VERSION=$(python3 -c "
           import tomllib
           with open('onex_change_control/pyproject.toml', 'rb') as f:
               d = tomllib.load(f)
@@ -115,16 +115,22 @@ jobs:
           ")
           echo "onex_change_control upstream version: $OCC_VERSION"
 
-          OCC_VERSION="$OCC_VERSION" uv run python3 -c "
+          # Inline major-version compatibility check (equivalent to
+          # omnibase_spi.contracts.pipeline.contract_schema_compat.is_compatible).
+          # omnibase_compat has no omnibase_spi dependency, so we inline the logic
+          # to avoid pulling in the full SPI dependency chain.
+          OCC_VERSION="$OCC_VERSION" python3 -c "
           import os, sys
-          from omnibase_spi.contracts.pipeline.contract_schema_compat import is_compatible
 
           wire_version = os.environ['OCC_VERSION']
           reader_version = '0.1.0'
 
+          wire_major = int(wire_version.split('.')[0])
+          reader_major = int(reader_version.split('.')[0])
+
           print(f'Compatibility check: upstream={wire_version}, reader={reader_version}')
 
-          if not is_compatible(wire_version=wire_version, reader_version=reader_version):
+          if wire_major != reader_major:
               print('ERROR: Schema compatibility broken!')
               print(f'  onex_change_control upstream version: {wire_version}')
               print(f'  omnibase_compat reader version:       {reader_version}')
