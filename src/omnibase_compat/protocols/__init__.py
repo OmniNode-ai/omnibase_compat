@@ -8,6 +8,9 @@ from omnibase_compat.protocols.protocol_docker_client import ProtocolDockerClien
 from omnibase_compat.protocols.protocol_health_check import ProtocolHealthCheck
 from omnibase_compat.protocols.protocol_idempotency_store import ProtocolIdempotencyStore
 from omnibase_compat.protocols.protocol_projection_database import ProtocolProjectionDatabase
+from omnibase_compat.protocols.protocol_projection_database_sync import (
+    ProtocolProjectionDatabaseSync,
+)
 
 __all__: list[str] = [
     "ProtocolDataSource",
@@ -15,4 +18,5 @@ __all__: list[str] = [
     "ProtocolHealthCheck",
     "ProtocolIdempotencyStore",
     "ProtocolProjectionDatabase",
+    "ProtocolProjectionDatabaseSync",
 ]
