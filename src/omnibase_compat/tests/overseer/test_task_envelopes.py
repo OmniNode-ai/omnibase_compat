@@ -4,9 +4,9 @@
 import pytest
 from pydantic import ValidationError
 
-from omnibase_compat.overseer import (
+from omnibase_compat.overseer.model_task_delta_envelope import ModelTaskDeltaEnvelope
+from omnibase_compat.overseer.model_task_state_envelope import (
     EnumTaskStatus,
-    ModelTaskDeltaEnvelope,
     ModelTaskStateEnvelope,
 )
 
