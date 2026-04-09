@@ -31,7 +31,7 @@ def test_verifier_output_frozen() -> None:
     """ModelVerifierOutput is immutable."""
     output = ModelVerifierOutput(verdict=EnumVerifierVerdict.PASS)
     with pytest.raises(ValidationError):
-        output.verdict = EnumVerifierVerdict.FAIL  # type: ignore[misc]
+        output.verdict = EnumVerifierVerdict.FAIL
 
 
 @pytest.mark.unit
@@ -78,7 +78,7 @@ def test_verifier_check_result_frozen() -> None:
     """ModelVerifierCheckResult is immutable."""
     check = ModelVerifierCheckResult(name="test", passed=True)
     with pytest.raises(ValidationError):
-        check.passed = False  # type: ignore[misc]
+        check.passed = False
 
 
 @pytest.mark.unit
