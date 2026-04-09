@@ -8,7 +8,6 @@ from omnibase_compat.overseer.enum_capability_tier import EnumCapabilityTier
 from omnibase_compat.overseer.enum_context_bundle_level import EnumContextBundleLevel
 from omnibase_compat.overseer.enum_failure_class import EnumFailureClass
 
-
 # --- EnumCapabilityTier ---
 
 
