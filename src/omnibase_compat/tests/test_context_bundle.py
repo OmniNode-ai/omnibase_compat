@@ -52,7 +52,7 @@ L4_KWARGS = {
 
 @pytest.mark.unit
 def test_l0_bundle_minimal_fields() -> None:
-    bundle = ModelContextBundleL0(**L0_KWARGS)
+    bundle = ModelContextBundleL0.model_validate(L0_KWARGS)
     assert bundle.run_id == "run-001"
     assert bundle.task_id == "task-abc"
     assert bundle.role == "implementer"
@@ -63,7 +63,7 @@ def test_l0_bundle_minimal_fields() -> None:
 @pytest.mark.unit
 def test_l0_rejects_missing_required() -> None:
     with pytest.raises(ValidationError):
-        ModelContextBundleL0(run_id="run-001")  # type: ignore[call-arg]
+        ModelContextBundleL0.model_validate({"run_id": "run-001"})
 
 
 # --- test_l4_bundle_includes_all_levels ---
@@ -71,7 +71,7 @@ def test_l0_rejects_missing_required() -> None:
 
 @pytest.mark.unit
 def test_l4_bundle_includes_all_levels() -> None:
-    bundle = ModelContextBundleL4(**L4_KWARGS)
+    bundle = ModelContextBundleL4.model_validate(L4_KWARGS)
     # L0 fields
     assert bundle.run_id == "run-001"
     assert bundle.task_id == "task-abc"
@@ -100,25 +100,26 @@ def test_l4_bundle_includes_all_levels() -> None:
 def test_context_bundle_level_invariant_l2_requires_l1_fields() -> None:
     """L2 bundle cannot be created without L1 fields (ticket_id, summary)."""
     with pytest.raises(ValidationError):
-        ModelContextBundleL2(
-            run_id="run-001",
-            task_id="task-abc",
-            role="implementer",
-            fsm_state="working",
-            entrypoints=["src/foo.py"],
-            # missing ticket_id and summary (L1 fields)
-        )  # type: ignore[call-arg]
+        ModelContextBundleL2.model_validate(
+            {
+                "run_id": "run-001",
+                "task_id": "task-abc",
+                "role": "implementer",
+                "fsm_state": "working",
+                "entrypoints": ["src/foo.py"],
+                # missing ticket_id and summary (L1 fields)
+            }
+        )
 
 
 @pytest.mark.unit
 def test_context_bundle_level_invariant_l3_requires_l2_fields() -> None:
     """L3 bundle cannot be created without L2 fields (entrypoints)."""
     with pytest.raises(ValidationError):
-        ModelContextBundleL3(
-            **L1_KWARGS,
-            decisions=["some decision"],
+        ModelContextBundleL3.model_validate(
+            {**L1_KWARGS, "decisions": ["some decision"]}
             # missing entrypoints (L2 field)
-        )  # type: ignore[call-arg]
+        )
 
 
 # --- test_bundle_frozen ---
@@ -127,11 +128,11 @@ def test_context_bundle_level_invariant_l3_requires_l2_fields() -> None:
 @pytest.mark.unit
 def test_bundle_frozen() -> None:
     """All bundle levels are immutable."""
-    bundle_l0 = ModelContextBundleL0(**L0_KWARGS)
+    bundle_l0 = ModelContextBundleL0.model_validate(L0_KWARGS)
     with pytest.raises(ValidationError):
         bundle_l0.run_id = "changed"  # type: ignore[misc]
 
-    bundle_l4 = ModelContextBundleL4(**L4_KWARGS)
+    bundle_l4 = ModelContextBundleL4.model_validate(L4_KWARGS)
     with pytest.raises(ValidationError):
         bundle_l4.ticket_id = "changed"  # type: ignore[misc]
 
@@ -142,7 +143,7 @@ def test_bundle_frozen() -> None:
 @pytest.mark.unit
 def test_bundle_forbids_extra_fields() -> None:
     with pytest.raises(ValidationError):
-        ModelContextBundleL0(**L0_KWARGS, unknown_field="bad")  # type: ignore[call-arg]
+        ModelContextBundleL0.model_validate({**L0_KWARGS, "unknown_field": "bad"})
 
 
 # --- default level markers ---
@@ -150,11 +151,11 @@ def test_bundle_forbids_extra_fields() -> None:
 
 @pytest.mark.unit
 def test_default_level_markers() -> None:
-    assert ModelContextBundleL0(**L0_KWARGS).level == EnumContextBundleLevel.L0
-    assert ModelContextBundleL1(**L1_KWARGS).level == EnumContextBundleLevel.L1
-    assert ModelContextBundleL2(**L2_KWARGS).level == EnumContextBundleLevel.L2
-    assert ModelContextBundleL3(**L3_KWARGS).level == EnumContextBundleLevel.L3
-    assert ModelContextBundleL4(**L4_KWARGS).level == EnumContextBundleLevel.L4
+    assert ModelContextBundleL0.model_validate(L0_KWARGS).level == EnumContextBundleLevel.L0
+    assert ModelContextBundleL1.model_validate(L1_KWARGS).level == EnumContextBundleLevel.L1
+    assert ModelContextBundleL2.model_validate(L2_KWARGS).level == EnumContextBundleLevel.L2
+    assert ModelContextBundleL3.model_validate(L3_KWARGS).level == EnumContextBundleLevel.L3
+    assert ModelContextBundleL4.model_validate(L4_KWARGS).level == EnumContextBundleLevel.L4
 
 
 # --- Pydantic serialization round-trip ---
@@ -162,7 +163,7 @@ def test_default_level_markers() -> None:
 
 @pytest.mark.unit
 def test_l4_serialization_round_trip() -> None:
-    bundle = ModelContextBundleL4(**L4_KWARGS)
+    bundle = ModelContextBundleL4.model_validate(L4_KWARGS)
     data = bundle.model_dump()
-    restored = ModelContextBundleL4(**data)
+    restored = ModelContextBundleL4.model_validate(data)
     assert restored == bundle
