@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -45,6 +45,6 @@ class ModelTaskStateEnvelope(BaseModel, frozen=True, extra="forbid"):
     attempt: int = Field(default=1, ge=1)
     payload: dict[str, Any] = Field(default_factory=dict)
     error: str | None = None
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     schema_version: str = "1.0"

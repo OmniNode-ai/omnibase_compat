@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -25,5 +25,5 @@ class ModelTaskDeltaEnvelope(BaseModel, frozen=True, extra="forbid"):
     attempt: int | None = Field(default=None, ge=1)
     payload: dict[str, Any] | None = None
     error: str | None = None
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     schema_version: str = "1.0"
