@@ -3,10 +3,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import UTC, datetime
+from types import MappingProxyType
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from omnibase_compat.overseer.model_task_state_envelope import EnumTaskStatus
 
@@ -23,7 +25,14 @@ class ModelTaskDeltaEnvelope(BaseModel, frozen=True, extra="forbid"):
     status: EnumTaskStatus | None = None
     runner_id: str | None = None
     attempt: int | None = Field(default=None, ge=1)
-    payload: dict[str, Any] | None = None
+    payload: Mapping[str, Any] | None = None
     error: str | None = None
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     schema_version: str = "1.0"
+
+    @field_validator("payload", mode="before")
+    @classmethod
+    def _freeze_payload(cls, value: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+        if value is None:
+            return None
+        return MappingProxyType(dict(value))
