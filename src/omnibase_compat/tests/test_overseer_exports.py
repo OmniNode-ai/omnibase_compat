@@ -56,9 +56,9 @@ def test_all_overseer_types_importable() -> None:
 @pytest.mark.unit
 def test_enum_task_status_is_str_enum() -> None:
     assert issubclass(EnumTaskStatus, StrEnum)
-    assert EnumTaskStatus.PENDING == "pending"
-    assert EnumTaskStatus.COMPLETED == "completed"
-    assert EnumTaskStatus.FAILED == "failed"
+    assert EnumTaskStatus.PENDING == "pending"  # type: ignore[comparison-overlap]
+    assert EnumTaskStatus.COMPLETED == "completed"  # type: ignore[comparison-overlap]
+    assert EnumTaskStatus.FAILED == "failed"  # type: ignore[comparison-overlap]
 
 
 @pytest.mark.unit
