@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -40,5 +40,5 @@ class ModelCompletionReport(BaseModel, frozen=True, extra="forbid"):
     error_message: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
     started_at: datetime | None = None
-    completed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    completed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     schema_version: str = "1.0"

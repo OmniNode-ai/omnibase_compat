@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -31,5 +31,5 @@ class ModelEscalationRequest(BaseModel, frozen=True, extra="forbid"):
     max_attempts_exhausted: int = Field(default=3, ge=1)
     error_message: str | None = None
     error_detail: dict[str, Any] = Field(default_factory=dict)
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     schema_version: str = "1.0"
