@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from omnibase_compat.overseer.enum_failure_class import EnumFailureClass
 from omnibase_compat.overseer.enum_verifier_verdict import EnumVerifierVerdict
@@ -21,6 +21,12 @@ class ModelVerifierCheckResult(BaseModel):
         default=None,
         description="Failure classification, set only when passed=False.",
     )
+
+    @model_validator(mode="after")
+    def validate_failure_class_consistency(self) -> ModelVerifierCheckResult:
+        if self.passed and self.failure_class is not None:
+            raise ValueError("failure_class must be None when passed=True")
+        return self
 
 
 class ModelVerifierOutput(BaseModel):
@@ -46,6 +52,12 @@ class ModelVerifierOutput(BaseModel):
         description="Opaque key-value outputs for downstream shim consumers.",
     )
     summary: str = Field(default="", description="Human-readable summary of verification results.")
+
+    @model_validator(mode="after")
+    def validate_verdict_consistency(self) -> ModelVerifierOutput:
+        if self.verdict == EnumVerifierVerdict.PASS and self.failure_class is not None:
+            raise ValueError("failure_class must be None when verdict=PASS")
+        return self
 
 
 __all__: list[str] = ["ModelVerifierCheckResult", "ModelVerifierOutput"]
