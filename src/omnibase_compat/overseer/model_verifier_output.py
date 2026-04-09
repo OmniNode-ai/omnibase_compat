@@ -33,9 +33,7 @@ class ModelVerifierOutput(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    verdict: EnumVerifierVerdict = Field(
-        ..., description="Overall verification verdict."
-    )
+    verdict: EnumVerifierVerdict = Field(..., description="Overall verification verdict.")
     checks: tuple[ModelVerifierCheckResult, ...] = Field(
         default_factory=tuple, description="Per-check results."
     )
@@ -47,9 +45,7 @@ class ModelVerifierOutput(BaseModel):
         default_factory=dict,
         description="Opaque key-value outputs for downstream shim consumers.",
     )
-    summary: str = Field(
-        default="", description="Human-readable summary of verification results."
-    )
+    summary: str = Field(default="", description="Human-readable summary of verification results.")
 
 
 __all__: list[str] = ["ModelVerifierCheckResult", "ModelVerifierOutput"]

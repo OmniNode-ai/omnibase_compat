@@ -19,9 +19,7 @@ class ProtocolDataSource(Protocol):
         """Return total row count for the given table."""
         ...
 
-    def get_sample_rows(
-        self, table_name: str, sample_size: int
-    ) -> list[dict[str, str]]:
+    def get_sample_rows(self, table_name: str, sample_size: int) -> list[dict[str, str]]:
         """Return up to sample_size rows from the given table."""
         ...
 
