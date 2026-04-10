@@ -66,7 +66,7 @@ def test_model_is_frozen() -> None:
         allowed_actions=frozenset({"read_contract"}),
     )
     with pytest.raises((ValidationError, TypeError)):
-        perms.role = "executor"  # type: ignore[misc]
+        perms.role = "executor"
 
 
 @pytest.mark.unit
