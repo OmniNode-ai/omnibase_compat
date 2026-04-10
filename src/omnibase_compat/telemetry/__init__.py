@@ -12,11 +12,17 @@ from omnibase_compat.telemetry.model_post_mortem_report import (
     ModelFrictionEvent,
     ModelPostMortemReport,
 )
+from omnibase_compat.telemetry.model_session_bootstrap_result import (
+    EnumBootstrapStatus,
+    ModelSessionBootstrapResult,
+)
 from omnibase_compat.telemetry.model_sweep_result import ModelSweepResult
 
 __all__ = [
+    "EnumBootstrapStatus",
     "EnumPostMortemOutcome",
     "ModelFrictionEvent",
     "ModelPostMortemReport",
+    "ModelSessionBootstrapResult",
     "ModelSweepResult",
 ]
