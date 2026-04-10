@@ -24,6 +24,9 @@ from omnibase_compat.overseer.model_context_bundle import (
     ModelContextBundleL3,
     ModelContextBundleL4,
 )
+from omnibase_compat.overseer.model_contract_allowed_actions import (
+    ModelContractAllowedActions,
+)
 from omnibase_compat.overseer.model_escalation_request import ModelEscalationRequest
 from omnibase_compat.overseer.model_process_runner_state_transition import (
     ModelProcessRunnerStateTransition,
@@ -52,6 +55,7 @@ __all__ = [
     "EnumTaskStatus",
     "EnumVerifierVerdict",
     "ModelCompletionReport",
+    "ModelContractAllowedActions",
     "ModelContextBundleL0",
     "ModelContextBundleL1",
     "ModelContextBundleL2",
