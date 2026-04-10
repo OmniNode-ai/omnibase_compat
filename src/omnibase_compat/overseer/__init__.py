@@ -8,10 +8,16 @@ overseer, domain runners, and routing engine.
 Zero upstream runtime deps.
 """
 
+from omnibase_compat.overseer.enum_artifact_store_action import EnumArtifactStoreAction
 from omnibase_compat.overseer.enum_capability_tier import EnumCapabilityTier
+from omnibase_compat.overseer.enum_code_repository_action import EnumCodeRepositoryAction
 from omnibase_compat.overseer.enum_context_bundle_level import EnumContextBundleLevel
+from omnibase_compat.overseer.enum_event_bus_action import EnumEventBusAction
 from omnibase_compat.overseer.enum_failure_class import EnumFailureClass
+from omnibase_compat.overseer.enum_llm_provider_action import EnumLLMProviderAction
+from omnibase_compat.overseer.enum_notification_action import EnumNotificationAction
 from omnibase_compat.overseer.enum_process_runner_state import EnumProcessRunnerState
+from omnibase_compat.overseer.enum_ticket_service_action import EnumTicketServiceAction
 from omnibase_compat.overseer.enum_verifier_verdict import EnumVerifierVerdict
 from omnibase_compat.overseer.model_completion_report import (
     EnumCompletionOutcome,
@@ -47,12 +53,18 @@ from omnibase_compat.overseer.model_verifier_output import (
 )
 
 __all__ = [
+    "EnumArtifactStoreAction",
     "EnumCapabilityTier",
+    "EnumCodeRepositoryAction",
     "EnumCompletionOutcome",
     "EnumContextBundleLevel",
+    "EnumEventBusAction",
     "EnumFailureClass",
+    "EnumLLMProviderAction",
+    "EnumNotificationAction",
     "EnumProcessRunnerState",
     "EnumTaskStatus",
+    "EnumTicketServiceAction",
     "EnumVerifierVerdict",
     "ModelCompletionReport",
     "ModelContractAllowedActions",
