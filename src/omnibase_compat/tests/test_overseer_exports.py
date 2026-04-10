@@ -12,6 +12,7 @@ from omnibase_compat.overseer import (
     EnumCompletionOutcome,
     EnumContextBundleLevel,
     EnumFailureClass,
+    EnumProcessRunnerState,
     EnumTaskStatus,
     EnumVerifierVerdict,
     ModelCompletionReport,
@@ -20,7 +21,9 @@ from omnibase_compat.overseer import (
     ModelContextBundleL2,
     ModelContextBundleL3,
     ModelContextBundleL4,
+    ModelContractAllowedActions,
     ModelEscalationRequest,
+    ModelProcessRunnerStateTransition,
     ModelSessionContract,
     ModelSessionHaltCondition,
     ModelSessionPhaseSpec,
@@ -33,21 +36,24 @@ from omnibase_compat.overseer import (
 
 @pytest.mark.unit
 def test_all_overseer_types_importable() -> None:
-    """All 20 overseer types are importable from omnibase_compat.overseer."""
+    """All 23 overseer types are importable from omnibase_compat.overseer."""
     types = [
         EnumCapabilityTier,
         EnumCompletionOutcome,
         EnumContextBundleLevel,
         EnumFailureClass,
+        EnumProcessRunnerState,
         EnumTaskStatus,
         EnumVerifierVerdict,
         ModelCompletionReport,
+        ModelContractAllowedActions,
         ModelContextBundleL0,
         ModelContextBundleL1,
         ModelContextBundleL2,
         ModelContextBundleL3,
         ModelContextBundleL4,
         ModelEscalationRequest,
+        ModelProcessRunnerStateTransition,
         ModelSessionContract,
         ModelSessionHaltCondition,
         ModelSessionPhaseSpec,
@@ -56,7 +62,7 @@ def test_all_overseer_types_importable() -> None:
         ModelVerifierCheckResult,
         ModelVerifierOutput,
     ]
-    assert len(types) == 20
+    assert len(types) == 23
 
 
 @pytest.mark.unit
@@ -95,6 +101,7 @@ def test_all_exports_in_dunder_all() -> None:
         "EnumTaskStatus",
         "EnumVerifierVerdict",
         "ModelCompletionReport",
+        "ModelContractAllowedActions",
         "ModelContextBundleL0",
         "ModelContextBundleL1",
         "ModelContextBundleL2",
