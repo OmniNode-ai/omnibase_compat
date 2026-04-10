@@ -102,26 +102,26 @@ def test_provider_all_values_unique() -> None:
 @pytest.mark.unit
 def test_retry_type_members() -> None:
     """EnumRetryType contains expected members."""
-    assert EnumRetryType.NONE == "none"
-    assert EnumRetryType.IMMEDIATE == "immediate"
-    assert EnumRetryType.BACKOFF == "backoff"
-    assert EnumRetryType.ESCALATE == "escalate"
+    assert EnumRetryType.NONE == "none"  # type: ignore[comparison-overlap]
+    assert EnumRetryType.IMMEDIATE == "immediate"  # type: ignore[comparison-overlap]
+    assert EnumRetryType.BACKOFF == "backoff"  # type: ignore[comparison-overlap]
+    assert EnumRetryType.ESCALATE == "escalate"  # type: ignore[comparison-overlap]
 
 
 @pytest.mark.unit
 def test_risk_level_members() -> None:
     """EnumRiskLevel contains expected members."""
-    assert EnumRiskLevel.LOW == "low"
-    assert EnumRiskLevel.MEDIUM == "medium"
-    assert EnumRiskLevel.HIGH == "high"
-    assert EnumRiskLevel.CRITICAL == "critical"
+    assert EnumRiskLevel.LOW == "low"  # type: ignore[comparison-overlap]
+    assert EnumRiskLevel.MEDIUM == "medium"  # type: ignore[comparison-overlap]
+    assert EnumRiskLevel.HIGH == "high"  # type: ignore[comparison-overlap]
+    assert EnumRiskLevel.CRITICAL == "critical"  # type: ignore[comparison-overlap]
 
 
 @pytest.mark.unit
 def test_provider_members() -> None:
     """EnumProvider contains expected members."""
-    assert EnumProvider.ANTHROPIC == "anthropic"
-    assert EnumProvider.OPENAI == "openai"
-    assert EnumProvider.GOOGLE == "google"
-    assert EnumProvider.LOCAL == "local"
-    assert EnumProvider.UNKNOWN == "unknown"
+    assert EnumProvider.ANTHROPIC == "anthropic"  # type: ignore[comparison-overlap]
+    assert EnumProvider.OPENAI == "openai"  # type: ignore[comparison-overlap]
+    assert EnumProvider.GOOGLE == "google"  # type: ignore[comparison-overlap]
+    assert EnumProvider.LOCAL == "local"  # type: ignore[comparison-overlap]
+    assert EnumProvider.UNKNOWN == "unknown"  # type: ignore[comparison-overlap]
