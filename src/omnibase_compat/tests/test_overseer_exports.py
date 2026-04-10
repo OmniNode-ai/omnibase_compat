@@ -94,6 +94,7 @@ def test_all_exports_in_dunder_all() -> None:
         "ModelContextBundleL3",
         "ModelContextBundleL4",
         "ModelEscalationRequest",
+        "ModelOvernightContract",
         "ModelTaskDeltaEnvelope",
         "ModelTaskStateEnvelope",
         "ModelVerifierCheckResult",
