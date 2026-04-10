@@ -1,21 +1,16 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-"""Wire types for session post-mortem reports.
-
-Zero upstream runtime deps — pydantic only.
-"""
-
 from __future__ import annotations
 
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class EnumPostMortemOutcome(StrEnum):
-    """Terminal outcome for an overnight session."""
+    """Terminal outcome for a post-mortem session report."""
 
     COMPLETED = "completed"
     PARTIAL = "partial"
@@ -24,10 +19,9 @@ class EnumPostMortemOutcome(StrEnum):
 
 
 class ModelFrictionEvent(BaseModel, frozen=True, extra="forbid"):
-    """A single friction event recorded during an overnight session.
+    """A single friction event recorded during an autonomous session.
 
-    Parsed from files in .onex_state/friction/. Frozen and extra-forbid
-    for schema safety.
+    Parsed from files in .onex_state/friction/ by adapter_friction_reader.
     """
 
     event_id: str
@@ -42,8 +36,9 @@ class ModelFrictionEvent(BaseModel, frozen=True, extra="forbid"):
 class ModelPostMortemReport(BaseModel, frozen=True, extra="forbid"):
     """Session post-mortem report produced by node_session_post_mortem.
 
-    Cross-repo observable artifact: written to docs/post-mortems/ and
-    emitted to Kafka. Frozen and extra-forbid for schema safety.
+    Cross-repo observable artifact written to docs/post-mortems/ and emitted
+    to Kafka. Captures planned vs completed phases, stalled agents, friction
+    events, PR status, and carry-forward items.
     """
 
     session_id: str
@@ -53,12 +48,12 @@ class ModelPostMortemReport(BaseModel, frozen=True, extra="forbid"):
     phases_completed: list[str]
     phases_failed: list[str]
     phases_skipped: list[str]
-    stalled_agents: list[str]
-    friction_events: list[ModelFrictionEvent]
-    prs_merged: list[str]
-    prs_open: list[str]
-    prs_failed: list[str]
-    carry_forward_items: list[str]
+    stalled_agents: list[str] = Field(default_factory=list)
+    friction_events: list[ModelFrictionEvent] = Field(default_factory=list)
+    prs_merged: list[str] = Field(default_factory=list)
+    prs_open: list[str] = Field(default_factory=list)
+    prs_failed: list[str] = Field(default_factory=list)
+    carry_forward_items: list[str] = Field(default_factory=list)
     report_path: str
     started_at: datetime
     completed_at: datetime

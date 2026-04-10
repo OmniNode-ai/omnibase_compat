@@ -24,6 +24,11 @@ from omnibase_compat.overseer.model_context_bundle import (
     ModelContextBundleL4,
 )
 from omnibase_compat.overseer.model_escalation_request import ModelEscalationRequest
+from omnibase_compat.overseer.model_session_contract import (
+    ModelSessionContract,
+    ModelSessionHaltCondition,
+    ModelSessionPhaseSpec,
+)
 from omnibase_compat.overseer.model_task_delta_envelope import ModelTaskDeltaEnvelope
 from omnibase_compat.overseer.model_task_state_envelope import (
     EnumTaskStatus,
@@ -48,6 +53,9 @@ __all__ = [
     "ModelContextBundleL3",
     "ModelContextBundleL4",
     "ModelEscalationRequest",
+    "ModelSessionContract",
+    "ModelSessionHaltCondition",
+    "ModelSessionPhaseSpec",
     "ModelTaskDeltaEnvelope",
     "ModelTaskStateEnvelope",
     "ModelVerifierCheckResult",

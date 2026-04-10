@@ -1,12 +1,10 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-"""omnibase_compat.telemetry — wire types for session-level observability.
+"""omnibase_compat.telemetry — wire types for session-level telemetry reporting.
 
-Exports all enums and models used for session bootstrap results and
-post-mortem reports. These are cross-repo observable artifacts emitted
-to Kafka and written to disk.
-Zero upstream runtime deps.
+Exports cross-repo observable artifacts for session post-mortems,
+friction event collection, and sweep skill runs. Zero upstream runtime deps.
 """
 
 from omnibase_compat.telemetry.model_post_mortem_report import (
@@ -18,6 +16,7 @@ from omnibase_compat.telemetry.model_session_bootstrap_result import (
     EnumBootstrapStatus,
     ModelSessionBootstrapResult,
 )
+from omnibase_compat.telemetry.model_sweep_result import ModelSweepResult
 
 __all__ = [
     "EnumBootstrapStatus",
@@ -25,4 +24,5 @@ __all__ = [
     "ModelFrictionEvent",
     "ModelPostMortemReport",
     "ModelSessionBootstrapResult",
+    "ModelSweepResult",
 ]

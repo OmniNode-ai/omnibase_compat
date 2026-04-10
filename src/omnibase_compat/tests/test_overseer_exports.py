@@ -21,6 +21,9 @@ from omnibase_compat.overseer import (
     ModelContextBundleL3,
     ModelContextBundleL4,
     ModelEscalationRequest,
+    ModelSessionContract,
+    ModelSessionHaltCondition,
+    ModelSessionPhaseSpec,
     ModelTaskDeltaEnvelope,
     ModelTaskStateEnvelope,
     ModelVerifierCheckResult,
@@ -30,7 +33,7 @@ from omnibase_compat.overseer import (
 
 @pytest.mark.unit
 def test_all_overseer_types_importable() -> None:
-    """All 17 overseer types are importable from omnibase_compat.overseer."""
+    """All 20 overseer types are importable from omnibase_compat.overseer."""
     types = [
         EnumCapabilityTier,
         EnumCompletionOutcome,
@@ -45,12 +48,15 @@ def test_all_overseer_types_importable() -> None:
         ModelContextBundleL3,
         ModelContextBundleL4,
         ModelEscalationRequest,
+        ModelSessionContract,
+        ModelSessionHaltCondition,
+        ModelSessionPhaseSpec,
         ModelTaskDeltaEnvelope,
         ModelTaskStateEnvelope,
         ModelVerifierCheckResult,
         ModelVerifierOutput,
     ]
-    assert len(types) == 17
+    assert len(types) == 20
 
 
 @pytest.mark.unit
@@ -94,6 +100,9 @@ def test_all_exports_in_dunder_all() -> None:
         "ModelContextBundleL3",
         "ModelContextBundleL4",
         "ModelEscalationRequest",
+        "ModelSessionContract",
+        "ModelSessionHaltCondition",
+        "ModelSessionPhaseSpec",
         "ModelTaskDeltaEnvelope",
         "ModelTaskStateEnvelope",
         "ModelVerifierCheckResult",
