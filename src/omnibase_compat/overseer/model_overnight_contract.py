@@ -17,6 +17,47 @@ from pydantic import BaseModel, ConfigDict, Field
 from omnibase_compat.overseer.model_dispatch_item import ModelDispatchItem
 
 
+class ModelOvernightHaltCondition(BaseModel):
+    """Condition that triggers an action when its trigger clause matches.
+
+    On-halt actions:
+      - ``dispatch_skill``: fire the named skill (e.g. ``onex:pr_polish``) as
+        a foreground recovery and continue the tick loop.
+      - ``halt_and_notify``: stop the pipeline and emit a tick event with a
+        notify reason so the controlling session sees it.
+      - ``hard_halt``: stop the pipeline immediately with halt_reason set.
+
+    Backwards compat: the pre-OMN-8375 shape only used
+    ``condition_id/description/check_type/threshold``. All new fields are
+    optional, and the legacy ``cost_ceiling`` / ``phase_failure_count`` /
+    ``time_elapsed`` check types still evaluate against ``threshold``.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    condition_id: str
+    description: str
+    check_type: Literal[
+        "cost_ceiling",
+        "phase_failure_count",
+        "time_elapsed",
+        "pr_blocked_too_long",
+        "required_outcome_missing",
+        "custom",
+    ]
+    threshold: float = 0.0  # USD for cost_ceiling, count for failures, seconds for time
+    # OMN-8375: action routing. Default halts the pipeline (legacy behavior).
+    on_halt: Literal["hard_halt", "dispatch_skill", "halt_and_notify"] = "hard_halt"
+    # Required when on_halt == "dispatch_skill" (e.g. "onex:pr_polish").
+    skill: str | None = None
+    # Context fields used by specific check_types.
+    # pr_blocked_too_long → watches this PR number; time measured in minutes.
+    pr: int | None = None
+    threshold_minutes: float | None = None
+    # required_outcome_missing → outcome name that must not be absent.
+    outcome: str | None = None
+
+
 class ModelOvernightPhaseSpec(BaseModel):
     """Specification for a single overnight phase."""
 
@@ -28,17 +69,15 @@ class ModelOvernightPhaseSpec(BaseModel):
     halt_on_failure: bool = False
     success_criteria: list[str] = Field(default_factory=list)
     dispatch_items: tuple[ModelDispatchItem, ...] = ()
-
-
-class ModelOvernightHaltCondition(BaseModel):
-    """Condition that triggers an immediate halt of the overnight session."""
-
-    model_config = ConfigDict(frozen=True, extra="forbid")
-
-    condition_id: str
-    description: str
-    check_type: Literal["cost_ceiling", "phase_failure_count", "time_elapsed", "custom"]
-    threshold: float  # USD for cost_ceiling, count for failures, seconds for time
+    # Phase-scoped success criteria probed after dispatch; phase does not
+    # advance until all required_outcomes resolve satisfied. Names are
+    # resolved by HandlerOvernight against its registered outcome probes
+    # (see OMN-8375).
+    required_outcomes: tuple[str, ...] = ()
+    # Phase-scoped halt conditions evaluated on every tick while the phase
+    # is active. Scoped here (in addition to contract.halt_conditions) so a
+    # phase can declare "watch this PR only while I'm running".
+    halt_conditions: tuple[ModelOvernightHaltCondition, ...] = ()
 
 
 class ModelOvernightContract(BaseModel):
