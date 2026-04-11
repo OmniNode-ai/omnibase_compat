@@ -12,7 +12,7 @@ from omnibase_compat.routing.model_routing_degraded_event import ModelRoutingDeg
 from omnibase_compat.routing.model_routing_policy import ModelCiOverridePolicy, ModelRoutingPolicy
 
 
-def test_model_routing_policy_defaults():
+def test_model_routing_policy_defaults() -> None:
     policy = ModelRoutingPolicy(primary="qwen3-coder-30b")
     assert policy.primary == "qwen3-coder-30b"
     assert policy.fallback is None
@@ -23,18 +23,18 @@ def test_model_routing_policy_defaults():
     assert policy.fallback_allowed_roles == []
 
 
-def test_model_routing_policy_frozen():
+def test_model_routing_policy_frozen() -> None:
     policy = ModelRoutingPolicy(primary="qwen3-coder-30b")
     with pytest.raises(ValidationError):
-        policy.primary = "other-model"  # type: ignore[misc]
+        policy.primary = "other-model"
 
 
-def test_model_routing_policy_extra_field_forbidden():
+def test_model_routing_policy_extra_field_forbidden() -> None:
     with pytest.raises(ValidationError):
         ModelRoutingPolicy(primary="qwen3-coder-30b", nonexistent_field="bad")  # type: ignore[call-arg]
 
 
-def test_model_routing_policy_with_fallback_and_ci_override():
+def test_model_routing_policy_with_fallback_and_ci_override() -> None:
     policy = ModelRoutingPolicy(
         primary="qwen3-coder-30b",
         fallback="claude-sonnet",
@@ -54,7 +54,7 @@ def test_model_routing_policy_with_fallback_and_ci_override():
     assert policy.ci_override.primary == "claude-sonnet"
 
 
-def test_model_routing_policy_timeout_math():
+def test_model_routing_policy_timeout_math() -> None:
     """Total budget must always be timeout_per_attempt_s * max_retries, never total/retries."""
     policy = ModelRoutingPolicy(
         primary="qwen3-coder-30b", timeout_per_attempt_s=60.0, max_retries=3
@@ -63,7 +63,7 @@ def test_model_routing_policy_timeout_math():
     assert total_budget == 180.0
 
 
-def test_model_routing_degraded_event_required_fields():
+def test_model_routing_degraded_event_required_fields() -> None:
     event = ModelRoutingDegradedEvent(
         primary="qwen3-coder-30b",
         reason="3 consecutive health check failures",
@@ -77,7 +77,7 @@ def test_model_routing_degraded_event_required_fields():
     assert event.correlation_id == "test-corr-id"
 
 
-def test_model_routing_degraded_event_frozen():
+def test_model_routing_degraded_event_frozen() -> None:
     event = ModelRoutingDegradedEvent(
         primary="qwen3-coder-30b",
         reason="test",
@@ -87,4 +87,4 @@ def test_model_routing_degraded_event_frozen():
         correlation_id="x",
     )
     with pytest.raises(ValidationError):
-        event.primary = "changed"  # type: ignore[misc]
+        event.primary = "changed"
