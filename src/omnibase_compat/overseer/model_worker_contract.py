@@ -22,11 +22,22 @@ Used by:
 
 from __future__ import annotations
 
+import re as _re
 from collections.abc import Mapping
 from types import MappingProxyType
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic.functional_validators import AfterValidator
+
+
+def _validate_semver(v: str) -> str:
+    if not _re.fullmatch(r"\d+\.\d+\.\d+", v):
+        raise ValueError(f"schema_version must match x.y.z, got {v!r}")
+    return v
+
+
+_SemVer = Annotated[str, AfterValidator(_validate_semver)]
 
 
 class ModelEvidenceRequirement(BaseModel):
@@ -66,7 +77,7 @@ class ModelWorkerContract(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    schema_version: str = "1.0.0"
+    schema_version: _SemVer = "1.0.0"
     worker_name: str
 
     heartbeat_interval_seconds: int = Field(
@@ -94,7 +105,23 @@ class ModelWorkerContract(BaseModel):
             return MappingProxyType({})
         if not isinstance(value, Mapping):
             raise TypeError("required_evidence must be a mapping")
-        return MappingProxyType({k: tuple(v) for k, v in value.items()})
+        coerced: dict[str, tuple[ModelEvidenceRequirement, ...]] = {}
+        for k, v in value.items():
+            if not isinstance(v, (list, tuple)):
+                raise TypeError(f"required_evidence[{k!r}] must be a list, got {type(v).__name__}")
+            items: list[ModelEvidenceRequirement] = []
+            for item in v:
+                if isinstance(item, ModelEvidenceRequirement):
+                    items.append(item)
+                elif isinstance(item, dict):
+                    items.append(ModelEvidenceRequirement.model_validate(item))
+                else:
+                    raise TypeError(
+                        f"required_evidence[{k!r}] items must be dicts or "
+                        f"ModelEvidenceRequirement, got {type(item).__name__}"
+                    )
+            coerced[k] = tuple(items)
+        return MappingProxyType(coerced)
 
     allowed_skills: tuple[str, ...] | Literal["*"] = Field(
         default="*",
