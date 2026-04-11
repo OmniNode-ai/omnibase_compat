@@ -61,6 +61,11 @@ from omnibase_compat.overseer.model_verifier_output import (
     ModelVerifierCheckResult,
     ModelVerifierOutput,
 )
+from omnibase_compat.overseer.model_worker_contract import (
+    ModelEvidenceRequirement,
+    ModelWorkerContract,
+    load_worker_contract,
+)
 
 __all__ = [
     "EnumArtifactStoreAction",
@@ -88,6 +93,7 @@ __all__ = [
     "ModelContextBundleL4",
     "ModelDispatchItem",
     "ModelEscalationRequest",
+    "ModelEvidenceRequirement",
     "ModelOvernightContract",
     "ModelOvernightHaltCondition",
     "ModelOvernightPhaseSpec",
@@ -100,4 +106,6 @@ __all__ = [
     "ModelTaskStateEnvelope",
     "ModelVerifierCheckResult",
     "ModelVerifierOutput",
+    "ModelWorkerContract",
+    "load_worker_contract",
 ]
