@@ -32,6 +32,7 @@ from omnibase_compat.overseer import (
     ModelContextBundleL4,
     ModelContractAllowedActions,
     ModelEscalationRequest,
+    ModelEvidenceRequirement,
     ModelProcessRunnerStateTransition,
     ModelSessionContract,
     ModelSessionHaltCondition,
@@ -41,12 +42,14 @@ from omnibase_compat.overseer import (
     ModelTaskStateEnvelope,
     ModelVerifierCheckResult,
     ModelVerifierOutput,
+    ModelWorkerContract,
+    load_worker_contract,
 )
 
 
 @pytest.mark.unit
 def test_all_overseer_types_importable() -> None:
-    """All 33 overseer types are importable from omnibase_compat.overseer."""
+    """All overseer types are importable from omnibase_compat.overseer."""
     from omnibase_compat.overseer import (
         ModelDispatchItem,
         ModelOvernightContract,
@@ -80,6 +83,7 @@ def test_all_overseer_types_importable() -> None:
         ModelContextBundleL4,
         ModelDispatchItem,
         ModelEscalationRequest,
+        ModelEvidenceRequirement,
         ModelOvernightContract,
         ModelOvernightHaltCondition,
         ModelOvernightPhaseSpec,
@@ -92,8 +96,10 @@ def test_all_overseer_types_importable() -> None:
         ModelTaskStateEnvelope,
         ModelVerifierCheckResult,
         ModelVerifierOutput,
+        ModelWorkerContract,
+        load_worker_contract,
     ]
-    assert len(types) == 37
+    assert len(types) == 40
 
 
 @pytest.mark.unit
@@ -149,6 +155,7 @@ def test_all_exports_in_dunder_all() -> None:
         "ModelContextBundleL4",
         "ModelDispatchItem",
         "ModelEscalationRequest",
+        "ModelEvidenceRequirement",
         "ModelOvernightContract",
         "ModelOvernightHaltCondition",
         "ModelOvernightPhaseSpec",
@@ -161,5 +168,7 @@ def test_all_exports_in_dunder_all() -> None:
         "ModelTaskStateEnvelope",
         "ModelVerifierCheckResult",
         "ModelVerifierOutput",
+        "ModelWorkerContract",
+        "load_worker_contract",
     }
     assert set(overseer_mod.__all__) == exported_names

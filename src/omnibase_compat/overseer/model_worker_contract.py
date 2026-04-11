@@ -22,9 +22,11 @@ Used by:
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from types import MappingProxyType
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ModelEvidenceRequirement(BaseModel):
@@ -74,14 +76,25 @@ class ModelWorkerContract(BaseModel):
     )
     stall_action: Literal["kill_and_respawn", "kill_only", "warn_only"] = "kill_and_respawn"
 
-    required_evidence: dict[str, tuple[ModelEvidenceRequirement, ...]] = Field(
-        default_factory=dict,
+    required_evidence: Mapping[str, tuple[ModelEvidenceRequirement, ...]] = Field(
+        default_factory=lambda: MappingProxyType({}),
         description=(
             "Map from TaskUpdate status transition (e.g. 'completed', "
             "'in_progress') to the list of evidence requirements that must "
             "be satisfied on the TaskUpdate body."
         ),
     )
+
+    @field_validator("required_evidence", mode="before")
+    @classmethod
+    def _freeze_required_evidence(
+        cls, value: Any
+    ) -> Mapping[str, tuple[ModelEvidenceRequirement, ...]]:
+        if value is None:
+            return MappingProxyType({})
+        if not isinstance(value, Mapping):
+            raise TypeError("required_evidence must be a mapping")
+        return MappingProxyType({k: tuple(v) for k, v in value.items()})
 
     allowed_skills: tuple[str, ...] | Literal["*"] = Field(
         default="*",
