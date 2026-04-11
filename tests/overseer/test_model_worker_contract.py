@@ -189,6 +189,104 @@ class TestLoadWorkerContract:
             load_worker_contract({"worker_name": "bad", "undocumented": True})
 
 
+class TestRequiredEvidenceYamlCoercion:
+    """Tests for YAML safe_load dict coercion in _freeze_required_evidence."""
+
+    _EVIDENCE_DICT = {
+        "evidence_id": "pr-merged",
+        "description": "PR must show MERGED",
+        "kind": "contains",
+        "pattern": "MERGED",
+    }
+
+    def test_required_evidence_coerces_yaml_dict_to_model_evidence_requirement(self) -> None:
+        """list-of-dicts (YAML safe_load output) must produce ModelEvidenceRequirement instances."""
+        data = {
+            "worker_name": "yaml-worker",
+            "required_evidence": {
+                "completed": [self._EVIDENCE_DICT],
+            },
+        }
+        contract = load_worker_contract(data)
+        items = contract.required_evidence["completed"]
+        assert len(items) == 1
+        item = items[0]
+        assert isinstance(item, ModelEvidenceRequirement), (
+            f"Expected ModelEvidenceRequirement, got {type(item)}"
+        )
+        assert item.evidence_id == "pr-merged"
+        assert item.kind == "contains"
+        assert item.pattern == "MERGED"
+
+    def test_required_evidence_bare_dict_value_coerces(self) -> None:
+        """Bare dict value (not in list) must raise ValidationError or TypeError."""
+        data = {
+            "worker_name": "yaml-worker",
+            "required_evidence": {
+                "completed": self._EVIDENCE_DICT,
+            },
+        }
+        from pydantic import ValidationError
+
+        with pytest.raises((ValidationError, TypeError)):
+            load_worker_contract(data)
+
+    def test_required_evidence_null_produces_empty_mapping(self) -> None:
+        """None/null required_evidence from YAML must produce empty mapping, no AttributeError."""
+        data = {"worker_name": "yaml-worker", "required_evidence": None}
+        contract = load_worker_contract(data)
+        assert contract.required_evidence == {}
+
+    def test_required_evidence_string_value_raises(self) -> None:
+        """A plain string where a list is expected must raise ValidationError."""
+        from pydantic import ValidationError
+
+        data = {
+            "worker_name": "yaml-worker",
+            "required_evidence": {"completed": "not-a-list"},
+        }
+        with pytest.raises((ValidationError, TypeError)):
+            load_worker_contract(data)
+
+    def test_required_evidence_yaml_roundtrip_attribute_access(self) -> None:
+        """Full YAML round-trip: safe_load output → load_worker_contract → attribute access."""
+        import io
+
+        import yaml
+
+        yaml_text = """\
+worker_name: yaml-rt-worker
+required_evidence:
+  completed:
+    - evidence_id: test-passed
+      description: pytest must show passed
+      kind: regex
+      pattern: "\\\\d+ passed"
+"""
+        raw = yaml.safe_load(io.StringIO(yaml_text))
+        contract = load_worker_contract(raw)
+        reqs = contract.required_evidence["completed"]
+        assert len(reqs) == 1
+        req = reqs[0]
+        assert isinstance(req, ModelEvidenceRequirement)
+        assert req.evidence_id == "test-passed"
+        assert req.kind == "regex"
+
+    def test_schema_version_accepts_semver(self) -> None:
+        contract = ModelWorkerContract(worker_name="w", schema_version="2.3.4")
+        assert contract.schema_version == "2.3.4"
+
+    def test_schema_version_rejects_non_semver(self) -> None:
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError):
+            ModelWorkerContract(worker_name="w", schema_version="v1.0")
+        with pytest.raises(ValidationError):
+            ModelWorkerContract(worker_name="w", schema_version="1.0")
+        with pytest.raises(ValidationError):
+            ModelWorkerContract(worker_name="w", schema_version="1.0.0-beta")
+
+
 class TestRoundTrip:
     def test_model_dump_and_revalidate(self) -> None:
         original = ModelWorkerContract(
