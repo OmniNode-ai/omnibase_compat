@@ -14,6 +14,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from omnibase_compat.overseer.model_dispatch_item import ModelDispatchItem
+
 
 class ModelSessionPhaseSpec(BaseModel):
     """Specification for a single session phase."""
@@ -25,6 +27,7 @@ class ModelSessionPhaseSpec(BaseModel):
     timeout_seconds: int = 3600  # 1 hour default
     halt_on_failure: bool = False
     success_criteria: list[str] = Field(default_factory=list)
+    dispatch_items: tuple[ModelDispatchItem, ...] = ()
 
 
 class ModelSessionHaltCondition(BaseModel):
