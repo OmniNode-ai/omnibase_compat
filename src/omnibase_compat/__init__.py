@@ -18,3 +18,12 @@ Those belong in omnibase_spi (interface contracts) or omnibase_infra (implementa
 """
 
 __version__ = "0.1.0"
+
+from omnibase_compat.routing.model_routing_degraded_event import ModelRoutingDegradedEvent
+from omnibase_compat.routing.model_routing_policy import ModelCiOverridePolicy, ModelRoutingPolicy
+
+__all__: list[str] = [
+    "ModelCiOverridePolicy",
+    "ModelRoutingPolicy",
+    "ModelRoutingDegradedEvent",
+]
