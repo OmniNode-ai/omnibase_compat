@@ -33,7 +33,13 @@ from omnibase_compat.overseer.model_context_bundle import (
 from omnibase_compat.overseer.model_contract_allowed_actions import (
     ModelContractAllowedActions,
 )
+from omnibase_compat.overseer.model_dispatch_item import ModelDispatchItem
 from omnibase_compat.overseer.model_escalation_request import ModelEscalationRequest
+from omnibase_compat.overseer.model_overnight_contract import (
+    ModelOvernightContract,
+    ModelOvernightHaltCondition,
+    ModelOvernightPhaseSpec,
+)
 from omnibase_compat.overseer.model_process_runner_state_transition import (
     ModelProcessRunnerStateTransition,
 )
@@ -73,7 +79,11 @@ __all__ = [
     "ModelContextBundleL2",
     "ModelContextBundleL3",
     "ModelContextBundleL4",
+    "ModelDispatchItem",
     "ModelEscalationRequest",
+    "ModelOvernightContract",
+    "ModelOvernightHaltCondition",
+    "ModelOvernightPhaseSpec",
     "ModelProcessRunnerStateTransition",
     "ModelSessionContract",
     "ModelSessionHaltCondition",
