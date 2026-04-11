@@ -10,9 +10,9 @@ resolved at runtime from model_registry.yaml via the model_id keys declared here
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class ModelCiOverridePolicy(BaseModel):
@@ -80,6 +80,13 @@ class ModelRoutingPolicy(BaseModel):
         default=None,
         description="Override policy applied when ONEX_CI_MODE=true.",
     )
+
+    @model_validator(mode="after")
+    def _fallback_required_when_roles_declared(self) -> Self:
+        if self.fallback_allowed_roles and self.fallback is None:
+            msg = "fallback must be set when fallback_allowed_roles is non-empty"
+            raise ValueError(msg)
+        return self
 
 
 __all__: list[str] = [

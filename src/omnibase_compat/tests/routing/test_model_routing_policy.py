@@ -63,6 +63,15 @@ def test_model_routing_policy_timeout_math() -> None:
     assert total_budget == 180.0
 
 
+def test_model_routing_policy_fallback_required_when_roles_declared() -> None:
+    """fallback must be set when fallback_allowed_roles is non-empty."""
+    with pytest.raises(ValidationError, match="fallback must be set"):
+        ModelRoutingPolicy(
+            primary="qwen3-coder-30b",
+            fallback_allowed_roles=["fixer"],
+        )
+
+
 def test_model_routing_degraded_event_required_fields() -> None:
     event = ModelRoutingDegradedEvent(
         primary="qwen3-coder-30b",
