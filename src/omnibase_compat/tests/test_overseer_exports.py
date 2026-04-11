@@ -18,6 +18,9 @@ from omnibase_compat.overseer import (
     EnumLLMProviderAction,
     EnumNotificationAction,
     EnumProcessRunnerState,
+    EnumProvider,
+    EnumRetryType,
+    EnumRiskLevel,
     EnumTaskStatus,
     EnumTicketServiceAction,
     EnumVerifierVerdict,
@@ -34,6 +37,7 @@ from omnibase_compat.overseer import (
     ModelSessionHaltCondition,
     ModelSessionPhaseSpec,
     ModelTaskDeltaEnvelope,
+    ModelTaskShapeFeatures,
     ModelTaskStateEnvelope,
     ModelVerifierCheckResult,
     ModelVerifierOutput,
@@ -42,7 +46,7 @@ from omnibase_compat.overseer import (
 
 @pytest.mark.unit
 def test_all_overseer_types_importable() -> None:
-    """All 29 overseer types are importable from omnibase_compat.overseer."""
+    """All 33 overseer types are importable from omnibase_compat.overseer."""
     types = [
         EnumArtifactStoreAction,
         EnumCapabilityTier,
@@ -54,6 +58,9 @@ def test_all_overseer_types_importable() -> None:
         EnumLLMProviderAction,
         EnumNotificationAction,
         EnumProcessRunnerState,
+        EnumProvider,
+        EnumRetryType,
+        EnumRiskLevel,
         EnumTaskStatus,
         EnumTicketServiceAction,
         EnumVerifierVerdict,
@@ -70,11 +77,12 @@ def test_all_overseer_types_importable() -> None:
         ModelSessionHaltCondition,
         ModelSessionPhaseSpec,
         ModelTaskDeltaEnvelope,
+        ModelTaskShapeFeatures,
         ModelTaskStateEnvelope,
         ModelVerifierCheckResult,
         ModelVerifierOutput,
     ]
-    assert len(types) == 29
+    assert len(types) == 33
 
 
 @pytest.mark.unit
@@ -115,6 +123,9 @@ def test_all_exports_in_dunder_all() -> None:
         "EnumLLMProviderAction",
         "EnumNotificationAction",
         "EnumProcessRunnerState",
+        "EnumProvider",
+        "EnumRetryType",
+        "EnumRiskLevel",
         "EnumTaskStatus",
         "EnumTicketServiceAction",
         "EnumVerifierVerdict",
@@ -131,6 +142,7 @@ def test_all_exports_in_dunder_all() -> None:
         "ModelSessionHaltCondition",
         "ModelSessionPhaseSpec",
         "ModelTaskDeltaEnvelope",
+        "ModelTaskShapeFeatures",
         "ModelTaskStateEnvelope",
         "ModelVerifierCheckResult",
         "ModelVerifierOutput",
