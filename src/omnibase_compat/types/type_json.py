@@ -41,7 +41,7 @@ Usage:
     >>> params: dict[str, ToolParameterValue] = {"name": "test", "tags": ["a", "b"]}
 
 See Also:
-    - omnibase_core.types.type_json: Re-exports from this module for backwards compatibility
+    - omnibase_core.types.type_json: Maintains identical type definitions (not imported due to SDK boundary)
 """
 
 from datetime import datetime
