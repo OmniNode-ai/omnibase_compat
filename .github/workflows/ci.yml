@@ -16,6 +16,7 @@ jobs:
       - uses: astral-sh/setup-uv@v3
       - run: uv sync --dev --frozen
       - run: uv run python scripts/validate_no_upstream_deps.py
+      - run: uv run python scripts/check_compat_retention.py
       - run: uv run ruff check src/
       - run: uv run mypy src/omnibase_compat --strict
       - run: uv run pytest src/omnibase_compat/tests/ -m unit --tb=short

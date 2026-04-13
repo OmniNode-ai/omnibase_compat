@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+# compat-skip-retention: infrastructure model for the compat retention system itself
 
 from pydantic import BaseModel
 
