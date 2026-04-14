@@ -34,10 +34,21 @@ jobs:
         run: git clone --depth=1 https://github.com/OmniNode-ai/onex_change_control.git /tmp/onex_change_control
       - name: Install pyyaml
         run: pip install pyyaml
+      - name: Resolve PR number
+        id: pr_number
+        run: |
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            # merge_group: ref is gh-readonly-queue/main/pr-<num>-<sha>
+            PR=$(echo "${{ github.ref }}" | grep -oP '(?<=pr-)\d+')
+            echo "pr=$PR" >> "$GITHUB_OUTPUT"
+          fi
       - name: Run contract compliance check
+        if: steps.pr_number.outputs.pr != ''
         run: |
           python /tmp/onex_change_control/scripts/ci/run_contract_compliance_check.py \
-            --pr ${{ github.event.pull_request.number }} \
+            --pr ${{ steps.pr_number.outputs.pr }} \
             --repo ${{ github.repository }} \
             --contracts-dir /tmp/onex_change_control/contracts
         env:
