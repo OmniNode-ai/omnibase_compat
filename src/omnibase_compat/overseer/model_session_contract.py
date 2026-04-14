@@ -16,6 +16,8 @@ from datetime import UTC, datetime
 from pydantic import BaseModel, Field
 
 
+# COMPAT_MIGRATION_TARGET: omnimarket.nodes.session_bootstrap.contract (OMN-8368)
+# COMPAT_REMOVAL_DATE: 2026-10-01
 class ModelSessionContract(BaseModel, frozen=True, extra="forbid"):
     """Session-level verification contract for autonomous sessions.
 

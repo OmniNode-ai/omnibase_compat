@@ -32,10 +32,10 @@ def test_overseer_exports_exactly_one_contract_model() -> None:
     """
     from omnibase_compat import overseer
 
-    contract_exports = [name for name in overseer.__all__ if "Contract" in name]
-    assert contract_exports == ["ModelSessionContract"], (
-        f"Expected exactly ['ModelSessionContract'] in overseer.__all__, "
-        f"got contract names: {contract_exports}"
+    assert set(overseer.__all__) == {"ModelRoutingDecision", "ModelSessionContract"}, (
+        "Expected overseer.__all__ to contain exactly "
+        "{'ModelRoutingDecision', 'ModelSessionContract'}, "
+        f"got: {set(overseer.__all__)}"
     )
 
 
