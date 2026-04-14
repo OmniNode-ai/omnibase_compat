@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class EnumCapabilityTier(StrEnum):
@@ -105,6 +105,14 @@ class ModelRoutingDecision(BaseModel):
         description="Estimated cost in USD for this routing decision.",
         ge=0.0,
     )
+
+    @model_validator(mode="after")
+    def _validate_retry_fallback_consistency(self) -> ModelRoutingDecision:
+        if self.retry_type == EnumRetryType.FALLBACK_MODEL and not self.fallback_model:
+            raise ValueError("fallback_model is required when retry_type=FALLBACK_MODEL")
+        if self.retry_type != EnumRetryType.FALLBACK_MODEL and self.fallback_model is not None:
+            raise ValueError("fallback_model must be None unless retry_type=FALLBACK_MODEL")
+        return self
 
 
 __all__: list[str] = [

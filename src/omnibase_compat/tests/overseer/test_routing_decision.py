@@ -96,3 +96,26 @@ def test_routing_decision_cost_estimate_non_negative() -> None:
 def test_routing_decision_extra_fields_forbidden() -> None:
     with pytest.raises(ValidationError):
         _make_decision(unknown_field="oops")
+
+
+def test_fallback_model_required_when_retry_type_fallback_model() -> None:
+    with pytest.raises(ValidationError, match="fallback_model is required"):
+        _make_decision(retry_type=EnumRetryType.FALLBACK_MODEL, fallback_model=None)
+
+
+def test_fallback_model_must_be_none_unless_fallback_retry_type() -> None:
+    with pytest.raises(ValidationError, match="fallback_model must be None"):
+        _make_decision(retry_type=EnumRetryType.NONE, fallback_model="some-model")
+
+
+def test_fallback_model_valid_when_retry_type_fallback_model() -> None:
+    decision = _make_decision(
+        retry_type=EnumRetryType.FALLBACK_MODEL, fallback_model="claude-haiku-4-5"
+    )
+    assert decision.fallback_model == "claude-haiku-4-5"
+
+
+def test_fallback_model_none_valid_for_non_fallback_retry_types() -> None:
+    for retry_type in (EnumRetryType.NONE, EnumRetryType.SAME_MODEL, EnumRetryType.ESCALATE_TIER):
+        decision = _make_decision(retry_type=retry_type, fallback_model=None)
+        assert decision.fallback_model is None
