@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 from pydantic import ValidationError
 
@@ -17,8 +19,8 @@ from omnibase_compat.overseer.model_routing_decision import (
 )
 
 
-def _make_decision(**kwargs: object) -> ModelRoutingDecision:
-    defaults = {
+def _make_decision(**kwargs: Any) -> ModelRoutingDecision:
+    defaults: dict[str, Any] = {
         "selected_model": "qwen3-coder-30b",
         "capability_tier": EnumCapabilityTier.LOCAL,
         "provider": EnumProvider.LOCAL_VLLM,
@@ -29,10 +31,10 @@ def _make_decision(**kwargs: object) -> ModelRoutingDecision:
 
 def test_routing_decision_requires_selected_model() -> None:
     with pytest.raises(ValidationError):
-        ModelRoutingDecision(
+        ModelRoutingDecision(  # type: ignore[call-arg]
             capability_tier=EnumCapabilityTier.LOCAL,
             provider=EnumProvider.LOCAL_VLLM,
-        )  # type: ignore[call-arg]
+        )
 
 
 def test_routing_decision_retry_budget_non_negative() -> None:
@@ -93,4 +95,4 @@ def test_routing_decision_cost_estimate_non_negative() -> None:
 
 def test_routing_decision_extra_fields_forbidden() -> None:
     with pytest.raises(ValidationError):
-        _make_decision(unknown_field="oops")  # type: ignore[call-arg]
+        _make_decision(unknown_field="oops")
