@@ -45,7 +45,7 @@ def test_routing_decision_retry_budget_non_negative() -> None:
 def test_routing_decision_frozen() -> None:
     decision = _make_decision()
     with pytest.raises(ValidationError):
-        decision.selected_model = "other-model"  # type: ignore[misc]
+        decision.selected_model = "other-model"
 
 
 def test_routing_decision_defaults() -> None:
