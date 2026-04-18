@@ -30,6 +30,7 @@ class ModelFrictionEvent(BaseModel, frozen=True, extra="forbid"):
     friction_type: str
     description: str
     recorded_at: datetime
+    # string-version-ok: wire schema guard; compat has zero runtime deps, ModelSemVer unavailable
     schema_version: str = "1.0"
 
 
@@ -57,4 +58,5 @@ class ModelPostMortemReport(BaseModel, frozen=True, extra="forbid"):
     report_path: str
     started_at: datetime
     completed_at: datetime
+    # string-version-ok: wire schema guard; compat has zero runtime deps, ModelSemVer unavailable
     schema_version: str = "1.0"

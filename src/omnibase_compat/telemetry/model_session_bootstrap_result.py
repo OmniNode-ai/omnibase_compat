@@ -38,4 +38,5 @@ class ModelSessionBootstrapResult(BaseModel, frozen=True, extra="forbid"):
     warnings: list[str]
     dry_run: bool
     bootstrapped_at: datetime
+    # string-version-ok: wire schema guard; compat has zero runtime deps, ModelSemVer unavailable
     schema_version: str = "1.0"
