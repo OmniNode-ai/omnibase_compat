@@ -20,4 +20,5 @@ class EventEnvelopeV1Minimal(BaseModel, frozen=True):
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     event_type: str
     payload: dict[str, Any] = Field(default_factory=dict)
+    # string-version-ok: wire schema guard; compat has zero runtime deps, ModelSemVer unavailable
     schema_version: str = "1.0"

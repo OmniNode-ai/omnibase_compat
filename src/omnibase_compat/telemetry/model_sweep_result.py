@@ -24,6 +24,7 @@ class ModelSweepResult(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
+    # string-version-ok: wire schema guard; compat has zero runtime deps, ModelSemVer unavailable
     schema_version: str = "1.0.0"
     sweep_type: Literal[
         "aislop", "coverage", "compliance", "contract", "dashboard", "runtime", "data_flow"

@@ -34,6 +34,7 @@ class ModelSessionContract(BaseModel, frozen=True, extra="forbid"):
     halt_on_build_loop_failure: bool = True
     dry_run: bool = False
     started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    # string-version-ok: wire schema guard; compat has zero runtime deps, ModelSemVer unavailable
     schema_version: str = "1.0"
 
 
