@@ -6,8 +6,6 @@
 from datetime import date
 from pathlib import Path
 
-import pytest
-
 from omnibase_compat.tooling.shim_ttl_check import _check_file, main
 
 
