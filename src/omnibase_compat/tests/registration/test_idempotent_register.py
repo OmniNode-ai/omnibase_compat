@@ -162,6 +162,44 @@ def test_per_decoration_state_is_isolated() -> None:
     assert b.calls == []
 
 
+class _RegistryPositionalOrKeyword:
+    """Registrar where the key param is POSITIONAL_OR_KEYWORD and can be
+    passed either positionally or as a kwarg.
+    """
+
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+
+    @idempotent_register(key_attr="name")
+    def register_thing(self, name: str, payload: object) -> str:
+        self.calls.append(name)
+        return name
+
+
+def test_positional_or_keyword_passed_positionally_binds_correctly() -> None:
+    """Regression: POSITIONAL_OR_KEYWORD params passed positionally must still
+    resolve via path 1 (bound argument name), not fall through to path 2 where
+    we would try to ``getattr(name_value, "name")``.
+    """
+    reg = _RegistryPositionalOrKeyword()
+    first = reg.register_thing("pok-key", object())
+    second = reg.register_thing("pok-key", object())
+
+    assert first == "pok-key"
+    assert second is None
+    assert reg.calls == ["pok-key"]
+
+
+def test_positional_or_keyword_passed_as_kwarg_also_works() -> None:
+    reg = _RegistryPositionalOrKeyword()
+    first = reg.register_thing(name="pok-kwarg", payload=object())
+    second = reg.register_thing(name="pok-kwarg", payload=object())
+
+    assert first == "pok-kwarg"
+    assert second is None
+    assert reg.calls == ["pok-kwarg"]
+
+
 def test_distinct_decorations_have_distinct_state() -> None:
     """Each @idempotent_register call gets its own seen-set."""
     seen_a: list[str] = []

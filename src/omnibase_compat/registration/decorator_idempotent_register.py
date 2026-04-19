@@ -97,69 +97,49 @@ def idempotent_register(key_attr: str) -> Callable[[F], F]:
 
         @functools.wraps(fn)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            # Path 1 — kwarg match.
+            # Bind args/kwargs to parameter names so POSITIONAL_OR_KEYWORD
+            # parameters passed positionally still register as bound
+            # arguments. Apply defaults so optional kwargs with a default
+            # are present in ``bound.arguments``.
+            try:
+                bound = signature.bind_partial(*args, **kwargs)
+            except TypeError as exc:
+                raise TypeError(
+                    f"idempotent_register: cannot bind call to {fn.__qualname__!r}: {exc}"
+                ) from exc
+            bound.apply_defaults()
+
             key: Any
-            if has_matching_kwarg and key_attr in kwargs:
-                key = kwargs[key_attr]
+            # Path 1 — key_attr resolves as a bound parameter name.
+            if has_matching_kwarg and key_attr in bound.arguments:
+                key = bound.arguments[key_attr]
             else:
-                # Path 1 fallback OR path 2 — look at the first positional
-                # non-self argument. If the function is a method, args[0] is
-                # ``self``; the registration object is args[1].
+                # Path 2 — read the attribute from the first positional
+                # non-self argument. Skip a leading ``self`` if present.
                 if not args:
-                    # No positional passed; path 1 bound by default?
-                    # Check if kwarg has a default and wasn't provided —
-                    # in that case, use the default.
-                    if has_matching_kwarg:
-                        param = signature.parameters[key_attr]
-                        if param.default is not inspect.Parameter.empty:
-                            key = param.default
-                        else:
-                            raise TypeError(
-                                "idempotent_register: no value for key "
-                                f"{key_attr!r} at call to {fn.__qualname__!r}"
-                            )
-                    else:
-                        raise TypeError(
-                            "idempotent_register: no positional argument "
-                            f"to read attribute {key_attr!r} from at call "
-                            f"to {fn.__qualname__!r}"
-                        )
-                else:
-                    # Skip a leading ``self``-like argument if present.
-                    first_param = params[0] if params else None
-                    is_method = first_param is not None and first_param.name == "self"
-                    target_index = 1 if is_method and len(args) > 1 else (1 if is_method else 0)
-                    # If method and only ``self`` positional, try path 1
-                    # default fallback instead.
-                    if is_method and len(args) == 1:
-                        if has_matching_kwarg:
-                            param = signature.parameters[key_attr]
-                            if param.default is not inspect.Parameter.empty:
-                                key = param.default
-                            else:
-                                raise TypeError(
-                                    "idempotent_register: no value for key "
-                                    f"{key_attr!r} at call to "
-                                    f"{fn.__qualname__!r}"
-                                )
-                        else:
-                            raise TypeError(
-                                "idempotent_register: no positional "
-                                "non-self argument to read attribute "
-                                f"{key_attr!r} from at call to "
-                                f"{fn.__qualname__!r}"
-                            )
-                    else:
-                        target = args[target_index]
-                        try:
-                            key = getattr(target, key_attr)
-                        except AttributeError as exc:
-                            raise TypeError(
-                                "idempotent_register: positional argument "
-                                f"of type {type(target).__name__!r} has no "
-                                f"attribute {key_attr!r} at call to "
-                                f"{fn.__qualname__!r}"
-                            ) from exc
+                    raise TypeError(
+                        "idempotent_register: no positional argument to "
+                        f"read attribute {key_attr!r} from at call to "
+                        f"{fn.__qualname__!r}"
+                    )
+                first_param = params[0] if params else None
+                is_method = first_param is not None and first_param.name == "self"
+                target_index = 1 if is_method else 0
+                if is_method and len(args) <= 1:
+                    raise TypeError(
+                        "idempotent_register: no positional non-self "
+                        f"argument to read attribute {key_attr!r} from at "
+                        f"call to {fn.__qualname__!r}"
+                    )
+                target = args[target_index]
+                try:
+                    key = getattr(target, key_attr)
+                except AttributeError as exc:
+                    raise TypeError(
+                        "idempotent_register: positional argument of type "
+                        f"{type(target).__name__!r} has no attribute "
+                        f"{key_attr!r} at call to {fn.__qualname__!r}"
+                    ) from exc
 
             key_str = str(key)
             with lock:
