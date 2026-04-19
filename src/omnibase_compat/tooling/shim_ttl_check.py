@@ -19,9 +19,7 @@ import sys
 from datetime import date, datetime
 from pathlib import Path
 
-_SUNSET_PATTERN = re.compile(
-    r"#\s*sunset:\s*\S+\s*>=\s*\S+\s*\((\d{4}-\d{2}-\d{2})\)"
-)
+_SUNSET_PATTERN = re.compile(r"#\s*sunset:\s*\S+\s*>=\s*\S+\s*\((\d{4}-\d{2}-\d{2})\)")
 
 
 def _check_file(path: Path, today: date) -> list[str]:
