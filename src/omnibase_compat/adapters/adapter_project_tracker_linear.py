@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import urllib.request
+from typing import Any, cast
 
 from omnibase_compat.models.model_project_tracker import (
     ModelIssueStatus,
@@ -18,13 +19,21 @@ from omnibase_compat.protocols.protocol_project_tracker import ProtocolProjectTr
 _LINEAR_API_URL = "https://api.linear.app/graphql"
 
 
+def _nested_id(raw: dict[str, Any], key: str) -> str | None:
+    val = raw.get(key)
+    if isinstance(val, dict):
+        inner = val.get("id")
+        return inner if isinstance(inner, str) else None
+    return None
+
+
 class AdapterProjectTrackerLinear(ProtocolProjectTracker):
     def __init__(self, api_key: str, *, base_url: str = _LINEAR_API_URL) -> None:
         self._api_key = api_key
         self._base_url = base_url
 
-    def _graphql(self, query: str, variables: dict[str, object] | None = None) -> dict[str, object]:
-        body: dict[str, object] = {"query": query}
+    def _graphql(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
+        body: dict[str, Any] = {"query": query}
         if variables is not None:
             body["variables"] = variables
         data = json.dumps(body).encode()
@@ -38,7 +47,7 @@ class AdapterProjectTrackerLinear(ProtocolProjectTracker):
             method="POST",
         )
         with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read())
+            return cast(dict[str, Any], json.loads(resp.read()))
 
     def list_teams(self) -> list[ModelTeam]:
         result = self._graphql(
@@ -47,7 +56,14 @@ class AdapterProjectTrackerLinear(ProtocolProjectTracker):
             }"""
         )
         nodes = _extract_nodes(result, "teams")
-        return [ModelTeam(**n) for n in nodes]
+        return [
+            ModelTeam(
+                id=n["id"],
+                name=n["name"],
+                key=n["key"],
+            )
+            for n in nodes
+        ]
 
     def list_issue_labels(self, team: str) -> list[ModelLabel]:
         result = self._graphql(
@@ -61,8 +77,14 @@ class AdapterProjectTrackerLinear(ProtocolProjectTracker):
         nodes = _extract_nodes(result, "issueLabels")
         out: list[ModelLabel] = []
         for n in nodes:
-            tid = n.pop("team", {}).get("id") if isinstance(n.get("team"), dict) else None
-            out.append(ModelLabel(**n, team_id=tid))
+            out.append(
+                ModelLabel(
+                    id=n["id"],
+                    name=n["name"],
+                    color=n.get("color"),
+                    team_id=_nested_id(n, "team"),
+                )
+            )
         return out
 
     def list_issue_statuses(self, team: str) -> list[ModelIssueStatus]:
@@ -77,12 +99,18 @@ class AdapterProjectTrackerLinear(ProtocolProjectTracker):
         nodes = _extract_nodes(result, "workflowStates")
         out: list[ModelIssueStatus] = []
         for n in nodes:
-            tid = n.pop("team", {}).get("id") if isinstance(n.get("team"), dict) else None
-            out.append(ModelIssueStatus(**n, team_id=tid))
+            out.append(
+                ModelIssueStatus(
+                    id=n["id"],
+                    name=n["name"],
+                    type=n["type"],
+                    team_id=_nested_id(n, "team"),
+                )
+            )
         return out
 
 
-def _extract_nodes(payload: dict[str, object], root_key: str) -> list[dict[str, object]]:
+def _extract_nodes(payload: dict[str, Any], root_key: str) -> list[dict[str, Any]]:
     data = payload.get("data")
     if not isinstance(data, dict):
         raise ValueError(f"Unexpected Linear response: {payload}")
