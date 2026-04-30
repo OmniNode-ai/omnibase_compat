@@ -11,3 +11,5 @@ on:
 jobs:
   call:
     uses: OmniNode-ai/omnibase_core/.github/workflows/validate-docs.yml@main
+    with:
+      standalone: true
