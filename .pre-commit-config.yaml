@@ -47,6 +47,14 @@ repos:
         pass_filenames: true
         stages: [pre-push]
 
+      - id: normalization-symmetry
+        name: normalization-symmetry
+        entry: python -m omnibase_core.validation.checker_normalization_symmetry src
+        language: python
+        additional_dependencies:
+          - "omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core.git@187871b3c3c84cc4c876781c6f160c0fde378978"
+        pass_filenames: false
+
 # Configuration
 default_install_hook_types: [pre-commit, pre-push]
 default_stages: [pre-commit]
