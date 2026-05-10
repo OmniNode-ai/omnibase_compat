@@ -18,7 +18,7 @@ from scripts.ci.test_selection_models import (
 )
 
 SRC_PREFIX = "src/omnibase_compat/"
-TEST_UNIT_PREFIX = "src/omnibase_compat/tests/unit/"
+TEST_UNIT_PREFIX = "src/omnibase_compat/tests/"
 
 FULL_SUITE_BRANCHES = {"main"}
 
@@ -31,9 +31,9 @@ def resolve_test_paths(
 
     Behavior:
       - Source changes under src/omnibase_compat/<module>: include
-        src/omnibase_compat/tests/unit/<module>/.
-      - Test-only changes under src/omnibase_compat/tests/unit/: include
-        the changed unit-test directory.
+        src/omnibase_compat/tests/<module>/.
+      - Test-only changes under src/omnibase_compat/tests/: include
+        the changed test directory.
       - Files outside src/: no contribution; caller decides whether to
         escalate to full suite.
     """
@@ -50,10 +50,9 @@ def _resolve(changed_files: list[str], config: ModelAdjacencyMap) -> list[str]:
             remainder = path[len(SRC_PREFIX) :]
             # Skip test files themselves — they map directly below
             if remainder.startswith("tests/"):
-                if remainder.startswith("tests/unit/"):
-                    parts = remainder.split("/")
-                    if len(parts) >= 3:
-                        selected.add(f"{TEST_UNIT_PREFIX}{parts[2]}/")
+                parts = remainder.split("/")
+                if len(parts) >= 2 and parts[1] not in ("", "__init__.py"):
+                    selected.add(f"{TEST_UNIT_PREFIX}{parts[1]}/")
                 continue
             module = remainder.split("/", 1)[0]
             if module in config.adjacency:
