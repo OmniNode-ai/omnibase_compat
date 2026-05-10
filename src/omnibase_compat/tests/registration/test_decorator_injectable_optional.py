@@ -4,47 +4,39 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
+
+from omnibase_compat.registration.decorator_injectable_optional import injectable_optional
 
 
 @pytest.mark.unit
 class TestInjectableOptional:
-    def _import(self):  # type: ignore[return]
-        from omnibase_compat.registration.decorator_injectable_optional import (
-            injectable_optional,
-        )
-
-        return injectable_optional
-
     def test_attaches_metadata_to_class(self) -> None:
-        injectable_optional = self._import()
-
         @injectable_optional("event_bus", reason="optional Kafka publisher")
         class MyNode:
             pass
 
         assert hasattr(MyNode, "__injectable_optional__")
-        meta = MyNode.__injectable_optional__
+        meta: Any = MyNode.__injectable_optional__  # type: ignore[attr-defined]
         assert meta["param_name"] == "event_bus"
         assert meta["reason"] == "optional Kafka publisher"
 
     def test_multiple_params_accumulate(self) -> None:
-        injectable_optional = self._import()
-
         @injectable_optional("logger", reason="optional structured logger")
         @injectable_optional("event_bus", reason="optional Kafka publisher")
         class MultiNode:
             pass
 
         assert hasattr(MultiNode, "__injectable_optional__")
-        meta = MultiNode.__injectable_optional__
+        meta: Any = MultiNode.__injectable_optional__  # type: ignore[attr-defined]
         assert isinstance(meta, list)
         param_names = {entry["param_name"] for entry in meta}
         assert "event_bus" in param_names
         assert "logger" in param_names
 
     def test_reason_is_required(self) -> None:
-        injectable_optional = self._import()
         with pytest.raises(TypeError):
 
             @injectable_optional("event_bus")  # type: ignore[call-arg]
@@ -52,8 +44,6 @@ class TestInjectableOptional:
                 pass
 
     def test_class_still_instantiable(self) -> None:
-        injectable_optional = self._import()
-
         @injectable_optional("event_bus", reason="optional Kafka publisher")
         class SimpleNode:
             def __init__(self, event_bus: object = None) -> None:
@@ -63,8 +53,6 @@ class TestInjectableOptional:
         assert node.event_bus is None
 
     def test_decorated_class_identity_preserved(self) -> None:
-        injectable_optional = self._import()
-
         @injectable_optional("event_bus", reason="optional Kafka publisher")
         class NamedNode:
             pass
