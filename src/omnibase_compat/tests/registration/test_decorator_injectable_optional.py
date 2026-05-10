@@ -19,7 +19,7 @@ class TestInjectableOptional:
             pass
 
         assert hasattr(MyNode, "__injectable_optional__")
-        meta: Any = MyNode.__injectable_optional__  # type: ignore[attr-defined]
+        meta: Any = MyNode.__injectable_optional__
         assert meta["param_name"] == "event_bus"
         assert meta["reason"] == "optional Kafka publisher"
 
@@ -30,7 +30,7 @@ class TestInjectableOptional:
             pass
 
         assert hasattr(MultiNode, "__injectable_optional__")
-        meta: Any = MultiNode.__injectable_optional__  # type: ignore[attr-defined]
+        meta: Any = MultiNode.__injectable_optional__
         assert isinstance(meta, list)
         param_names = {entry["param_name"] for entry in meta}
         assert "event_bus" in param_names
