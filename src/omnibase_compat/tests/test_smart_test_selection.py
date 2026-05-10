@@ -30,7 +30,7 @@ def test_source_change_maps_to_unit_tests() -> None:
         ["src/omnibase_compat/adapters/some_adapter.py"],
         ADJACENCY,
     )
-    assert "src/omnibase_compat/tests/unit/adapters/" in paths
+    assert "src/omnibase_compat/tests/adapters/" in paths
 
 
 @pytest.mark.unit
