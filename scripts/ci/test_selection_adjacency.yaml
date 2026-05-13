@@ -41,7 +41,7 @@ adjacency:
     reverse_deps: [contracts, protocols, adapters, routing, overseer, telemetry]
   # Mid-level — depend on foundation, depended on by few
   contracts:
-    reverse_deps: [adapters, registration]
+    reverse_deps: [registration]
   protocols:
     reverse_deps: [adapters, routing]
   types:
