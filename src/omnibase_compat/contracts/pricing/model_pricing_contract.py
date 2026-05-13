@@ -36,5 +36,11 @@ class ModelPricingContract(BaseModel):
         object.__setattr__(self, "models", MappingProxyType(dict(self.models)))
         return self
 
+    @model_validator(mode="after")
+    def _validate_baseline_model_in_models(self) -> ModelPricingContract:
+        if self.models and self.baseline_model not in self.models:
+            raise ValueError(f"baseline_model '{self.baseline_model}' must be a key in models")
+        return self
+
 
 __all__: list[str] = ["ModelPricingContract"]
