@@ -55,7 +55,7 @@ def test_frozen_immutability() -> None:
         models={},
     )
     with pytest.raises(ValidationError):
-        pricing.version = 2  # type: ignore[misc]
+        pricing.version = 2
 
 
 @pytest.mark.unit
@@ -112,7 +112,7 @@ def test_model_pricing_frozen() -> None:
         runner_cost_per_hour=0.0,
     )
     with pytest.raises(ValidationError):
-        mp.input_cost_per_1k_tokens = 99.0  # type: ignore[misc]
+        mp.input_cost_per_1k_tokens = 99.0
 
 
 @pytest.mark.unit
