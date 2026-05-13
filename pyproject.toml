@@ -49,11 +49,12 @@ line-length = 100
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pytest.ini_options]
-testpaths = ["src/omnibase_compat/tests"]
+testpaths = ["src/omnibase_compat/tests", "tests"]
 pythonpath = ["src", "."]
 markers = [
     "unit: unit tests",
     "integration: integration tests",
+    "timeout: test-level timeout hint (informational; requires pytest-timeout to enforce)",
 ]
 addopts = "--tb=short"
 
