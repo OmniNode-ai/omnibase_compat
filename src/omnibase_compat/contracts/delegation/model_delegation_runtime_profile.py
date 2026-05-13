@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
-# compat-skip-retention: delegation wire DTO — permanent zero-upstream-dep schema layer (OMN-10919)
+# COMPAT_MIGRATION_TARGET: omnibase_core.contracts.delegation.model_delegation_runtime_profile
+# COMPAT_REMOVAL_DATE: 2027-06-01
 
 """Root delegation runtime profile contract model for OMN-10919.
 
@@ -10,7 +11,7 @@ Frozen + extra=forbid — pure schema with no env var reads or I/O.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from omnibase_compat.contracts.delegation.model_delegation_dashboard_connection import (
     ModelDelegationDashboardConnection,
@@ -54,7 +55,8 @@ class ModelDelegationRuntimeProfile(BaseModel):
     )
     llm_backends: dict[str, ModelDelegationLlmBackend] = Field(
         ...,
-        description="Named LLM backend configurations (at least 'default' expected)",
+        min_length=1,
+        description="Named LLM backend configurations (at least 'default' required)",
     )
     security: ModelDelegationSecurity | None = Field(
         default=None,
@@ -72,3 +74,9 @@ class ModelDelegationRuntimeProfile(BaseModel):
         default=None,
         description="Optional named datastore configurations",
     )
+
+    @model_validator(mode="after")
+    def validate_llm_backends(self) -> ModelDelegationRuntimeProfile:
+        if "default" not in self.llm_backends:
+            raise ValueError("llm_backends must include a 'default' entry")
+        return self

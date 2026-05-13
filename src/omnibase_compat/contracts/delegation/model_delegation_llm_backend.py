@@ -1,12 +1,13 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
-# compat-skip-retention: delegation wire DTO — permanent zero-upstream-dep schema layer (OMN-10919)
+# COMPAT_MIGRATION_TARGET: omnibase_core.contracts.delegation.model_delegation_llm_backend
+# COMPAT_REMOVAL_DATE: 2027-06-01
 
 """LLM backend contract model for delegation runtime configuration."""
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class ModelDelegationLlmBackend(BaseModel):
@@ -29,3 +30,9 @@ class ModelDelegationLlmBackend(BaseModel):
         default_factory=dict,
         description="Per-task-type model override map",
     )
+
+    @model_validator(mode="after")
+    def validate_token_limits(self) -> ModelDelegationLlmBackend:
+        if self.max_tokens_default > self.max_tokens_hard_limit:
+            raise ValueError("max_tokens_default must be <= max_tokens_hard_limit")
+        return self

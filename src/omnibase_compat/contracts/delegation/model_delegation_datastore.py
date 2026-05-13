@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
-# compat-skip-retention: delegation wire DTO — permanent zero-upstream-dep schema layer (OMN-10919)
+# COMPAT_MIGRATION_TARGET: omnibase_core.contracts.delegation.model_delegation_datastore
+# COMPAT_REMOVAL_DATE: 2027-06-01
 
 """Datastore contract model for delegation runtime configuration."""
 

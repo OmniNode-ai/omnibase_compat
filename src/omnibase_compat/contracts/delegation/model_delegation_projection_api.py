@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
-# compat-skip-retention: delegation wire DTO — permanent zero-upstream-dep schema layer (OMN-10919)
+# COMPAT_MIGRATION_TARGET: omnibase_core.contracts.delegation.model_delegation_projection_api
+# COMPAT_REMOVAL_DATE: 2027-06-01
 
 """Projection API contract model for delegation runtime configuration."""
 
@@ -25,5 +26,6 @@ class ModelDelegationProjectionApi(BaseModel):
     schema_version: str = Field(..., description="API schema version string")
     freshness_sla_ms: int = Field(
         ...,
+        ge=1,
         description="Maximum acceptable data freshness in milliseconds",
     )

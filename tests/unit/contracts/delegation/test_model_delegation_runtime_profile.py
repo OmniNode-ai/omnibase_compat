@@ -304,3 +304,74 @@ class TestFrozenImmutability:
 
     def test_model_config_from_attributes(self) -> None:
         assert ModelDelegationRuntimeProfile.model_config.get("from_attributes") is True
+
+
+@pytest.mark.unit
+@pytest.mark.timeout(30)
+class TestNewValidators:
+    def test_llm_backend_rejects_default_exceeding_hard_limit(self) -> None:
+        with pytest.raises(
+            ValidationError, match="max_tokens_default must be <= max_tokens_hard_limit"
+        ):
+            ModelDelegationLlmBackend(
+                bifrost_endpoint_ref="ref",
+                default_task_model_ref="model",
+                max_tokens_default=10000,
+                max_tokens_hard_limit=1000,
+                timeout_ms=5000,
+            )
+
+    def test_llm_backend_accepts_equal_token_limits(self) -> None:
+        backend = ModelDelegationLlmBackend(
+            bifrost_endpoint_ref="ref",
+            default_task_model_ref="model",
+            max_tokens_default=4096,
+            max_tokens_hard_limit=4096,
+            timeout_ms=5000,
+        )
+        assert backend.max_tokens_default == backend.max_tokens_hard_limit
+
+    def test_projection_api_rejects_zero_freshness_sla(self) -> None:
+        with pytest.raises(ValidationError):
+            ModelDelegationProjectionApi(
+                base_url_ref="URL_REF",
+                endpoints={},
+                schema_version="1.0.0",
+                freshness_sla_ms=0,
+            )
+
+    def test_projection_api_rejects_negative_freshness_sla(self) -> None:
+        with pytest.raises(ValidationError):
+            ModelDelegationProjectionApi(
+                base_url_ref="URL_REF",
+                endpoints={},
+                schema_version="1.0.0",
+                freshness_sla_ms=-1,
+            )
+
+    def test_profile_rejects_missing_default_llm_backend(
+        self,
+        minimal_event_bus: ModelDelegationEventBusEndpoint,
+        minimal_llm_backend: ModelDelegationLlmBackend,
+    ) -> None:
+        with pytest.raises(ValidationError, match="llm_backends must include a 'default' entry"):
+            ModelDelegationRuntimeProfile(
+                name="test",
+                version=1,
+                runtime_profile="local",
+                event_bus=minimal_event_bus,
+                llm_backends={"fast": minimal_llm_backend},
+            )
+
+    def test_profile_rejects_empty_llm_backends(
+        self,
+        minimal_event_bus: ModelDelegationEventBusEndpoint,
+    ) -> None:
+        with pytest.raises(ValidationError):
+            ModelDelegationRuntimeProfile(
+                name="test",
+                version=1,
+                runtime_profile="local",
+                event_bus=minimal_event_bus,
+                llm_backends={},
+            )
