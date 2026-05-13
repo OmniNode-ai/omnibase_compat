@@ -8,7 +8,10 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from collections.abc import Mapping
+from types import MappingProxyType
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from omnibase_compat.contracts.pricing.model_llm_pricing import ModelLlmPricing
 
@@ -26,7 +29,12 @@ class ModelPricingContract(BaseModel):
     version: int = Field(..., ge=1)
     baseline_model: str = Field(..., min_length=1)
     savings_method: str = Field(..., min_length=1)
-    models: dict[str, ModelLlmPricing] = Field(default_factory=dict)
+    models: Mapping[str, ModelLlmPricing] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _freeze_models_mapping(self) -> ModelPricingContract:
+        object.__setattr__(self, "models", MappingProxyType(dict(self.models)))
+        return self
 
 
 __all__: list[str] = ["ModelPricingContract"]
