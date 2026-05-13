@@ -4,7 +4,7 @@
 import pytest
 from pydantic import ValidationError
 
-from omnibase_compat.contracts.pricing.model_model_pricing import ModelModelPricing
+from omnibase_compat.contracts.pricing.model_llm_pricing import ModelLlmPricing
 from omnibase_compat.contracts.pricing.model_pricing_contract import ModelPricingContract
 
 
@@ -16,12 +16,12 @@ def test_pricing_contract_parses() -> None:
         baseline_model="claude-sonnet-4-6",
         savings_method="counterfactual",
         models={
-            "qwen3-coder": ModelModelPricing(
+            "qwen3-coder": ModelLlmPricing(
                 input_cost_per_1k_tokens=0.0,
                 output_cost_per_1k_tokens=0.0,
                 runner_cost_per_hour=0.15,
             ),
-            "claude-sonnet-4-6": ModelModelPricing(
+            "claude-sonnet-4-6": ModelLlmPricing(
                 input_cost_per_1k_tokens=0.003,
                 output_cost_per_1k_tokens=0.015,
                 runner_cost_per_hour=0.0,
@@ -61,7 +61,7 @@ def test_frozen_immutability() -> None:
 @pytest.mark.unit
 def test_rejects_negative_costs() -> None:
     with pytest.raises(ValueError):
-        ModelModelPricing(
+        ModelLlmPricing(
             input_cost_per_1k_tokens=-0.001,
             output_cost_per_1k_tokens=0.0,
             runner_cost_per_hour=0.0,
@@ -71,7 +71,7 @@ def test_rejects_negative_costs() -> None:
 @pytest.mark.unit
 def test_rejects_negative_output_cost() -> None:
     with pytest.raises(ValueError):
-        ModelModelPricing(
+        ModelLlmPricing(
             input_cost_per_1k_tokens=0.0,
             output_cost_per_1k_tokens=-0.01,
             runner_cost_per_hour=0.0,
@@ -81,7 +81,7 @@ def test_rejects_negative_output_cost() -> None:
 @pytest.mark.unit
 def test_rejects_negative_runner_cost() -> None:
     with pytest.raises(ValueError):
-        ModelModelPricing(
+        ModelLlmPricing(
             input_cost_per_1k_tokens=0.0,
             output_cost_per_1k_tokens=0.0,
             runner_cost_per_hour=-0.01,
@@ -90,7 +90,7 @@ def test_rejects_negative_runner_cost() -> None:
 
 @pytest.mark.unit
 def test_model_pricing_frozen() -> None:
-    mp = ModelModelPricing(
+    mp = ModelLlmPricing(
         input_cost_per_1k_tokens=0.001,
         output_cost_per_1k_tokens=0.002,
         runner_cost_per_hour=0.0,
@@ -151,7 +151,7 @@ def test_extra_fields_rejected_on_pricing_contract() -> None:
 @pytest.mark.unit
 def test_extra_fields_rejected_on_model_pricing() -> None:
     with pytest.raises(ValueError):
-        ModelModelPricing(
+        ModelLlmPricing(
             input_cost_per_1k_tokens=0.0,
             output_cost_per_1k_tokens=0.0,
             runner_cost_per_hour=0.0,
@@ -161,7 +161,7 @@ def test_extra_fields_rejected_on_model_pricing() -> None:
 
 @pytest.mark.unit
 def test_runner_cost_defaults_to_zero() -> None:
-    mp = ModelModelPricing(
+    mp = ModelLlmPricing(
         input_cost_per_1k_tokens=0.003,
         output_cost_per_1k_tokens=0.015,
     )

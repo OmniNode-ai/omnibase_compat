@@ -10,11 +10,11 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from omnibase_compat.contracts.pricing.model_model_pricing import ModelModelPricing
+from omnibase_compat.contracts.pricing.model_llm_pricing import ModelLlmPricing
 
 
 class ModelPricingContract(BaseModel):
-    """Versioned contract declaring per-model costs and savings methodology.
+    """Versioned contract declaring per-LLM costs and savings methodology.
 
     Frozen so contract declarations are immutable after parse. Each projection
     row records the pricing contract version to enable auditable savings replay.
@@ -26,7 +26,7 @@ class ModelPricingContract(BaseModel):
     version: int = Field(..., ge=1)
     baseline_model: str = Field(..., min_length=1)
     savings_method: str = Field(..., min_length=1)
-    models: dict[str, ModelModelPricing] = Field(default_factory=dict)
+    models: dict[str, ModelLlmPricing] = Field(default_factory=dict)
 
 
 __all__: list[str] = ["ModelPricingContract"]
