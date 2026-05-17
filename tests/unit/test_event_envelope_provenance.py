@@ -24,7 +24,7 @@ class TestEventEnvelopeProvenance:
         envelope = EventEnvelopeV1Minimal.model_validate(data)
         assert envelope.data_provenance is None
 
-    def test_allowed_provenance_values(self) -> None:
+    def test_accepts_expected_provenance_values(self) -> None:
         for value in ("demo_seeded", "demo_projected_shortcut", "measured", "estimated", "unknown"):
             envelope = EventEnvelopeV1Minimal(
                 event_id="id", event_type="type", payload={}, data_provenance=value
