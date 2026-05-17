@@ -25,7 +25,7 @@ class EventEnvelopeV1Minimal(BaseModel, frozen=True):
     data_provenance: str | None = Field(
         default=None,
         description=(
-            "Data provenance label. Allowed values: "
+            "Data provenance label. Expected values: "
             '"demo_seeded", "demo_projected_shortcut", "measured", "estimated", "unknown". '
             "Uses str (not enum) because omnibase_compat has zero upstream runtime deps."
         ),
