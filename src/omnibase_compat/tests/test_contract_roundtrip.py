@@ -40,4 +40,5 @@ def test_event_envelope_schema_export() -> None:
         "event_type",
         "payload",
         "schema_version",
+        "data_provenance",
     }
