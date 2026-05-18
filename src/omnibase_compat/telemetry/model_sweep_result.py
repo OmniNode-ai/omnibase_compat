@@ -1,5 +1,9 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+
+# COMPAT_MIGRATION_TARGET: omnibase_core.models.telemetry.model_sweep_result
+# COMPAT_REMOVAL_DATE: 2026-07-01
+
 # Location: omnibase_compat/src/omnibase_compat/telemetry/model_sweep_result.py
 """Structured result from a sweep skill run.
 

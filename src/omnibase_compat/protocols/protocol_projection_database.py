@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
+# COMPAT_MIGRATION_TARGET: omnibase_core.protocols.protocol_projection_database
+# COMPAT_REMOVAL_DATE: 2026-07-01
+
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
