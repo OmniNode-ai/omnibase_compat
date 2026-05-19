@@ -1,0 +1,17 @@
+---
+schema_version: "1.0.0"
+ticket_id: OMN-11261
+evidence_item_id: dod-core-migration-ticket
+check_type: command
+check_value: "Linear OMN-11262 exists"
+status: PASS
+run_timestamp: "2026-05-19T11:20:39Z"
+commit_sha: 939ed79826fc89d3f3d54eac8a0810fb9f37a5a7
+runner: codex
+verifier: manual
+probe_command: "mcp__linear__.get_issue OMN-11262"
+probe_stdout: |
+  OMN-11262 Migrate contract evidence storage model from omnibase_compat to omnibase_core
+actual_output: "PASS: core migration follow-up OMN-11262 exists."
+exit_code: 0
+pr_number: 93

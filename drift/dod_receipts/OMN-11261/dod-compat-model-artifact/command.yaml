@@ -1,0 +1,16 @@
+---
+schema_version: "1.0.0"
+ticket_id: OMN-11261
+evidence_item_id: dod-compat-model-artifact
+check_type: command
+check_value: "test -f src/omnibase_compat/contracts/evidence/model_contract_evidence_spec.py"
+status: PASS
+run_timestamp: "2026-05-19T11:20:39Z"
+commit_sha: 939ed79826fc89d3f3d54eac8a0810fb9f37a5a7
+runner: codex
+verifier: automated
+probe_command: "test -f src/omnibase_compat/contracts/evidence/model_contract_evidence_spec.py"
+probe_stdout: ""
+actual_output: "PASS: compat evidence contract model artifact exists at the declared path."
+exit_code: 0
+pr_number: 93

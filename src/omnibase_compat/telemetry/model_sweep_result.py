@@ -36,11 +36,11 @@ class ModelSweepResult(BaseModel):
     session_id: str
     correlation_id: str
     ran_at: datetime
-    duration_seconds: float
+    duration_seconds: float = Field(..., ge=0)
     passed: bool
-    finding_count: int = 0
-    critical_count: int = 0
-    warning_count: int = 0
+    finding_count: int = Field(default=0, ge=0)
+    critical_count: int = Field(default=0, ge=0)
+    warning_count: int = Field(default=0, ge=0)
     repos_scanned: tuple[str, ...] = Field(default_factory=tuple)
     summary: str
     output_path: str | None = None  # path to full JSON output
