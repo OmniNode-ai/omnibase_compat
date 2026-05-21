@@ -9,9 +9,10 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from types import MappingProxyType
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
 
 from omnibase_compat.contracts.evidence_pipeline.wire.types import (
     DashboardStage,
@@ -37,6 +38,19 @@ class ModelDashboardEvent(BaseModel):
     timestamp: str = Field(..., min_length=1)
     payload_summary: Mapping[str, str] = Field(default_factory=dict)
     evidence_lifecycle_state: EvidenceLifecycleState
+
+    @model_validator(mode="after")
+    def _freeze_payload_summary_mapping(self) -> ModelDashboardEvent:
+        object.__setattr__(
+            self,
+            "payload_summary",
+            MappingProxyType(dict(self.payload_summary)),
+        )
+        return self
+
+    @field_serializer("payload_summary")
+    def _serialize_payload_summary(self, value: Mapping[str, str]) -> dict[str, str]:
+        return dict(value)
 
 
 __all__: list[str] = ["ModelDashboardEvent"]

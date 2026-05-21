@@ -4,14 +4,24 @@
 import pytest
 from pydantic import ValidationError
 
-from omnibase_compat.contracts.evidence_pipeline.wire import (
+from omnibase_compat.contracts.evidence_pipeline.wire.model_correlation_trace import (
     ModelCorrelationTrace,
     ModelCorrelationTraceEvent,
+)
+from omnibase_compat.contracts.evidence_pipeline.wire.model_correlation_trace_projection import (
     ModelCorrelationTraceProjection,
+)
+from omnibase_compat.contracts.evidence_pipeline.wire.model_dashboard_event import (
     ModelDashboardEvent,
+)
+from omnibase_compat.contracts.evidence_pipeline.wire.model_dashboard_projection_event import (
     ModelDashboardProjectionEvent,
+)
+from omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_dashboard_projection import (
     ModelEvidenceDashboardProjection,
     ModelEvidenceDashboardStageProjection,
+)
+from omnibase_compat.contracts.evidence_pipeline.wire.model_readiness_aggregate_projection import (
     ModelReadinessAggregateProjection,
 )
 
@@ -79,6 +89,12 @@ def test_dashboard_event_is_projection_write_shape() -> None:
 
     assert event.payload_summary["result"] == "passed"
     assert event.stage == "VALIDATED"
+
+    with pytest.raises(TypeError):
+        event.payload_summary["result"] = "failed"  # type: ignore[index]
+
+    restored = ModelDashboardEvent.model_validate_json(event.model_dump_json())
+    assert restored == event
 
 
 @pytest.mark.unit
@@ -194,6 +210,12 @@ def test_readiness_aggregate_projection_keeps_readiness_separate_from_pipeline_s
     assert projection.readiness_state == "BLOCKED"
     assert projection.evidence_pipeline_state == "PASSED"
     assert projection.gap_breakdown["MISSING"] == 2
+
+    with pytest.raises(TypeError):
+        projection.gap_breakdown["MISSING"] = 3  # type: ignore[index]
+
+    restored = ModelReadinessAggregateProjection.model_validate_json(projection.model_dump_json())
+    assert restored == projection
 
 
 @pytest.mark.unit

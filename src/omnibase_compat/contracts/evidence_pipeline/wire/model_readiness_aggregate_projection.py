@@ -9,9 +9,10 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from types import MappingProxyType
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
 
 from omnibase_compat.contracts.evidence_pipeline.wire.types import (
     DashboardStatus,
@@ -41,6 +42,18 @@ class ModelReadinessAggregateProjection(BaseModel):
     blocking_reason_codes: tuple[str, ...] = Field(default_factory=tuple)
     correlation_ids: tuple[str, ...] = Field(default_factory=tuple)
     ticket_ids: tuple[str, ...] = Field(default_factory=tuple)
+
+    @model_validator(mode="after")
+    def _freeze_gap_breakdown_mapping(self) -> Self:
+        object.__setattr__(self, "gap_breakdown", MappingProxyType(dict(self.gap_breakdown)))
+        return self
+
+    @field_serializer("gap_breakdown")
+    def _serialize_gap_breakdown(
+        self,
+        value: Mapping[GapClassification, int],
+    ) -> dict[GapClassification, int]:
+        return dict(value)
 
     @model_validator(mode="after")
     def _projection_metadata_is_consistent(self) -> Self:
