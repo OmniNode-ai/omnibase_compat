@@ -59,6 +59,22 @@ def test_frozen_immutability() -> None:
 
 
 @pytest.mark.unit
+def test_models_mapping_is_immutable() -> None:
+    pricing = ModelPricingContract(
+        name="test",
+        version=1,
+        baseline_model="claude-sonnet-4-6",
+        savings_method="counterfactual",
+        models={},
+    )
+    with pytest.raises(TypeError):
+        pricing.models["new_key"] = ModelLlmPricing(  # type: ignore[index]
+            input_cost_per_1k_tokens=0.0,
+            output_cost_per_1k_tokens=0.0,
+        )
+
+
+@pytest.mark.unit
 def test_rejects_negative_costs() -> None:
     with pytest.raises(ValueError):
         ModelLlmPricing(
@@ -166,6 +182,23 @@ def test_runner_cost_defaults_to_zero() -> None:
         output_cost_per_1k_tokens=0.015,
     )
     assert mp.runner_cost_per_hour == 0.0
+
+
+@pytest.mark.unit
+def test_baseline_model_must_be_in_models_when_nonempty() -> None:
+    with pytest.raises(ValueError):
+        ModelPricingContract(
+            name="test",
+            version=1,
+            baseline_model="claude-sonnet-4-6",
+            savings_method="counterfactual",
+            models={
+                "qwen3-coder": ModelLlmPricing(
+                    input_cost_per_1k_tokens=0.0,
+                    output_cost_per_1k_tokens=0.0,
+                )
+            },
+        )
 
 
 @pytest.mark.unit
