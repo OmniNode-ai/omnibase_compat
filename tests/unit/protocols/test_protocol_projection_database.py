@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 import pytest
@@ -63,20 +64,15 @@ def test_missing_close_is_not_instance() -> None:
 
 
 @pytest.mark.unit
-def test_empty_class_is_not_instance() -> None:
-    class _Broken:
-        pass
-
-    assert not isinstance(_Broken(), ProtocolProjectionDatabase)
+def test_empty_adapter_is_not_instance(empty_projection_adapter: object) -> None:
+    assert not isinstance(empty_projection_adapter, ProtocolProjectionDatabase)
 
 
 @pytest.mark.unit
-def test_protocol_is_runtime_checkable() -> None:
-    # Verifies @runtime_checkable is applied — isinstance must not raise TypeError
-    try:
-        isinstance(object(), ProtocolProjectionDatabase)
-    except TypeError:
-        pytest.fail("ProtocolProjectionDatabase is not @runtime_checkable")
+def test_protocol_is_runtime_checkable(
+    assert_runtime_checkable_protocol: Callable[[type[Any]], None],
+) -> None:
+    assert_runtime_checkable_protocol(ProtocolProjectionDatabase)
 
 
 @pytest.mark.unit
@@ -85,7 +81,10 @@ def test_protocol_class_name() -> None:
 
 
 @pytest.mark.unit
-def test_protocol_has_expected_methods() -> None:
-    methods = {"execute", "execute_many", "fetchval", "close"}
-    for method in methods:
-        assert hasattr(ProtocolProjectionDatabase, method), f"Missing method: {method}"
+def test_protocol_has_expected_methods(
+    assert_protocol_methods: Callable[[type[Any], set[str]], None],
+) -> None:
+    assert_protocol_methods(
+        ProtocolProjectionDatabase,
+        {"execute", "execute_many", "fetchval", "close"},
+    )
