@@ -182,7 +182,7 @@ jobs:
             echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
           else
             # merge_group: ref is gh-readonly-queue/main/pr-<num>-<sha>
-            PR=$(echo "${{ github.ref }}" | grep -oP '(?<=pr-)\d+')
+            PR=$(echo "${{ github.ref }}" | grep -oP '(?<=pr-)\d+' || true)
             echo "pr=$PR" >> "$GITHUB_OUTPUT"
           fi
       - name: Run contract compliance check
