@@ -2,10 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev, "hotfix/**"]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
   merge_group:
+    branches: [main, dev]
   workflow_dispatch:
   schedule:
     - cron: "17 6 * * *"  # 06:17 UTC nightly
