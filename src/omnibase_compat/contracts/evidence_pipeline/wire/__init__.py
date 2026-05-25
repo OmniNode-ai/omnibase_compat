@@ -42,6 +42,16 @@ from omnibase_compat.contracts.evidence_pipeline.wire.model_raw_evidence_payload
 from omnibase_compat.contracts.evidence_pipeline.wire.model_readiness_aggregate_projection import (
     ModelReadinessAggregateProjection,
 )
+from omnibase_compat.contracts.evidence_pipeline.wire.topics import (
+    EVIDENCE_COLLECTED_EVT_V1,
+    EVIDENCE_DASHBOARD_PROJECTED_EVT_V1,
+    EVIDENCE_EXTRACTED_EVT_V1,
+    EVIDENCE_GAP_ANALYZED_EVT_V1,
+    EVIDENCE_OCC_PR_CREATED_EVT_V1,
+    EVIDENCE_PIPELINE_START_CMD_V1,
+    EVIDENCE_READINESS_SCORED_EVT_V1,
+    EVIDENCE_VALIDATED_EVT_V1,
+)
 from omnibase_compat.contracts.evidence_pipeline.wire.types import (
     DashboardSeverity,
     DashboardStage,
@@ -59,6 +69,14 @@ __all__: list[str] = [
     "DashboardSeverity",
     "DashboardStage",
     "DashboardStatus",
+    "EVIDENCE_COLLECTED_EVT_V1",
+    "EVIDENCE_DASHBOARD_PROJECTED_EVT_V1",
+    "EVIDENCE_EXTRACTED_EVT_V1",
+    "EVIDENCE_GAP_ANALYZED_EVT_V1",
+    "EVIDENCE_OCC_PR_CREATED_EVT_V1",
+    "EVIDENCE_PIPELINE_START_CMD_V1",
+    "EVIDENCE_READINESS_SCORED_EVT_V1",
+    "EVIDENCE_VALIDATED_EVT_V1",
     "EvidenceLifecycleState",
     "FreshnessState",
     "GapClassification",
