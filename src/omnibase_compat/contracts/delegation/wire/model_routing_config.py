@@ -4,6 +4,9 @@
 """Delegation routing configuration wire DTOs.
 
 OMN-8596 owns ModelRoutingDecision; this module only carries routing config.
+
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 """
 
 from __future__ import annotations
@@ -19,7 +22,7 @@ class ModelTierModel(BaseModel):
     id: str = Field(..., description="Model identifier.")
     backend_ref: str = Field(
         ...,
-        description="Backend key in the deployed bifrost contract (bifrost_delegation.yaml).",
+        description="Backend key in the merged bifrost contract.",
     )
     max_context_tokens: int = Field(..., description="Max context window in tokens.")
     use_for: tuple[str, ...] = Field(
@@ -53,6 +56,14 @@ class ModelRoutingTier(BaseModel):
     max_retries: int = Field(
         default=0,
         description="Max retry attempts within this tier before escalating.",
+    )
+    cost_per_1k_tokens: float = Field(
+        default=0.0,
+        description=(
+            "Approximate USD cost per 1 000 tokens for this tier. "
+            "Used to compare against pricing_ceiling_per_1k_tokens in the "
+            "task-class contract.  Local tiers are 0.0."
+        ),
     )
 
 
