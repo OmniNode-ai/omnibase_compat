@@ -5,6 +5,9 @@
 
 These models are pure Pydantic schemas for shared delegation payloads. They do
 not include routing decision models; OMN-8596 owns that path.
+
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 """
 
 from omnibase_compat.contracts.delegation.wire.model_bifrost_delegation_config import (
@@ -21,6 +24,8 @@ from omnibase_compat.contracts.delegation.wire.model_budget import (
     ModelBudgetLimits,
 )
 from omnibase_compat.contracts.delegation.wire.model_delegation_request import (
+    MAX_WORDS_PER_SENTENCE_RE,
+    SUPPORTED_ACCEPTANCE_CRITERIA,
     EnumQualityContractMode,
     ModelDelegationRequest,
     validate_acceptance_criteria,
@@ -55,6 +60,9 @@ from omnibase_compat.contracts.delegation.wire.model_task_delegated_event import
 )
 
 __all__: list[str] = [
+    "MAX_WORDS_PER_SENTENCE_RE",
+    "SUPPORTED_ACCEPTANCE_CRITERIA",
+    "TASK_DELEGATED_TOPIC_V1",
     "EnumBudgetAction",
     "EnumQualityContractMode",
     "EnumQualityGateCategory",
@@ -81,6 +89,5 @@ __all__: list[str] = [
     "ModelRoutingTier",
     "ModelTaskDelegatedEvent",
     "ModelTierModel",
-    "TASK_DELEGATED_TOPIC_V1",
     "validate_acceptance_criteria",
 ]

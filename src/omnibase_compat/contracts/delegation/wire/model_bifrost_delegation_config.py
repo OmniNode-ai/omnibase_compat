@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-"""Bifrost delegation config wire DTOs."""
+"""Bifrost delegation config wire DTOs.
+
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
+"""
 
 from __future__ import annotations
 
@@ -127,9 +131,17 @@ class ModelDelegationBackendConfig(BaseModel):
     )
     endpoint_url: str = Field(
         default="",
-        description="Deployed full endpoint URL populated by install-delegation.sh.",
+        description="Endpoint URL populated by the user overlay at load time.",
     )
     model_name: str = Field(..., description="Model identifier sent in outbound requests.")
+    api_key_env: str | None = Field(
+        default=None,
+        description="Optional environment variable name holding the backend API key.",
+    )
+    extra_headers: dict[str, str] | None = Field(
+        default=None,
+        description="Optional static HTTP headers required by the backend provider.",
+    )
     tier: str = Field(..., description="Routing tier: 'local' or 'frontier_api'.")
     timeout_ms: int = Field(
         default=30000,

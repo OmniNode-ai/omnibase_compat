@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-"""Delegation request wire DTO."""
+"""Delegation request wire DTO.
+
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
+"""
 
 from __future__ import annotations
 
@@ -46,7 +50,20 @@ class ModelDelegationRequest(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid", from_attributes=True)
 
     prompt: str = Field(..., description="The user prompt to delegate to the local LLM.")
-    task_type: Literal["test", "document", "research"] = Field(
+    task_type: Literal[
+        "test",
+        "document",
+        "research",
+        "code_generation",
+        "refactor",
+        "reasoning",
+        "complex_reasoning",
+        "planning",
+        "review",
+        "summarization",
+        "agent_delegation",
+        "escalation",
+    ] = Field(
         ...,
         description="Classification of the delegation task.",
     )

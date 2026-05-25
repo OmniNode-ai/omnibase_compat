@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-"""Delegation orchestrator intent and response wire DTOs."""
+"""Delegation orchestrator intent and response wire DTOs.
+
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
+"""
 
 from __future__ import annotations
 
@@ -39,7 +43,21 @@ class ModelInferenceIntent(BaseModel):
     prompt: str
     max_tokens: int
     temperature: float = Field(default=0.3, ge=0.0, le=2.0)
+    timeout_seconds: float = Field(
+        default=30.0,
+        ge=1.0,
+        le=600.0,
+        description="Backend-owned timeout for the downstream inference call.",
+    )
     correlation_id: UUID
+    api_key: str | None = Field(
+        default=None,
+        description="Resolved API key for the backend provider (e.g. from api_key_env).",
+    )
+    extra_headers: dict[str, str] | None = Field(
+        default=None,
+        description="Optional static HTTP headers required by the backend provider.",
+    )
 
 
 class ModelQualityGateIntent(BaseModel):
@@ -85,6 +103,10 @@ class ModelInferenceResponseData(BaseModel):
     prompt_tokens: int = Field(default=0, description="Prompt token count.")
     completion_tokens: int = Field(default=0, description="Completion token count.")
     total_tokens: int = Field(default=0, description="Total token count.")
+    error_message: str = Field(
+        default="",
+        description="Failure reason when inference could not produce content.",
+    )
 
 
 class ModelComplianceLoopResult(BaseModel):
