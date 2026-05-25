@@ -1,5 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+# COMPAT_MIGRATION_TARGET: omnibase_core.contracts.delegation.wire.model_routing_config
+# COMPAT_REMOVAL_DATE: 2026-08-25
 
 """Delegation routing configuration wire DTOs.
 
@@ -32,6 +34,13 @@ class ModelTierModel(BaseModel):
     fast_path_threshold_tokens: int | None = Field(
         default=None,
         description="If set, prefer this model when prompt tokens <= threshold.",
+    )
+    min_success_rate: float = Field(
+        default=0.0,
+        description=(
+            "Minimum success rate from routing feedback. Models below this rate"
+            " for the requested task_type are skipped. 0.0 = no threshold (default)."
+        ),
     )
 
 
