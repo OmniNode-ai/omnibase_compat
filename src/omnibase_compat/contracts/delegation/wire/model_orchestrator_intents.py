@@ -52,10 +52,12 @@ class ModelInferenceIntent(BaseModel):
     correlation_id: UUID
     api_key: str | None = Field(
         default=None,
+        repr=False,
         description="Resolved API key for the backend provider (e.g. from api_key_env).",
     )
     extra_headers: dict[str, str] | None = Field(
         default=None,
+        repr=False,
         description="Optional static HTTP headers required by the backend provider.",
     )
 

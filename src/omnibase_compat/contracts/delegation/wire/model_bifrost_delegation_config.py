@@ -15,6 +15,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelDelegationShadowConfig(BaseModel):
     """Shadow routing comparison settings."""
 
@@ -48,6 +50,8 @@ class ModelDelegationShadowConfig(BaseModel):
     )
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelDelegationFallbackPolicy(BaseModel):
     """Per-rule fallback behavior when backend attempts fail."""
 
@@ -69,6 +73,8 @@ class ModelDelegationFallbackPolicy(BaseModel):
     )
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelDelegationRoutingRule(BaseModel):
     """Routing rule from task class constraints to ordered backend IDs."""
 
@@ -119,6 +125,8 @@ class ModelDelegationRoutingRule(BaseModel):
     shadow_policy_id: UUID = Field(..., description="Shadow policy UUID for A/B evaluation.")
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelDelegationBackendConfig(BaseModel):
     """Backend definition for the Bifrost delegation gateway."""
 
@@ -155,6 +163,8 @@ class ModelDelegationBackendConfig(BaseModel):
     )
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelDelegationCircuitBreakerConfig(BaseModel):
     """Circuit breaker settings applying to all Bifrost backends."""
 
@@ -174,6 +184,8 @@ class ModelDelegationCircuitBreakerConfig(BaseModel):
     )
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelDelegationFailoverConfig(BaseModel):
     """Gateway-level failover settings."""
 
@@ -193,6 +205,8 @@ class ModelDelegationFailoverConfig(BaseModel):
     )
 
 
+# COMPAT_MIGRATION_TARGET: omnibase_core
+# COMPAT_REMOVAL_DATE: 2026-06-25
 class ModelBifrostDelegationConfig(BaseModel):
     """Bifrost delegation gateway configuration."""
 
