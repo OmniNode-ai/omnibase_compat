@@ -50,6 +50,11 @@ class ModelRoutingTier(BaseModel):
         default=None,
         description="Model to use for eval scoring (tier name required).",
     )
+    cost_per_1k_tokens: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Estimated tier cost per 1,000 tokens.",
+    )
     max_retries: int = Field(
         default=0,
         description="Max retry attempts within this tier before escalating.",
