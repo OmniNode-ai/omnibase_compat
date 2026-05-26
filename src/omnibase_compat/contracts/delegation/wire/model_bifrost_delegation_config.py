@@ -1,5 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+# COMPAT_MIGRATION_TARGET: omnibase_core.models.delegation.wire
+# COMPAT_REMOVAL_DATE: 2026-06-25
 
 """Bifrost delegation config wire DTOs."""
 
