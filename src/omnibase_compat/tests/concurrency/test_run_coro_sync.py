@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+# compat-skip-retention: test helper classes; not a compat shim
 
 """Unit tests for ``omnibase_compat.concurrency.run_coro_sync``.
 
