@@ -125,11 +125,28 @@ class ModelDelegationBackendConfig(BaseModel):
         default=None,
         description="Env var name holding the backend base URL (local backends).",
     )
-    endpoint_url: str = Field(
-        default="",
-        description="Deployed full endpoint URL populated by install-delegation.sh.",
+    endpoint_url: str | None = Field(
+        default=None,
+        description=(
+            "Endpoint URL populated by deploy-time overlay. Null for local "
+            "backends until overlay is applied."
+        ),
     )
-    model_name: str = Field(..., description="Model identifier sent in outbound requests.")
+    model_name: str | None = Field(
+        default=None,
+        description=(
+            "Model identifier sent in outbound requests. Null for local "
+            "backends resolved at deploy time."
+        ),
+    )
+    api_key_env: str | None = Field(
+        default=None,
+        description="Optional environment variable name holding the backend API key.",
+    )
+    extra_headers: dict[str, str] | None = Field(
+        default=None,
+        description="Optional static HTTP headers required by the backend provider.",
+    )
     tier: str = Field(..., description="Routing tier: 'local' or 'frontier_api'.")
     timeout_ms: int = Field(
         default=30000,
