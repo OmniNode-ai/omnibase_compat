@@ -57,6 +57,52 @@ class ModelDelegationResult(BaseModel):
         ge=1,
         description="Number of LLM invocations to reach compliance.",
     )
+    escalation_count: int = Field(
+        default=0,
+        ge=0,
+        description="Number of tier-escalation attempts that occurred.",
+    )
+    escalation_history: tuple[dict[str, object], ...] = Field(
+        default=(),
+        description="Serialized per-tier escalation attempt records.",
+    )
+    terminal_failure_reason: str | None = Field(
+        default=None,
+        description="Terminal failure reason when delegation fails after escalation.",
+    )
+    routing_tiers_hash: str | None = Field(
+        default=None,
+        description="SHA-256 of serialized routing_tiers.yaml at execution time.",
+    )
+    escalation_config_hash: str | None = Field(
+        default=None,
+        description="SHA-256 of the escalation contract section at execution time.",
+    )
+    attempts_count: int = Field(
+        default=1,
+        ge=1,
+        description="Total delegation attempts including the initial attempt.",
+    )
+    cumulative_attempt_cost: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Total estimated cost across all attempts.",
+    )
+    cumulative_input_tokens: int = Field(
+        default=0,
+        ge=0,
+        description="Total input tokens across all attempts.",
+    )
+    cumulative_output_tokens: int = Field(
+        default=0,
+        ge=0,
+        description="Total output tokens across all attempts.",
+    )
+    final_attempt_cost: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Estimated cost of the final attempt.",
+    )
 
 
 __all__: list[str] = ["ModelDelegationResult"]
