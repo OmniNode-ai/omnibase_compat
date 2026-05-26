@@ -24,6 +24,11 @@ from omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_dashboard_p
 from omnibase_compat.contracts.evidence_pipeline.wire.model_readiness_aggregate_projection import (
     ModelReadinessAggregateProjection,
 )
+from omnibase_compat.contracts.evidence_pipeline.wire.topics import (
+    EVIDENCE_COLLECTED_EVT_V1,
+    EVIDENCE_PIPELINE_START_CMD_V1,
+    EVIDENCE_VALIDATED_EVT_V1,
+)
 
 
 def _trace_event(
@@ -36,7 +41,7 @@ def _trace_event(
         event_id=event_id,
         projection_cursor=f"cursor-{sequence}",
         ingest_sequence=sequence,
-        topic="onex.cmd.omnimarket.evidence-pipeline-start.v1",
+        topic=EVIDENCE_PIPELINE_START_CMD_V1,
         stage=stage,  # type: ignore[arg-type]
         status="IN_FLIGHT",
         timestamp="2026-05-21T20:00:00Z",
@@ -60,7 +65,7 @@ def test_dashboard_projection_event_carries_normalization_contract() -> None:
         ingest_sequence=1,
         correlation_id="corr-001",
         ticket_id="OMN-11469",
-        topic="onex.evt.omnimarket.evidence-collected.v1",
+        topic=EVIDENCE_COLLECTED_EVT_V1,
         observed_at="2026-05-21T20:01:00Z",
     )
 
@@ -80,7 +85,7 @@ def test_dashboard_event_is_projection_write_shape() -> None:
         ingest_sequence=2,
         correlation_id="corr-001",
         ticket_id="OMN-11469",
-        topic="onex.evt.omnimarket.evidence-validated.v1",
+        topic=EVIDENCE_VALIDATED_EVT_V1,
         stage="VALIDATED",
         timestamp="2026-05-21T20:03:00Z",
         payload_summary={"result": "passed"},
@@ -247,7 +252,7 @@ def test_dashboard_literals_and_frozen_models_are_enforced() -> None:
         projection_cursor="projection:1",
         ingest_sequence=1,
         correlation_id="corr-001",
-        topic="onex.evt.omnimarket.evidence-collected.v1",
+        topic=EVIDENCE_COLLECTED_EVT_V1,
         observed_at="2026-05-21T20:01:00Z",
     )
 
@@ -266,7 +271,7 @@ def test_dashboard_literals_and_frozen_models_are_enforced() -> None:
             projection_cursor="projection:1",
             ingest_sequence=1,
             correlation_id="corr-001",
-            topic="onex.evt.omnimarket.evidence-collected.v1",
+            topic=EVIDENCE_COLLECTED_EVT_V1,
             observed_at="2026-05-21T20:01:00Z",
         )
 
@@ -280,7 +285,7 @@ def test_dashboard_models_reject_extra_fields() -> None:
             projection_cursor="projection:2",
             ingest_sequence=2,
             correlation_id="corr-001",
-            topic="onex.evt.omnimarket.evidence-validated.v1",
+            topic=EVIDENCE_VALIDATED_EVT_V1,
             stage="VALIDATED",
             timestamp="2026-05-21T20:03:00Z",
             evidence_lifecycle_state="VALIDATED",
