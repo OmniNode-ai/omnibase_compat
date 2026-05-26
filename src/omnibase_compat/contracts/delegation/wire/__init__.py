@@ -21,6 +21,8 @@ from omnibase_compat.contracts.delegation.wire.model_budget import (
     ModelBudgetLimits,
 )
 from omnibase_compat.contracts.delegation.wire.model_delegation_request import (
+    MAX_WORDS_PER_SENTENCE_RE,
+    SUPPORTED_ACCEPTANCE_CRITERIA,
     EnumQualityContractMode,
     ModelDelegationRequest,
     validate_acceptance_criteria,
@@ -58,6 +60,7 @@ __all__: list[str] = [
     "EnumBudgetAction",
     "EnumQualityContractMode",
     "EnumQualityGateCategory",
+    "MAX_WORDS_PER_SENTENCE_RE",
     "ModelBaselineIntent",
     "ModelBifrostDelegationConfig",
     "ModelBudgetLimits",
@@ -81,6 +84,7 @@ __all__: list[str] = [
     "ModelRoutingTier",
     "ModelTaskDelegatedEvent",
     "ModelTierModel",
+    "SUPPORTED_ACCEPTANCE_CRITERIA",
     "TASK_DELEGATED_TOPIC_V1",
     "validate_acceptance_criteria",
 ]
