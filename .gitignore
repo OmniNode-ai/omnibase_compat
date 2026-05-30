@@ -1,0 +1,311 @@
+# =============================================================================
+# omnibase_compat .gitignore
+# =============================================================================
+# This file specifies patterns for files that Git should ignore.
+# Organized into logical sections for clarity and maintainability.
+# Last updated: 2025-12-06
+# =============================================================================
+
+# =============================================================================
+# PYTHON BYTECODE & COMPILATION
+# =============================================================================
+# Python bytecode caches (generated on import)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extension shared objects
+*.so
+
+# Cython debug symbols
+cython_debug/
+
+# =============================================================================
+# PYTHON PACKAGING & DISTRIBUTION
+# =============================================================================
+# Build artifacts
+build/
+dist/
+sdist/
+wheels/
+*.egg-info/
+*.egg
+/MANIFEST
+
+# Legacy packaging formats
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+var/
+share/python-wheels/
+.installed.cfg
+
+# PyInstaller artifacts
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =============================================================================
+# VIRTUAL ENVIRONMENTS
+# =============================================================================
+# Standard virtual environment directories
+.venv/
+venv/
+env/
+ENV/
+
+# Backup virtual environments
+env.bak/
+venv.bak/
+
+# PEP 582 local packages (pyflow, pdm)
+__pypackages__/
+
+# =============================================================================
+# DEPENDENCY MANAGEMENT
+# =============================================================================
+# uv: We COMMIT uv.lock for reproducible CI builds
+# (uncomment to ignore if treating as library)
+#uv.lock
+
+# Poetry lock file (migrated to uv in OMN-2232)
+poetry.lock
+
+# PDM configuration (project-specific, not version-controlled)
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# PyPI upload configuration (contains credentials)
+.pypirc
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+coverage.json
+*.cover
+*.py,cover
+cover/
+
+# Test runners
+.tox/
+.nox/
+.cache
+.pytest_cache/
+.hypothesis/
+.testmondata
+.test_durations
+nosetests.xml
+junit-*.xml
+test_split_results/
+
+# ONEX-specific test caches
+.onex_cache/
+
+# =============================================================================
+# TYPE CHECKING & LINTING
+# =============================================================================
+# mypy cache and daemon
+.mypy_cache/
+.dmypy.json
+dmypy.json
+mypy_*.txt
+
+# Pyre type checker
+.pyre/
+
+# pytype static analyzer
+.pytype/
+
+# Ruff linter cache
+.ruff_cache/
+
+# =============================================================================
+# IDE & EDITOR SETTINGS
+# =============================================================================
+# JetBrains IDEs (PyCharm, IntelliJ)
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Spyder IDE
+.spyderproject
+.spyproject
+
+# Rope refactoring tool
+.ropeproject
+
+# IPython/Jupyter
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# =============================================================================
+# AI CODING ASSISTANTS
+# =============================================================================
+# Claude Code (local settings and session data)
+# Use .claude/* instead of .claude/ so negation rules can re-include specific files
+.claude/*
+# Track architecture handshake for CI verification (OMN-2083)
+!.claude/architecture-handshake.md
+*.db
+*.sqlite
+*.db-wal
+*.db-shm
+*.sqlite-journal
+session-*.json
+*auto-save*.json
+*-metrics.json
+*system-metrics.json
+
+# Other AI IDE tools
+.codanna/
+.serena/
+.cursor/
+.hive-mind/
+.swarm/
+.claude-flow/
+claude-flow.config.json
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+# macOS
+.DS_Store
+
+# =============================================================================
+# ENVIRONMENT & SECRETS
+# =============================================================================
+# Environment files (may contain secrets)
+.env
+.env.*
+!.env.example
+
+# Secrets directory (Docker runtime)
+secrets/
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+# Log files
+*.log
+logs/
+
+# Temporary files and caches
+tmp/
+
+# =============================================================================
+# DOCUMENTATION BUILD ARTIFACTS
+# =============================================================================
+# Sphinx documentation build
+docs/_build/
+
+# mkdocs site output
+/site
+
+# Archived/private documentation (not for public repo)
+docs_archived/
+docs_private/
+
+# =============================================================================
+# PROJECT-SPECIFIC: ONEX/OMNIBASE
+# =============================================================================
+# Quality reports and metrics (generated, not committed)
+.github/quality_*.json
+.github/quality_*.md
+.github/last_quality_scan.json
+.github/quality_metrics.json
+code_quality_report.json
+code_quality_report.md
+
+# Validation and test result files (CI-generated)
+*_validation_results.json
+*_go_no_go_results.json
+container_security_validation.json
+
+# Analysis reports (generated)
+/backups/
+/reports/
+*_report*.json
+*_analysis*.json
+*_errors*.txt
+
+# Docker runtime data directories
+data/
+generated/
+
+# Legacy directory handling:
+#   - /legacy/ at repo root: Deprecated files, not tracked
+#   - src/omnibase_core/nodes/legacy/: PRESERVED for migration support
+/legacy/
+!/src/omnibase_core/nodes/legacy/
+
+# =============================================================================
+# DEVELOPMENT TEMPORARY FILES
+# =============================================================================
+# Phase documentation (temporary planning files at repo root)
+# Pattern: phase1_*.json, PHASE2_*.md, etc.
+phase*_*.json
+PHASE*_*.md
+
+# Temporary design/implementation docs (at repo root only)
+# These patterns only match files at repo root to avoid catching
+# legitimate documentation in subdirectories
+/DESIGN_*.md
+/PR_DESCRIPTION.md
+/TEMP_*.md
+/REFACTORING_EXAMPLE.py
+/examples_*.py
+/factory_pattern_analysis.md
+/migration_guide_*.md
+
+# =============================================================================
+# FRAMEWORK-SPECIFIC (OPTIONAL - UNCOMMENT IF USING)
+# =============================================================================
+# Django (uncomment if using Django components)
+#db.sqlite3
+#db.sqlite3-journal
+#local_settings.py
+
+# Flask (uncomment if using Flask components)
+#instance/
+#.webassets-cache
+
+# Celery (uncomment if using Celery)
+#celerybeat-schedule
+#celerybeat.pid
+
+# Scrapy (uncomment if using Scrapy)
+#.scrapy
+
+# SageMath (uncomment if using SageMath)
+#*.sage.py
+
+# Translations (uncomment if using i18n)
+#*.mo
+#*.pot
+
+# PyBuilder (uncomment if using PyBuilder)
+#.pybuilder/
+#target/
+
+# Operational artifacts — never commit (OMN-4569)
+# Recovery logs, validation logs, and session artifacts are auto-generated
+# by automated tooling and must never be tracked as repo content.
+docs/recovery/
+*-validation-log-*.md
+*-recovery-log-*.md
