@@ -191,7 +191,8 @@ jobs:
           python /tmp/onex_change_control/scripts/ci/run_contract_compliance_check.py \
             --pr ${{ steps.pr_number.outputs.pr }} \
             --repo ${{ github.repository }} \
-            --contracts-dir /tmp/onex_change_control/contracts
+            --contracts-dir /tmp/onex_change_control/contracts \
+            --workspace /tmp/onex_change_control
         env:
           EMERGENCY_BYPASS: ${{ secrets.EMERGENCY_BYPASS || '' }}
           GH_TOKEN: ${{ github.token }}

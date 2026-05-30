@@ -309,3 +309,41 @@ PHASE*_*.md
 docs/recovery/
 *-validation-log-*.md
 *-recovery-log-*.md
+
+# =============================================================================
+# ONEX-MANAGED BLOCKS (from origin/dev)
+# =============================================================================
+# NOTE (OMN-12450): The gitignore_baseline validator epic will later reconcile
+# this plain .gitignore into the managed-block format. These marker blocks are
+# preserved here from origin/dev as a union; the patterns are already covered
+# above. This PR is a stopgap durable .pyc-untracking win per user decision
+# 2026-05-30. Full managed-block reconciliation is tracked under OMN-12450.
+
+# === onex-managed: universal ===
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+.idea/
+.vscode/
+test-results/
+playwright-report/
+# === end onex-managed: universal ===
+
+# === onex-managed: python ===
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+# === end onex-managed: python ===
