@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+# compat-skip-retention: test scaffolding (dataclass/fixtures), not a migration model
 
 """Unit tests for omnibase_compat.registration.idempotent_register [OMN-9239].
 
