@@ -47,6 +47,19 @@ repos:
         pass_filenames: true
         stages: [pre-push]
 
+      # No-infra-edge invariant (OMN-12599, durability-plan Task 3.1).
+      # compat must validate without resolving/installing omnibase_infra; this
+      # guard scans pyproject + uv.lock for any omnibase_infra/core/spi edge and
+      # fails fast when one appears. Runs on every commit so a dependency edge
+      # cannot slip in via pyproject or a re-lock.
+      - id: compat-no-infra-edge
+        name: compat no-infra-edge gate (OMN-12599)
+        entry: python scripts/check_no_infra_edge.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
       - id: normalization-symmetry
         name: normalization-symmetry
         entry: python -m omnibase_core.validation.checker_normalization_symmetry src
