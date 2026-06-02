@@ -4,6 +4,14 @@ All notable changes to `omnibase_compat` should be recorded here.
 
 This project follows semantic versioning for published package versions.
 
+## v0.4.2 (2026-05-31)
+
+### Changed
+- fix(OMN-12254): align bifrost backend wire config (#117)
+- chore(OMN-12126): add retention comments to delegation wire DTOs (#120)
+- ci(OMN-12493): resolve OCC-relative DoD contract paths in Contract Compliance Check (#126)
+- chore(OMN-12455): add .gitignore and untrack committed Python bytecode (#125, #127)
+
 ## v0.4.1 (2026-05-21)
 
 ### Changed
