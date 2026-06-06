@@ -25,6 +25,14 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - run: uv sync --dev --frozen
       - run: uv run python scripts/validate_no_upstream_deps.py
+      # No-infra-edge invariant (OMN-12599, durability-plan Task 3.1):
+      # compat must validate without resolving/installing omnibase_infra. The
+      # guard scans pyproject + the frozen uv.lock closure only (no network,
+      # no install) and fails the gate if an omnibase_infra/core/spi edge
+      # appears. uv sync --dev --frozen above proves the closure resolved with
+      # infra absent; this step asserts that invariant explicitly.
+      - name: Compat no-infra-edge gate (OMN-12599)
+        run: uv run python scripts/check_no_infra_edge.py
       - run: uv run python scripts/check_compat_retention.py
       - run: uv run ruff check src/
       - run: uv run mypy src/omnibase_compat --strict
@@ -191,7 +199,8 @@ jobs:
           python /tmp/onex_change_control/scripts/ci/run_contract_compliance_check.py \
             --pr ${{ steps.pr_number.outputs.pr }} \
             --repo ${{ github.repository }} \
-            --contracts-dir /tmp/onex_change_control/contracts
+            --contracts-dir /tmp/onex_change_control/contracts \
+            --workspace /tmp/onex_change_control
         env:
           EMERGENCY_BYPASS: ${{ secrets.EMERGENCY_BYPASS || '' }}
           GH_TOKEN: ${{ github.token }}
