@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
-# compat-skip-retention: test helper classes; not a compat shim
+# compat-skip-retention: test scaffolding (async helpers/fixtures), not a migration model
 
 """Unit tests for ``omnibase_compat.concurrency.run_coro_sync``.
 
