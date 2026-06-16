@@ -1,8 +1,8 @@
 # Release Workflow
 
 **Owner:** `omnibase_compat`
-**Last verified:** 2026-04-24
-**Verification:** `.github/workflows/release.yml`, `pyproject.toml`, OMN-9459 plan promotion
+**Last verified:** 2026-06-16
+**Verification:** `.github/workflows/release.yml`, `pyproject.toml`, OMN-13172 docs refresh
 **Source plan:** `docs/plans/omn-9459-release-workflow.md`
 
 This is the canonical release runbook for publishing `omnibase_compat`.
@@ -43,8 +43,8 @@ stable release procedure.
 3. Create and push a matching version tag:
 
    ```bash
-   git tag v0.3.1
-   git push origin v0.3.1
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
    ```
 
 4. Watch the GitHub Actions `Release` workflow.
@@ -57,7 +57,7 @@ Pass the full tag, including the `v` prefix.
 Example:
 
 ```text
-v0.3.1
+vX.Y.Z
 ```
 
 The workflow checks out that tag and validates it against `pyproject.toml`.

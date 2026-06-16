@@ -1,8 +1,8 @@
 # omnibase_compat Documentation
 
 **Owner:** `omnibase_compat`
-**Last verified:** 2026-04-24
-**Verification:** OMN-9597 docs pass
+**Last verified:** 2026-06-16
+**Verification:** OMN-13172 docs refresh
 
 This is the canonical docs map for `omnibase_compat`.
 
@@ -42,6 +42,23 @@ Current structural surfaces live under `src/omnibase_compat/`:
 - `registration/` - idempotent registration helper.
 - `concurrency/` - synchronous coroutine bridge utility.
 - `env/` - strict-mode environment helper.
+- `adapters/` - protocol adapters (e.g., `adapter_project_tracker_linear.py`).
+- `metadata/` - artifact status and transitional metadata models.
+- `primitives/` - low-level primitive types shared across repos.
+- `protocols/` - cross-repo protocol definitions: `protocol_project_tracker`, `protocol_projection_database`, `protocol_projection_database_sync`.
+- `tooling/` - TTL check shim and other CI tooling helpers.
+
+### contracts/ Sub-modules
+
+Domain-specific wire DTOs live under `src/omnibase_compat/contracts/`:
+
+- `contracts/delegation/` - delegation runtime profile, LLM backend config, datastore, event bus endpoint, projection API, security, and secret reference wire models (OMN-10919, OMN-11024, OMN-12245).
+- `contracts/evidence/` - contract evidence proof, spec, and provenance models (OMN-11261).
+- `contracts/evidence_pipeline/wire/` - evidence pipeline wire DTOs: dashboard events, pipeline commands, evidence bundles, correlation traces, gap reports, OCC PR references, raw payloads, readiness aggregates, topic constants, and wire types (OMN-11443, OMN-11469).
+- `contracts/pricing/` - LLM pricing and pricing contract models (OMN-10948).
+- `contracts/runtime_deployment/wire/` - runtime deployment proof, request, and type wire models (OMN-12576).
+
+Note: `contracts/delegation/wire/` (the old shim module) was deleted in OMN-12659 (PR #132). Import from `contracts/delegation/` directly.
 
 Every class-like compatibility artifact must either carry retention metadata or
 an explicit retention exemption:
@@ -92,10 +109,20 @@ The registry is local scaffolding for governance visibility. If artifacts need
 cross-environment discoverability, promote the registry to file-backed or
 CI-enforced metadata in a separate change.
 
+## Validation Scripts
+
+Scripts under `scripts/` enforce the zero-upstream-dependency and structural invariants:
+
+- `scripts/validate_no_upstream_deps.py` - AST scan of `src/` for import statements referencing forbidden upstream packages.
+- `scripts/check_compat_retention.py` - enforces `COMPAT_MIGRATION_TARGET` and `COMPAT_REMOVAL_DATE` retention comments on all class-bearing modules.
+- `scripts/check_no_infra_edge.py` - closure scan of `pyproject.toml` and `uv.lock` for any `omnibase_infra`, `omnibase_core`, or `omnibase_spi` edge; wired as a pre-commit hook (OMN-12599).
+- `scripts/ci/` - CI tooling: change-aware test path detection (`detect_test_paths.py`), test selection models and adjacency configuration.
+
 ## Reference
 
 - [Package source](../src/omnibase_compat/)
 - [No-upstream-dependency validator](../scripts/validate_no_upstream_deps.py)
+- [No-infra-edge closure guard](../scripts/check_no_infra_edge.py)
 - [Compat retention validator](../scripts/check_compat_retention.py)
 - [Release workflow](../.github/workflows/release.yml)
 - [Release dry run workflow](../.github/workflows/release-dry-run.yml)
@@ -134,12 +161,18 @@ Run the repo validation path before changing public compatibility surfaces:
 ```bash
 uv sync --dev --frozen
 uv run python scripts/validate_no_upstream_deps.py
+uv run python scripts/check_no_infra_edge.py
 uv run python scripts/check_compat_retention.py
 uv run ruff check src/
 uv run mypy src/omnibase_compat --strict
-uv run pytest src/omnibase_compat/tests/ -m unit --tb=short
+uv run pytest -m unit --tb=short
 uv build
 ```
+
+`pyproject.toml` lists both `src/omnibase_compat/tests` and the root `tests/`
+directory in `testpaths`. Both are exercised by `uv run pytest`. The root
+`tests/` directory contains protocol tests, contract wire tests, and the
+`test_overseer_exports.py` integration check.
 
 Docs validation must not add an OmniNode runtime dependency. If link validation
 is needed before a standalone local entrypoint exists here, run it as CI-only

@@ -77,4 +77,4 @@ uv run pytest
 ## Key Rules
 
 - **Zero runtime upstream deps**: `[project.dependencies]` contains only `pydantic` and `typing-extensions`. Never add OmniNode packages there.
-- `omnibase_core` is a **dev-only** dependency (in `[dependency-groups] dev`) for tooling (SPDX, pre-commit hooks). It is NOT a runtime dep.
+- `omnibase_core` is **not in `pyproject.toml`** at all — neither as a runtime dep nor in `[dependency-groups] dev`. It appears only as an `additional_dependencies` entry inside the `normalization-symmetry` hook in `.pre-commit-config.yaml`. Do not add it to pyproject; the no-infra-edge guard (`scripts/check_no_infra_edge.py`, wired as a pre-commit hook) will fail if any OmniNode upstream package appears in `pyproject.toml` or `uv.lock`.

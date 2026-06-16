@@ -4,6 +4,59 @@ All notable changes to `omnibase_compat` should be recorded here.
 
 This project follows semantic versioning for published package versions.
 
+## v0.5.4 (2026-06-11)
+
+### Changed
+- ci(OMN-12934): promote dev integration to main; backmerge release metadata (#146, #147)
+
+### Added
+- feat(OMN-13021): non-dev-base guard — fail feature-base PRs absent Stacked-Parent declaration (#151)
+- ci(OMN-12825): wire receipt-honesty gate as required CI ratchet (#148)
+
+## v0.5.3 (2026-06-10)
+
+### Changed
+- release(OMN-12765): promote compat dev lane to main; backmerge release evidence (#137, #139, #141, #143)
+
+## v0.5.2 (2026-06-06)
+
+### Added
+- chore(OMN-12659): delete dead `contracts/delegation/wire/` shim module (#132); consumers must import from `contracts/delegation/` directly.
+- feat(OMN-12599): add `scripts/check_no_infra_edge.py` closure guard; wire as pre-commit hook scanning `pyproject.toml` and `uv.lock` for forbidden upstream edges (#131)
+- feat(OMN-12576): mirror runtime deployment wire DTOs in `contracts/runtime_deployment/wire/` (#129)
+
+### Changed
+- ci(OMN-12493): resolve OCC-relative DoD contract paths in Contract Compliance Check (#126)
+- chore(OMN-12455): add `.gitignore`; untrack committed Python bytecode (#125, #127)
+
+## v0.5.1 (2026-05-30)
+
+### Fixed
+- fix(OMN-12245): release delegation escalation DTOs (#121)
+- ci(OMN-12243): add main target guard (#119)
+- chore(OMN-12126): add retention comments to delegation wire DTOs (#120)
+
+## v0.5.0 (2026-05-22)
+
+### Added
+- feat(OMN-11832): wire `contract.yaml` topic definitions for evidence pipeline (#107)
+- feat(OMN-11469): add evidence dashboard DTOs to `contracts/evidence_pipeline/wire/`
+- feat(OMN-11443): add evidence pipeline wire DTOs (`model_evidence_pipeline_command`, `model_evidence_bundle`, `model_gap_report`, `model_occ_pr_reference`, `topics`, `types`) (#98)
+- feat(OMN-11261): add contract evidence storage models to `contracts/evidence/` (#100)
+- feat(OMN-11969): add `api_key` / `extra_headers` to delegation wire models (#108)
+- feat(OMN-12129): add `min_success_rate` to `ModelTierModel` (#110)
+- feat(OMN-12256): add `min_tier_name` field to `ModelRoutingIntent` for tier escalation (#113)
+- feat(OMN-12254): add delegation escalation terminal metadata; export delegation quality contract helpers; align delegation runtime wire fields and bifrost backend wire config (#115, #116, #117)
+
+### Fixed
+- fix(OMN-12006): add `api_key_env`, `extra_headers`; make `model_name` and `endpoint_url` optional in `ModelDelegationBackendConfig` (#109)
+- fix(OMN-12194): fix compat retention CI failure
+
+### Changed
+- ci(OMN-11412): propagate skip-token rejection hook from `omniclaude` (#96)
+- ci(OMN-11424): add `edited` trigger to receipt-gate caller workflow (#97)
+- ci: support `dev` and `hotfix` workflow triggers (#104)
+
 ## v0.4.2 (2026-05-31)
 
 ### Changed
