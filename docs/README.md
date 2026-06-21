@@ -1,8 +1,8 @@
 # omnibase_compat Documentation
 
 **Owner:** `omnibase_compat`
-**Last verified:** 2026-06-16
-**Verification:** OMN-13172 docs refresh
+**Last verified:** 2026-06-21
+**Verification:** OMN-13463 docs refresh (verified against code on this refresh)
 
 This is the canonical docs map for `omnibase_compat`.
 
@@ -35,18 +35,20 @@ event envelope, DTO, or primitive shared across repos, the owner is
 
 Current structural surfaces live under `src/omnibase_compat/`:
 
-- `types/type_json.py` - shared JSON typing.
-- `routing/` - routing policy and degraded-routing event DTOs.
-- `telemetry/` - post-mortem, session bootstrap, and sweep result DTOs.
-- `overseer/` - routing decision and session contract DTOs.
-- `registration/` - idempotent registration helper.
-- `concurrency/` - synchronous coroutine bridge utility.
-- `env/` - strict-mode environment helper.
-- `adapters/` - protocol adapters (e.g., `adapter_project_tracker_linear.py`).
-- `metadata/` - artifact status and transitional metadata models.
-- `primitives/` - low-level primitive types shared across repos.
-- `protocols/` - cross-repo protocol definitions: `protocol_project_tracker`, `protocol_projection_database`, `protocol_projection_database_sync`.
-- `tooling/` - TTL check shim and other CI tooling helpers.
+- `models/` - `event_envelope.py` (`EventEnvelopeV1Minimal`) and `model_project_tracker.py` (`ModelTeam`, `ModelLabel`, `ModelIssueStatus`).
+- `routing/` - routing policy and degraded-routing event DTOs (`model_routing_policy.py`, `model_routing_degraded_event.py`).
+- `telemetry/` - sweep result DTO (`model_sweep_result.py`, `ModelSweepResult`).
+- `overseer/` - routing decision model (`model_routing_decision.py`, `ModelRoutingDecision` plus tier/provider/retry/risk enums) and agent scope presets (`model_agent_scope_presets.py`).
+- `registration/` - idempotent registration helper (`decorator_idempotent_register.py`) and optional-injectable decorator (`decorator_injectable_optional.py`).
+- `concurrency/` - synchronous coroutine bridge utility (`util_run_coro_sync.py`).
+- `env/` - strict-mode environment helper (`util_is_strict_mode.py`).
+- `adapters/` - protocol adapters (`adapter_project_tracker_linear.py`).
+- `metadata/` - artifact status and transitional metadata models (`artifact_status.py`, `transitional.py`).
+- `protocols/` - cross-repo protocol definitions: `protocol_project_tracker.py`, `protocol_projection_database.py`, `protocol_projection_database_sync.py`.
+- `tooling/` - TTL check shim (`shim_ttl_check.py`).
+
+The `types/` and `primitives/` subpackages currently hold only their `__init__.py`
+placeholders; no JSON typing or primitive modules are present.
 
 ### contracts/ Sub-modules
 
@@ -90,6 +92,7 @@ It is intentionally narrow:
 - `event_type`
 - `payload`
 - `schema_version`
+- `data_provenance` (optional provenance label)
 
 Do not add runtime tracing, source, timestamp, or helper behavior without a
 versioned compatibility decision and downstream consumer evidence.
@@ -171,8 +174,9 @@ uv build
 
 `pyproject.toml` lists both `src/omnibase_compat/tests` and the root `tests/`
 directory in `testpaths`. Both are exercised by `uv run pytest`. The root
-`tests/` directory contains protocol tests, contract wire tests, and the
-`test_overseer_exports.py` integration check.
+`tests/` directory holds `test_overseer_exports.py` (integration export check),
+`tests/unit/` (event-envelope provenance, no-infra-edge, plus nested
+`contracts/` and `protocols/` wire tests), and `tests/experimental/`.
 
 Docs validation must not add an OmniNode runtime dependency. If link validation
 is needed before a standalone local entrypoint exists here, run it as CI-only
