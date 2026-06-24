@@ -2,14 +2,14 @@
 
 **Owner:** `omnibase_compat`
 **Last verified:** 2026-06-16
-**Verification:** `.github/workflows/release.yml`, `pyproject.toml`, OMN-13172 docs refresh
-**Source plan:** `docs/plans/omn-9459-release-workflow.md`
+**Verification:** `.github/workflows/release.yml`, `pyproject.toml`, verified on docs refresh
+**Source plan:** `docs/plans/release-workflow.md`
 
 This is the canonical release runbook for publishing `omnibase_compat`.
 
 ## Truth Boundary
 
-The dated OMN-9459 plan is historical execution context. This runbook is the
+The dated release workflow plan is historical execution context. This runbook is the
 stable release procedure.
 
 ## Preconditions

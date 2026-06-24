@@ -3,10 +3,9 @@ schema_version: "1.0.0"
 ticket_id: "OMN-11832"
 title: "Wire contract.yaml topic definitions for evidence pipeline"
 summary: >
-  Creates canonical Kafka topic constants for the evidence pipeline in
-  omnibase_compat.contracts.evidence_pipeline.wire.topics, backed by a
-  contracts/evidence-pipeline.yaml topic definition file. Replaces all
-  hardcoded topic strings in tests with constant references.
+  Creates canonical Kafka topic constants for the evidence pipeline in omnibase_compat.contracts.evidence_pipeline.wire.topics,
+  backed by a contracts/evidence-pipeline.yaml topic definition file. Replaces all hardcoded topic strings
+  in tests with constant references.
 is_seam_ticket: false
 interface_change: true
 interfaces_touched:
@@ -40,7 +39,8 @@ dod_evidence:
     source: "generated"
     checks:
       - check_type: "command"
-        check_value: "! grep -n 'onex\\.cmd\\.omnimarket\\.evidence\\|onex\\.evt\\.omnimarket\\.evidence' src/omnibase_compat/tests/contracts/evidence_pipeline/wire/test_dashboard_wire_dtos.py"
+        check_value: "! grep -n 'onex\\.cmd\\.omnimarket\\.evidence\\|onex\\.evt\\.omnimarket\\.evidence'
+          src/omnibase_compat/tests/contracts/evidence_pipeline/wire/test_dashboard_wire_dtos.py"
   - id: "dod-tests-pass"
     description: "All 264 compat unit tests pass."
     source: "generated"
@@ -48,8 +48,10 @@ dod_evidence:
       - check_type: "command"
         check_value: "uv run pytest tests/ src/ -q"
   - id: "dod-deploy"
-    description: "Deploy-gate evidence: new Pydantic DTOs and YAML config; no Docker image, daemon, broker topic creation, runtime process, or service deploy required."
+    description: "Deploy-gate evidence: new Pydantic DTOs and YAML config; no Docker image, daemon, broker
+      topic creation, runtime process, or service deploy required."
     source: "manual"
     checks:
       - check_type: "command"
-        check_value: "echo 'deploy-gate: OMN-11832 adds topic constant module and contract YAML; no Docker image, daemon, broker topic, runtime process, or service deploy required'"
+        check_value: "echo 'deploy-gate: OMN-11832 adds topic constant module and contract YAML; no Docker
+          image, daemon, broker topic, runtime process, or service deploy required'"
