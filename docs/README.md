@@ -2,14 +2,14 @@
 
 **Owner:** `omnibase_compat`
 **Last verified:** 2026-06-21
-**Verification:** OMN-13463 docs refresh (verified against code on this refresh)
+**Verification:** docs refresh (verified against code on this refresh)
 
 This is the canonical docs map for `omnibase_compat`.
 
 ## Start Here
 
 - [Root README](../README.md) - repo role, install, dependency boundary, common workflows, and docs map.
-- [Release workflow](runbooks/release.md) - stable release runbook promoted from the OMN-9459 dated plan.
+- [Release workflow](runbooks/release.md) - stable release runbook promoted from the dated release workflow plan.
 - [CLAUDE.md](../CLAUDE.md) - local agent/developer rules.
 
 ## Current Architecture
@@ -54,13 +54,13 @@ placeholders; no JSON typing or primitive modules are present.
 
 Domain-specific wire DTOs live under `src/omnibase_compat/contracts/`:
 
-- `contracts/delegation/` - delegation runtime profile, LLM backend config, datastore, event bus endpoint, projection API, security, and secret reference wire models (OMN-10919, OMN-11024, OMN-12245).
-- `contracts/evidence/` - contract evidence proof, spec, and provenance models (OMN-11261).
-- `contracts/evidence_pipeline/wire/` - evidence pipeline wire DTOs: dashboard events, pipeline commands, evidence bundles, correlation traces, gap reports, OCC PR references, raw payloads, readiness aggregates, topic constants, and wire types (OMN-11443, OMN-11469).
-- `contracts/pricing/` - LLM pricing and pricing contract models (OMN-10948).
-- `contracts/runtime_deployment/wire/` - runtime deployment proof, request, and type wire models (OMN-12576).
+- `contracts/delegation/` - delegation runtime profile, LLM backend config, datastore, event bus endpoint, projection API, security, and secret reference wire models.
+- `contracts/evidence/` - contract evidence proof, spec, and provenance models.
+- `contracts/evidence_pipeline/wire/` - evidence pipeline wire DTOs: dashboard events, pipeline commands, evidence bundles, correlation traces, gap reports, OCC PR references, raw payloads, readiness aggregates, topic constants, and wire types.
+- `contracts/pricing/` - LLM pricing and pricing contract models.
+- `contracts/runtime_deployment/wire/` - runtime deployment proof, request, and type wire models.
 
-Note: `contracts/delegation/wire/` (the old shim module) was deleted in OMN-12659 (PR #132). Import from `contracts/delegation/` directly.
+Note: `contracts/delegation/wire/` (the old shim module) was deleted in PR #132. Import from `contracts/delegation/` directly.
 
 Every class-like compatibility artifact must either carry retention metadata or
 an explicit retention exemption:
@@ -118,7 +118,7 @@ Scripts under `scripts/` enforce the zero-upstream-dependency and structural inv
 
 - `scripts/validate_no_upstream_deps.py` - AST scan of `src/` for import statements referencing forbidden upstream packages.
 - `scripts/check_compat_retention.py` - enforces `COMPAT_MIGRATION_TARGET` and `COMPAT_REMOVAL_DATE` retention comments on all class-bearing modules.
-- `scripts/check_no_infra_edge.py` - closure scan of `pyproject.toml` and `uv.lock` for any `omnibase_infra`, `omnibase_core`, or `omnibase_spi` edge; wired as a pre-commit hook (OMN-12599).
+- `scripts/check_no_infra_edge.py` - closure scan of `pyproject.toml` and `uv.lock` for any `omnibase_infra`, `omnibase_core`, or `omnibase_spi` edge; wired as a pre-commit hook.
 - `scripts/ci/` - CI tooling: change-aware test path detection (`detect_test_paths.py`), test selection models and adjacency configuration.
 
 ## Reference
@@ -184,5 +184,5 @@ tooling or from the repo that owns the validator.
 
 ## Historical Context
 
-- [OMN-9459 release workflow plan](plans/omn-9459-release-workflow.md) - source plan for the stable [release runbook](runbooks/release.md).
+- [Release workflow plan](plans/release-workflow.md) - source plan for the stable [release runbook](runbooks/release.md).
 

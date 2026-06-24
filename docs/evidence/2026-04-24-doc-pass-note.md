@@ -1,7 +1,5 @@
-# OMN-9597 Doc Pass Note
+# Doc Pass Note
 
-**Issue:** OMN-9597
-**Parent:** OMN-9594
 **Date:** 2026-04-24
 **Scope:** `omnibase_compat` entrypoint, docs index, release runbook, and repo metadata.
 
@@ -40,7 +38,7 @@ They were not edited or cleaned as part of this documentation pass.
 - `pyproject.toml`
 - `.github/workflows/ci.yml`
 - `.github/workflows/release.yml`
-- `docs/plans/omn-9459-release-workflow.md`
+- `docs/plans/release-workflow.md`
 - `scripts/validate_no_upstream_deps.py`
 - `scripts/check_compat_retention.py`
 
@@ -56,7 +54,7 @@ They were not edited or cleaned as part of this documentation pass.
 
 ## Promotion Decisions
 
-- `docs/plans/omn-9459-release-workflow.md` remains historical execution context.
+- `docs/plans/release-workflow.md` remains historical execution context.
 - `docs/runbooks/release.md` is the stable release runbook.
 
 ## Validation Result
@@ -87,9 +85,9 @@ error: Failed to spawn: `onex-validate-links`
 ```
 
 This is expected for this pass: `omnibase_compat` does not currently expose the
-shared docs-validator entrypoint, and OMN-9597 explicitly preserves the rule
+shared docs-validator entrypoint, and this pass explicitly preserves the rule
 that `omnibase_compat` must not consume `omnibase_core` just to validate docs.
-Full docs-validation wiring is tracked by OMN-9607.
+Full docs-validation wiring is tracked separately.
 
 Running the validation commands created or updated additional `__pycache__`
 artifacts in the already-dirty worktree. They are generated files and were not
