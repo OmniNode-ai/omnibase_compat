@@ -17,7 +17,7 @@ ticket_id: "OMN-11832"
 title: "Evidence pipeline Kafka topic definitions"
 summary: >
   Defines all Kafka topic names for the evidence pipeline directed flow: command → collector → extractor
-  → matcher → OCC writer → gap analyzer → readiness scorer, with a parallel dashboard lane. #magic___^_^___line
+  → matcher → OCC writer → gap analyzer → readiness scorer, with a parallel dashboard lane.
 service: omnimarket
 
 topics:
@@ -32,7 +32,7 @@ topics:
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_pipeline_command.ModelEvidencePipelineCommand"
     description: >
       Trigger payload that starts the per-PR evidence validation pipeline. Emitted by the pipeline entry
-      point; consumed by the collector node. #magic___^_^___line
+      point; consumed by the collector node.
   # ------------------------------------------------------------------
   # Event topics — stage boundary crossings
   # ------------------------------------------------------------------
@@ -43,7 +43,7 @@ topics:
     constant: "EVIDENCE_COLLECTED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_bundle.ModelEvidenceBundle"
     description: >
-      Raw evidence collected from source artifacts. Crosses the collector → extractor boundary. #magic___^_^___line
+      Raw evidence collected from source artifacts. Crosses the collector → extractor boundary.
   - name: evidence-extracted
     kind: evt
     version: 1
@@ -71,7 +71,7 @@ topics:
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_occ_pr_reference.ModelOccPrReference"
     description: >
       Idempotent reference to a provisional or finalized OCC evidence PR. Crosses the OCC writer → gap
-      analyzer boundary. #magic___^_^___line
+      analyzer boundary.
   - name: evidence-gap-analyzed
     kind: evt
     version: 1
@@ -89,7 +89,7 @@ topics:
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_deployment_readiness_result.ModelDeploymentReadinessResult"
     description: >
       Machine-readable readiness gate result for a deployment set. Final output topic of the evidence
-      pipeline. #magic___^_^___line
+      pipeline.
   # ------------------------------------------------------------------
   # Dashboard lane topics — parallel projection events
   # ------------------------------------------------------------------

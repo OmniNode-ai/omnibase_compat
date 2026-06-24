@@ -53,5 +53,5 @@ dod_evidence:
     source: "manual"
     checks:
       - check_type: "command"
-        check_value: "echo 'deploy-gate: OMN-11832 adds topic constant module and contract YAML; no Docker
-          image, daemon, broker topic, runtime process, or service deploy required'"
+        check_value: "echo 'deploy-gate: adds topic constant module and contract YAML; no Docker image,
+          daemon, broker topic, runtime process, or service deploy required'"
