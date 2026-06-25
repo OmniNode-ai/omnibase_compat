@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-"""Canonical helper for the ``AUTOWIRE_STRICT`` env flag.
+"""Canonical helper for the autowire strict-mode flag.
 
 This module hosts a single function, :func:`is_strict_mode`, which reports
 whether the runtime-boot auto-wiring layer should run in strict mode.
@@ -9,18 +9,24 @@ whether the runtime-boot auto-wiring layer should run in strict mode.
 The helper exists so every call site agrees on the exact semantic and a
 future state-triggered follow-up (flipping the default from lenient to
 strict) can replace one comparison site instead of grepping every consumer.
+
+As of OMN-13564 the flag value is resolved through the compat contract/overlay
+surface (:func:`omnibase_compat.config.resolve_autowire_strict_raw`) rather
+than a bare ``os.environ`` read. The overlay declares the flag as
+``${env.AUTOWIRE_STRICT}``, so the resolved raw value is identical to what the
+former direct env read produced — the only thing that changed is *where* the
+value is sourced (the overlay, not raw ``os.environ``).
 """
 
 from __future__ import annotations
 
-import os
+from omnibase_compat.config import resolve_autowire_strict_raw
 
-_ENV_VAR: str = "AUTOWIRE_STRICT"
 _STRICT_LITERAL: str = "1"
 
 
 def is_strict_mode() -> bool:
-    """Return ``True`` iff ``AUTOWIRE_STRICT`` is set to the literal string ``"1"``.
+    """Return ``True`` iff the autowire strict flag resolves to the literal ``"1"``.
 
     The comparison is **strictly** against the one-character string ``"1"``.
     All other values, including common truthy strings, produce ``False``.
@@ -43,12 +49,12 @@ def is_strict_mode() -> bool:
     behavior change for downstream consumers and MUST be coordinated with
     those consumers.
 
-    The env var is read on every call, so tests can toggle it via
-    ``monkeypatch.setenv`` / ``monkeypatch.delenv`` without reloading the
-    module.
+    The overlay flag (``${env.AUTOWIRE_STRICT}``) is resolved on every call, so
+    tests can toggle the underlying env var via ``monkeypatch.setenv`` /
+    ``monkeypatch.delenv`` without reloading the module.
 
     Returns:
-        ``True`` if ``os.environ["AUTOWIRE_STRICT"] == "1"`` exactly,
+        ``True`` if the resolved autowire strict flag equals ``"1"`` exactly,
         otherwise ``False``.
     """
-    return os.environ.get(_ENV_VAR) == _STRICT_LITERAL
+    return resolve_autowire_strict_raw() == _STRICT_LITERAL

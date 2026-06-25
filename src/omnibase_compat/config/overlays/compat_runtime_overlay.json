@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "_comment": "Contract/overlay config surface for omnibase_compat. The canonical authority for endpoint URLs and config tunables that would otherwise be hardcoded Python literals or raw env reads (epic OMN-13556 / OMN-13564). Values support ${env.VAR} interpolation: the declared value is the authority, an env var of the named key overrides it at resolution time. This file is the contract surface — never reintroduce the URL/flag as a Python literal or a bare os.environ read.",
+  "endpoints": {
+    "project_tracker_linear": {
+      "url": "https://api.linear.app/graphql"
+    }
+  },
+  "autowire": {
+    "strict_mode_raw": "${env.AUTOWIRE_STRICT}"
+  }
+}
