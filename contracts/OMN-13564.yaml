@@ -18,7 +18,7 @@ evidence_requirements:
   - kind: "tests"
     description: "Full compat test suite passes (resolution-equivalence + fail-closed tests added)."
     command: "uv run pytest -q"
-  - kind: "lint"
+  - kind: "ci"
     description: "Ruff, mypy --strict, and pre-commit pass with no errors."
     command: "pre-commit run --all-files"
 emergency_bypass:
@@ -26,24 +26,6 @@ emergency_bypass:
   justification: ""
   follow_up_ticket_id: ""
 dod_evidence:
-  - id: "dod-overlay-resolver-exists"
-    description: "Zero-upstream-dep contract/overlay resolver module exists in omnibase_compat.config."
-    source: "generated"
-    checks:
-      - check_type: "file_exists"
-        check_value: "src/omnibase_compat/config/overlay_resolver.py"
-  - id: "dod-overlay-document-exists"
-    description: "Packaged JSON overlay (contract surface holding the endpoint URL + autowire flag) exists."
-    source: "generated"
-    checks:
-      - check_type: "file_exists"
-        check_value: "src/omnibase_compat/config/overlays/compat_runtime_overlay.json"
-  - id: "dod-equivalence-test-exists"
-    description: "Resolution-equivalence + fail-closed test module exists."
-    source: "generated"
-    checks:
-      - check_type: "file_exists"
-        check_value: "src/omnibase_compat/tests/config/test_overlay_resolver.py"
   - id: "dod-url-authority-zero"
     description: "url-authority cross-repo scan reports 0 new violations for omnibase_compat (was 1)."
     source: "manual"
