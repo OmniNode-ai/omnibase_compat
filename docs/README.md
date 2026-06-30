@@ -1,15 +1,15 @@
 # omnibase_compat Documentation
 
 **Owner:** `omnibase_compat`
-**Last verified:** 2026-04-24
-**Verification:** OMN-9597 docs pass
+**Last verified:** 2026-06-21
+**Verification:** docs refresh (verified against code on this refresh)
 
 This is the canonical docs map for `omnibase_compat`.
 
 ## Start Here
 
 - [Root README](../README.md) - repo role, install, dependency boundary, common workflows, and docs map.
-- [Release workflow](runbooks/release.md) - stable release runbook promoted from the OMN-9459 dated plan.
+- [Release workflow](runbooks/release.md) - stable release runbook promoted from the dated release workflow plan.
 - [CLAUDE.md](../CLAUDE.md) - local agent/developer rules.
 
 ## Current Architecture
@@ -35,13 +35,32 @@ event envelope, DTO, or primitive shared across repos, the owner is
 
 Current structural surfaces live under `src/omnibase_compat/`:
 
-- `types/type_json.py` - shared JSON typing.
-- `routing/` - routing policy and degraded-routing event DTOs.
-- `telemetry/` - post-mortem, session bootstrap, and sweep result DTOs.
-- `overseer/` - routing decision and session contract DTOs.
-- `registration/` - idempotent registration helper.
-- `concurrency/` - synchronous coroutine bridge utility.
-- `env/` - strict-mode environment helper.
+- `models/` - `event_envelope.py` (`EventEnvelopeV1Minimal`) and `model_project_tracker.py` (`ModelTeam`, `ModelLabel`, `ModelIssueStatus`).
+- `routing/` - routing policy and degraded-routing event DTOs (`model_routing_policy.py`, `model_routing_degraded_event.py`).
+- `telemetry/` - sweep result DTO (`model_sweep_result.py`, `ModelSweepResult`).
+- `overseer/` - routing decision model (`model_routing_decision.py`, `ModelRoutingDecision` plus tier/provider/retry/risk enums) and agent scope presets (`model_agent_scope_presets.py`).
+- `registration/` - idempotent registration helper (`decorator_idempotent_register.py`) and optional-injectable decorator (`decorator_injectable_optional.py`).
+- `concurrency/` - synchronous coroutine bridge utility (`util_run_coro_sync.py`).
+- `env/` - strict-mode environment helper (`util_is_strict_mode.py`).
+- `adapters/` - protocol adapters (`adapter_project_tracker_linear.py`).
+- `metadata/` - artifact status and transitional metadata models (`artifact_status.py`, `transitional.py`).
+- `protocols/` - cross-repo protocol definitions: `protocol_project_tracker.py`, `protocol_projection_database.py`, `protocol_projection_database_sync.py`.
+- `tooling/` - TTL check shim (`shim_ttl_check.py`).
+
+The `types/` and `primitives/` subpackages currently hold only their `__init__.py`
+placeholders; no JSON typing or primitive modules are present.
+
+### contracts/ Sub-modules
+
+Domain-specific wire DTOs live under `src/omnibase_compat/contracts/`:
+
+- `contracts/delegation/` - delegation runtime profile, LLM backend config, datastore, event bus endpoint, projection API, security, and secret reference wire models.
+- `contracts/evidence/` - contract evidence proof, spec, and provenance models.
+- `contracts/evidence_pipeline/wire/` - evidence pipeline wire DTOs: dashboard events, pipeline commands, evidence bundles, correlation traces, gap reports, OCC PR references, raw payloads, readiness aggregates, topic constants, and wire types.
+- `contracts/pricing/` - LLM pricing and pricing contract models.
+- `contracts/runtime_deployment/wire/` - runtime deployment proof, request, and type wire models.
+
+Note: `contracts/delegation/wire/` (the old shim module) was deleted in PR #132. Import from `contracts/delegation/` directly.
 
 Every class-like compatibility artifact must either carry retention metadata or
 an explicit retention exemption:
@@ -73,6 +92,7 @@ It is intentionally narrow:
 - `event_type`
 - `payload`
 - `schema_version`
+- `data_provenance` (optional provenance label)
 
 Do not add runtime tracing, source, timestamp, or helper behavior without a
 versioned compatibility decision and downstream consumer evidence.
@@ -92,10 +112,20 @@ The registry is local scaffolding for governance visibility. If artifacts need
 cross-environment discoverability, promote the registry to file-backed or
 CI-enforced metadata in a separate change.
 
+## Validation Scripts
+
+Scripts under `scripts/` enforce the zero-upstream-dependency and structural invariants:
+
+- `scripts/validate_no_upstream_deps.py` - AST scan of `src/` for import statements referencing forbidden upstream packages.
+- `scripts/check_compat_retention.py` - enforces `COMPAT_MIGRATION_TARGET` and `COMPAT_REMOVAL_DATE` retention comments on all class-bearing modules.
+- `scripts/check_no_infra_edge.py` - closure scan of `pyproject.toml` and `uv.lock` for any `omnibase_infra`, `omnibase_core`, or `omnibase_spi` edge; wired as a pre-commit hook.
+- `scripts/ci/` - CI tooling: change-aware test path detection (`detect_test_paths.py`), test selection models and adjacency configuration.
+
 ## Reference
 
 - [Package source](../src/omnibase_compat/)
 - [No-upstream-dependency validator](../scripts/validate_no_upstream_deps.py)
+- [No-infra-edge closure guard](../scripts/check_no_infra_edge.py)
 - [Compat retention validator](../scripts/check_compat_retention.py)
 - [Release workflow](../.github/workflows/release.yml)
 - [Release dry run workflow](../.github/workflows/release-dry-run.yml)
@@ -134,12 +164,19 @@ Run the repo validation path before changing public compatibility surfaces:
 ```bash
 uv sync --dev --frozen
 uv run python scripts/validate_no_upstream_deps.py
+uv run python scripts/check_no_infra_edge.py
 uv run python scripts/check_compat_retention.py
 uv run ruff check src/
 uv run mypy src/omnibase_compat --strict
-uv run pytest src/omnibase_compat/tests/ -m unit --tb=short
+uv run pytest -m unit --tb=short
 uv build
 ```
+
+`pyproject.toml` lists both `src/omnibase_compat/tests` and the root `tests/`
+directory in `testpaths`. Both are exercised by `uv run pytest`. The root
+`tests/` directory holds `test_overseer_exports.py` (integration export check),
+`tests/unit/` (event-envelope provenance, no-infra-edge, plus nested
+`contracts/` and `protocols/` wire tests), and `tests/experimental/`.
 
 Docs validation must not add an OmniNode runtime dependency. If link validation
 is needed before a standalone local entrypoint exists here, run it as CI-only
@@ -147,5 +184,5 @@ tooling or from the repo that owns the validator.
 
 ## Historical Context
 
-- [OMN-9459 release workflow plan](plans/omn-9459-release-workflow.md) - source plan for the stable [release runbook](runbooks/release.md).
+- [Release workflow plan](plans/release-workflow.md) - source plan for the stable [release runbook](runbooks/release.md).
 

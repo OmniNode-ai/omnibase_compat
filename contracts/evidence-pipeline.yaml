@@ -16,10 +16,8 @@ schema_version: "1.0.0"
 ticket_id: "OMN-11832"
 title: "Evidence pipeline Kafka topic definitions"
 summary: >
-  Defines all Kafka topic names for the evidence pipeline directed flow:
-  command → collector → extractor → matcher → OCC writer → gap analyzer → readiness scorer,
-  with a parallel dashboard lane.
-
+  Defines all Kafka topic names for the evidence pipeline directed flow: command → collector → extractor
+  → matcher → OCC writer → gap analyzer → readiness scorer, with a parallel dashboard lane.
 service: omnimarket
 
 topics:
@@ -33,9 +31,8 @@ topics:
     constant: "EVIDENCE_PIPELINE_START_CMD_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_pipeline_command.ModelEvidencePipelineCommand"
     description: >
-      Trigger payload that starts the per-PR evidence validation pipeline.
-      Emitted by the pipeline entry point; consumed by the collector node.
-
+      Trigger payload that starts the per-PR evidence validation pipeline. Emitted by the pipeline entry
+      point; consumed by the collector node.
   # ------------------------------------------------------------------
   # Event topics — stage boundary crossings
   # ------------------------------------------------------------------
@@ -46,9 +43,7 @@ topics:
     constant: "EVIDENCE_COLLECTED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_bundle.ModelEvidenceBundle"
     description: >
-      Raw evidence collected from source artifacts.
-      Crosses the collector → extractor boundary.
-
+      Raw evidence collected from source artifacts. Crosses the collector → extractor boundary.
   - name: evidence-extracted
     kind: evt
     version: 1
@@ -56,8 +51,7 @@ topics:
     constant: "EVIDENCE_EXTRACTED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_raw_evidence_payload.ModelRawEvidencePayload"
     description: >
-      Evidence extracted and structured for contract matching.
-      Crosses the extractor → matcher boundary.
+      Evidence extracted and structured for contract matching. Crosses the extractor → matcher boundary.
 
   - name: evidence-validated
     kind: evt
@@ -66,9 +60,8 @@ topics:
     constant: "EVIDENCE_VALIDATED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_evidence_validation_result.ModelEvidenceValidationResult"
     description: >
-      Per-ticket deterministic validation result from the matcher compute node.
-      Crosses the matcher → OCC writer boundary.
-      Also referenced in dashboard projection events for VALIDATED stage tracking.
+      Per-ticket deterministic validation result from the matcher compute node. Crosses the matcher →
+      OCC writer boundary. Also referenced in dashboard projection events for VALIDATED stage tracking.
 
   - name: evidence-occ-pr-created
     kind: evt
@@ -77,9 +70,8 @@ topics:
     constant: "EVIDENCE_OCC_PR_CREATED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_occ_pr_reference.ModelOccPrReference"
     description: >
-      Idempotent reference to a provisional or finalized OCC evidence PR.
-      Crosses the OCC writer → gap analyzer boundary.
-
+      Idempotent reference to a provisional or finalized OCC evidence PR. Crosses the OCC writer → gap
+      analyzer boundary.
   - name: evidence-gap-analyzed
     kind: evt
     version: 1
@@ -87,8 +79,7 @@ topics:
     constant: "EVIDENCE_GAP_ANALYZED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_gap_report.ModelGapReport"
     description: >
-      Deployment-level evidence gap analysis report.
-      Crosses the gap analyzer → readiness scorer boundary.
+      Deployment-level evidence gap analysis report. Crosses the gap analyzer → readiness scorer boundary.
 
   - name: evidence-readiness-scored
     kind: evt
@@ -97,9 +88,8 @@ topics:
     constant: "EVIDENCE_READINESS_SCORED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_deployment_readiness_result.ModelDeploymentReadinessResult"
     description: >
-      Machine-readable readiness gate result for a deployment set.
-      Final output topic of the evidence pipeline.
-
+      Machine-readable readiness gate result for a deployment set. Final output topic of the evidence
+      pipeline.
   # ------------------------------------------------------------------
   # Dashboard lane topics — parallel projection events
   # ------------------------------------------------------------------
@@ -110,5 +100,5 @@ topics:
     constant: "EVIDENCE_DASHBOARD_PROJECTED_EVT_V1"
     wire_dto: "omnibase_compat.contracts.evidence_pipeline.wire.model_dashboard_projection_event.ModelDashboardProjectionEvent"
     description: >
-      Normalized event emitted by the dashboard effect node for projection writes.
-      Consumed by the dashboard reducer; runs in a parallel lane to the main pipeline.
+      Normalized event emitted by the dashboard effect node for projection writes. Consumed by the dashboard
+      reducer; runs in a parallel lane to the main pipeline.

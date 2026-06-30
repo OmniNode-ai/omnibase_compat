@@ -181,8 +181,12 @@ jobs:
       - uses: actions/checkout@v6
       - name: Clone onex_change_control
         run: git clone --depth=1 https://github.com/OmniNode-ai/onex_change_control.git /tmp/onex_change_control
-      - name: Install pyyaml
-        run: pip install pyyaml
+      - name: Install onex_change_control and dependencies
+        # Install the cloned OCC package so `from onex_change_control.integrations`
+        # resolves. OCC depends on omnibase-core (on PyPI) + pyyaml + pydantic.
+        # OCC commit 7c1a5cc64 added this import to run_contract_compliance_check.py;
+        # the prior step only installed pyyaml, breaking any PR opened after that commit.
+        run: pip install /tmp/onex_change_control
       - name: Resolve PR number
         id: pr_number
         run: |

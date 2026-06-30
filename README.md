@@ -94,15 +94,15 @@ uv run python scripts/validate_no_upstream_deps.py
 uv run python scripts/check_compat_retention.py
 uv run ruff check src/
 uv run mypy src/omnibase_compat --strict
-uv run pytest src/omnibase_compat/tests/ -m unit --tb=short
+uv run pytest -m unit --tb=short
 uv build
 ```
 
 Release workflow:
 
 ```bash
-git tag v0.3.1
-git push origin v0.3.1
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
 The tag must match `[project].version` in `pyproject.toml`. See

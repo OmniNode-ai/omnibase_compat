@@ -9,6 +9,7 @@ import json
 import urllib.request
 from typing import Any, cast
 
+from omnibase_compat.config import resolve_endpoint_url
 from omnibase_compat.models.model_project_tracker import (
     ModelIssueStatus,
     ModelLabel,
@@ -16,7 +17,10 @@ from omnibase_compat.models.model_project_tracker import (
 )
 from omnibase_compat.protocols.protocol_project_tracker import ProtocolProjectTracker
 
-_LINEAR_API_URL = "https://api.linear.app/graphql"
+# Logical endpoint key resolved from the compat contract/overlay surface
+# (``omnibase_compat.config``). The URL itself lives in the overlay document,
+# never as a Python literal here (OMN-13564 / url-authority).
+_LINEAR_ENDPOINT_KEY = "project_tracker_linear"
 
 
 def _nested_id(raw: dict[str, Any], key: str) -> str | None:
@@ -28,9 +32,11 @@ def _nested_id(raw: dict[str, Any], key: str) -> str | None:
 
 
 class AdapterProjectTrackerLinear(ProtocolProjectTracker):
-    def __init__(self, api_key: str, *, base_url: str = _LINEAR_API_URL) -> None:
+    def __init__(self, api_key: str, *, base_url: str | None = None) -> None:
+        # base_url resolves from the contract/overlay surface when not supplied
+        # by the caller; fail-closed if the endpoint is undeclared.
         self._api_key = api_key
-        self._base_url = base_url
+        self._base_url = base_url or resolve_endpoint_url(_LINEAR_ENDPOINT_KEY)
 
     def _graphql(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
         body: dict[str, Any] = {"query": query}

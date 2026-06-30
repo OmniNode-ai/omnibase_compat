@@ -1,8 +1,7 @@
-# OMN-9459 — Add publish release workflow for omnibase_compat
+# Add publish release workflow for omnibase_compat
 
-## Epic / Ticket
+## Reference
 
-- Linear: [OMN-9459](https://linear.app/omninode/issue/OMN-9459)
 - PR: [omnibase_compat#76](https://github.com/OmniNode-ai/omnibase_compat/pull/76)
 
 ## Goal
