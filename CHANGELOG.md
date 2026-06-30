@@ -4,6 +4,17 @@ All notable changes to `omnibase_compat` should be recorded here.
 
 This project follows semantic versioning for published package versions.
 
+## v0.5.5 (2026-06-30)
+
+### Added
+- feat: migrate env read + URL literal to contract/overlay (OMN-13564, #159)
+- feat: wire validate-validator-requirements fleet gate (OMN-13291, #156)
+
+### Changed
+- docs: sanitize documentation — strip local-env traces and OMN-XXXX refs (OMN-13570, #158)
+- docs: refresh architecture docs verified against code (OMN-13463, #157)
+- docs: refresh omnibase_compat documentation (OMN-13176, #155)
+
 ## v0.5.4 (2026-06-11)
 
 ### Changed
