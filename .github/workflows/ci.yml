@@ -202,6 +202,12 @@ jobs:
             --contracts-dir /tmp/onex_change_control/contracts \
             --workspace /tmp/onex_change_control
         env:
+          # OCC commit 7c1a5cc64 added `from onex_change_control.integrations import
+          # contract_descriptor` to run_contract_compliance_check.py. The job clones
+          # OCC but does not install it, so the import fails without PYTHONPATH.
+          # Setting src/ on PYTHONPATH makes the cloned package importable; transitive
+          # deps are stdlib-only + pyyaml (already installed above).
+          PYTHONPATH: /tmp/onex_change_control/src
           EMERGENCY_BYPASS: ${{ secrets.EMERGENCY_BYPASS || '' }}
           GH_TOKEN: ${{ github.token }}
 
