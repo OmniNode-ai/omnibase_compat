@@ -3,6 +3,7 @@
 
 # COMPAT_MIGRATION_TARGET: omnibase_core.contracts.evidence_pipeline.wire.topics
 # COMPAT_REMOVAL_DATE: 2027-06-01
+# onex-topic-sot: canonical evidence-pipeline topic-name registry (OMN-13944)
 
 """Canonical Kafka topic name constants for the evidence pipeline.
 
