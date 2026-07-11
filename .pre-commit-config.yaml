@@ -76,6 +76,22 @@ repos:
           - "omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core.git@187871b3c3c84cc4c876781c6f160c0fde378978"
         pass_filenames: false
 
+      # OMN-14350: non-canonical lifecycle-class ratchet (fan-out). compat forbids a
+      # core dep (compat-no-infra-edge gate), so — exactly like normalization-symmetry
+      # above — it runs the core validator via an isolated additional_dependencies
+      # git-pin, NOT a pyproject/uv.lock edge. rev MUST be a specific core SHA
+      # (post-#1430-merge dev HEAD); the HOLD placeholder below stays until the real
+      # SHA is set and this PR is opened.
+      - id: no-noncanonical-lifecycle-classes
+        name: Non-canonical lifecycle-class ratchet (OMN-14350)
+        entry: python -m omnibase_core.validators.no_noncanonical_lifecycle_classes --allowlist .onex_ratchets/noncanonical_class_allowlist.yaml
+          src/omnibase_compat
+        language: python
+        additional_dependencies:
+          - "omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core.git@63635097705d832e0ee9c4811093efb31349105c"
+        pass_filenames: false
+        stages: [pre-commit]
+
       # Skip-token rejection gate (OMN-11412 / OMN-10414)
       # Blocks [skip-*] bypass tokens in staged markdown/yaml/txt files.
       # Escape hatch: add '# skip-token-allowed: <receipt-id>' with a traceable approval receipt.
