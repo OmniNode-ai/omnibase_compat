@@ -57,14 +57,22 @@ pip-delete-this-directory.txt
 # VIRTUAL ENVIRONMENTS
 # =============================================================================
 # Standard virtual environment directories
-.venv/
-venv/
-env/
-ENV/
+# NOTE (OMN-14636): `/env/` is anchored to the repo root only. An unanchored
+# `env/` pattern matches ANY directory literally named "env" at any depth —
+# including this package's real, git-tracked src/omnibase_compat/env/
+# submodule. Hatchling's no-VCS wheel-build fallback (used for every
+# workspace-mode staged sibling, since stage_workspace.sh strips .git) applies
+# .gitignore patterns directly as an exclude filter with no git-tracked
+# awareness, so the unanchored pattern silently dropped the real submodule
+# from every workspace-mode wheel build. Do not remove the leading slash.
+/.venv/
+/venv/
+/env/
+/ENV/
 
 # Backup virtual environments
-env.bak/
-venv.bak/
+/env.bak/
+/venv.bak/
 
 # PEP 582 local packages (pyflow, pdm)
 __pypackages__/
@@ -335,9 +343,12 @@ playwright-report/
 __pycache__/
 *.py[cod]
 *$py.class
-.venv/
-venv/
-env/
+# Anchored to repo root (OMN-14636) — see note above; an unanchored `env/`
+# here collides with the real src/omnibase_compat/env/ submodule the same
+# way the primary block's pattern did.
+/.venv/
+/venv/
+/env/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
