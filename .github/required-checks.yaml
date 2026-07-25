@@ -1,27 +1,38 @@
 # SPDX-FileCopyrightText: 2026 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 
-# required-checks.yaml v3 (OMN-14858 — fan-out of OMN-14854 omniclaude canary)
+# required-checks.yaml v3 (OMN-14858 fan-out; reconciled OMN-15120 canary
+# fan-out for both branches)
 # Location: .github/required-checks.yaml
 #
 # This manifest is the OPERATIONAL input to the Required-Check Skip-Vector
 # Guard (validate_no_required_check_skip_vectors.py, canonical source hosted
 # in omniclaude, invoked here via required-check-skip-guard-caller.yml).
 #
-# Exhaustive: every context in required_status_checks.contexts for
-# omnibase_compat's `dev` branch has a `mode: REQUIRED` row below (fetched via
-# `gh api repos/OmniNode-ai/omnibase_compat/branches/dev/protection/required_status_checks
-# --jq '.contexts'`, 21 contexts, verified 2026-07-20). The privileged reconcile
-# job (not yet wired here — see follow-up note at end of file) would fail
-# closed if this file and live branch protection diverge in either direction.
+# RECONCILED 2026-07-25 (OMN-15120, fan-out of the omnimarket #1895 canary
+# fix for the OMN-15057 parent finding — the skip-vector guard was
+# manifest-blind to per-branch drift). Re-fetched live required_status_checks
+# for BOTH branches via
+# `gh api repos/OmniNode-ai/omnibase_compat/branches/{dev,main}/protection/required_status_checks --jq '.contexts'`
+# and diffed against this manifest using the canonical
+# `reconcile_manifest_vs_live.py --branch <dev|main>` script (OMN-15117
+# per-branch `branch:` field support, canonical source: omniclaude/dev). Live
+# counts as of 2026-07-25: `dev` = 21 required contexts (unchanged from the
+# 2026-07-20 authoring pass), `main` = 17 required contexts.
 #
-# SCOPE NOTE (mirrors OMN-14854's own scope note): `main`'s required_status_
-# checks set is NOT identical to `dev`'s (dev has 21 contexts; main has 17 —
-# main additionally omits "Enforce validator-requirements.yaml (OMN-13291)"
-# and others per the 2026-07-20 branch-protection union PATCH ledger entry).
-# This manifest is single-branch (dev), matching the OMN-14854 precedent. A
-# `main`-scoped manifest section is an explicit open follow-up, not resolved
-# here.
+# Every REQUIRED row below now carries an optional `branch: dev` or
+# `branch: main` field (OMN-15117 schema extension) when the context is
+# required on only ONE branch; a row with no `branch:` field is required on
+# BOTH branches (unchanged legacy convention). dev and main were already
+# identical in composition except for 4 dev-only rows (no rows required on
+# main only, and no stale rows to remove) — this PR tags those 4 rows
+# `branch: dev` and otherwise leaves the manifest unchanged: "Dep Provenance
+# Gate", "non-dev-base-guard", "Enforce validator-requirements.yaml (OMN-13291)",
+# "receipt-honesty".
+#
+# Post-reconcile verification: `reconcile_manifest_vs_live.py --branch dev`
+# and `--branch main` both return PASS (empty diff in both directions) — see
+# PR body for full command output.
 #
 # Do NOT rename/remove a REQUIRED row without following the Branch Protection
 # Migration Safety procedure — flip branch protection first (or same PR), then
@@ -64,6 +75,7 @@ gates:
 
   - name: "Dep Provenance Gate"
     mode: REQUIRED
+    branch: dev
     producer_kind: local
     workflow: dep-provenance-gate.yml
     job_path: ["dep-provenance-gate"]
@@ -152,11 +164,12 @@ gates:
 
   - name: "Enforce validator-requirements.yaml (OMN-13291)"
     mode: REQUIRED
+    branch: dev
     producer_kind: local
     workflow: validate-validator-requirements.yml
     job_path: ["validate-validator-requirements"]
     skip_semantics: never
-    rationale: "Live required status check on omnibase_compat dev branch protection. Withheld from main per 2026-07-20 branch-protection union PATCH (below the 5-PR proof bar on main at that time) — dev-only per this manifest's scope note."
+    rationale: "Live required status check on omnibase_compat dev branch protection only (not required on main, confirmed by 2026-07-25 reconcile)."
 
   - name: "call / validate-docs"
     mode: REQUIRED
@@ -169,6 +182,7 @@ gates:
 
   - name: "non-dev-base-guard"
     mode: REQUIRED
+    branch: dev
     producer_kind: local
     workflow: non-dev-base-guard.yml
     job_path: ["non-dev-base-guard"]
@@ -194,6 +208,7 @@ gates:
 
   - name: "receipt-honesty"
     mode: REQUIRED
+    branch: dev
     producer_kind: local
     workflow: receipt-honesty.yml
     job_path: ["receipt-honesty"]
@@ -218,10 +233,10 @@ gates:
     skip_semantics: never
     rationale: "OMN-14858: this guard's own required check, fanned out from the OMN-14854 omniclaude canary. Runs on every PR but is NOT YET in required_status_checks — per the canary's ordering, the branch-protection flip happens only after 2 independent green runs on dev, tracked as a follow-up. mode stays ADVISORY until that flip lands (same PR as the flip, per schema-v3 rule: mode changes and branch-protection changes land together). Pinned to @dev not @main: omniclaude's main has not yet been promoted past OMN-14854 (verified 2026-07-20 via raw.githubusercontent.com 404 on main / 200 on dev) — flip to @main once promoted."
 
-# Follow-up (not resolved in OMN-14858): a privileged
+# Follow-up (not resolved in OMN-14858 or OMN-15120): a privileged
 # required-check-manifest-reconcile.yml (push/schedule/workflow_dispatch only,
 # never PR-triggered) comparing this file's REQUIRED rows against LIVE
-# required_status_checks.contexts for `dev` needs a fine-grained PAT with
-# Administration:Read on omnibase_compat (mirrors omniclaude's
-# BRANCH_PROTECTION_PAT gap). Not provisioned in this PR; tracked as an open
-# follow-up, same disposition as the omniclaude canary.
+# required_status_checks.contexts for both `dev` and `main` needs a
+# fine-grained PAT with Administration:Read on omnibase_compat (mirrors
+# omniclaude's BRANCH_PROTECTION_PAT gap). Not provisioned in this PR; tracked
+# as an open follow-up, same disposition as the omniclaude/omnimarket canaries.
