@@ -165,13 +165,41 @@ jobs:
       - name: Evaluate test results
         run: |
           result="${{ needs.test-parallel.result }}"
-          if [[ "$result" == "success" || "$result" == "skipped" ]]; then
-            echo "Tests Gate: PASSED ($result)"
-            exit 0
-          else
-            echo "Tests Gate: FAILED ($result)"
-            exit 1
-          fi
+          echo "test-parallel: $result"
+
+          # OMN-15315 (OMN-15304 vector 6 — result triage). The previous pass
+          # condition was `"$result" == "success" || "$result" == "skipped"`,
+          # which rendered this REQUIRED context green on a SKIPPED upstream.
+          # `skipped` is the ABSENCE of a verdict exactly like `cancelled`, and
+          # it is precisely the state a conditional `if:` or a needs-cascade
+          # produces — so vector 5 and vector 6 composed into a bypass: strand
+          # `test-parallel`, and the gate that was supposed to catch it reports
+          # green with no test result in existence.
+          #
+          # PER-UPSTREAM SKIP POLICY: `test-parallel` carries no job-level `if:`
+          # and its matrix is never empty (scripts/ci/detect_test_paths.py
+          # always emits split_count >= 1, falling back to `tests/`), so it can
+          # only be skipped by a non-success `validate` / `detect-changes`
+          # upstream — a state that must fail this gate, not pass it. The policy
+          # table is therefore empty: every non-`success` value fails closed,
+          # including an unrecognised future result value (`*`).
+          case "$result" in
+            success)
+              echo "Tests Gate: PASSED ($result)"
+              ;;
+            failure)
+              echo "::error::Tests Gate FAILED — test-parallel reported failure."
+              exit 1
+              ;;
+            cancelled|skipped)
+              echo "::error::Tests Gate FAILED — test-parallel produced no verdict (result: $result); the absence of a test result is not a passing one."
+              exit 1
+              ;;
+            *)
+              echo "::error::Tests Gate FAILED — unrecognised test-parallel result '$result'; failing closed."
+              exit 1
+              ;;
+          esac
 
   contract-compliance:
     name: Contract Compliance Check
