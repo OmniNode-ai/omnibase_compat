@@ -164,6 +164,26 @@ repos:
         pass_filenames: false
         files: '^\.github/(workflows/.*\.ya?ml|required-checks\.yaml)$'
         stages: [pre-commit]
+      # OMN-15541: test-root collection guard. This repo has TWO pytest roots
+      # (src/omnibase_compat/tests and tests) and three surfaces used to name
+      # different subsets of them -- ci.yml's full-suite step hardcoded
+      # `pytest src/omnibase_compat/tests/` while the selector returned
+      # ["tests/"], DISJOINT lists, so every fail-closed escalation collected
+      # 141 tests and none of the 277 under tests/ (the OMN-15373 policy gate
+      # among them). pyproject `testpaths` is now the single source of truth;
+      # this hook fails closed if a positional path returns to the full-suite
+      # step, if the selector stops reading testpaths, if a tests/ dir is added
+      # outside every declared root, or if a declared root is not on disk.
+      # Same guard shape as omnibase_infra's OMN-15410. Also runs in CI inside
+      # the required `validate` job -- local and CI execute the same script.
+      - id: validate-test-root-collection
+        name: Test-root collection guard (OMN-15541)
+        entry: uv run --frozen python scripts/validation/validate_test_root_collection.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+        files: ^(pyproject\.toml|\.github/workflows/ci\.yml|scripts/ci/detect_test_paths\.py|.*/tests/.*)$
 
 # Configuration
 # OMN-14669 (DRIFT-2a fix): every stage a hook uses MUST be installed by
