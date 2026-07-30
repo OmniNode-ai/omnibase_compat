@@ -34,6 +34,16 @@ jobs:
       - name: Compat no-infra-edge gate (OMN-12599)
         run: uv run python scripts/check_no_infra_edge.py
       - run: uv run python scripts/check_compat_retention.py
+      # OMN-15541: test-root collection guard. Lives in the REQUIRED `validate`
+      # context (not in the test job) so it cannot itself be skipped by the
+      # very test-selection defect it guards -- a guard reachable only through
+      # the selector would be unreachable exactly when the selector is broken.
+      # Fails closed on a positional path in the full-suite pytest step, a
+      # selector that stops deriving its roots from pyproject `testpaths`, a
+      # tests/ dir outside every declared root, or a declared root missing from
+      # disk. Same script the pre-commit hook runs.
+      - name: Test-root collection guard (OMN-15541)
+        run: uv run python scripts/validation/validate_test_root_collection.py
       - run: uv run ruff check src/
       - run: uv run mypy src/omnibase_compat --strict
       - run: uv build
@@ -141,8 +151,25 @@ jobs:
 
       - name: Run pytest (full suite)
         if: vars.ENABLE_SMART_TESTS != 'true' || needs.detect-changes.outputs.is_full_suite == 'true'
+        # OMN-15541: NO positional path is passed to pytest here, deliberately.
+        # This step used to say `uv run pytest src/omnibase_compat/tests/`,
+        # which made this workflow — not pyproject.toml — the real definition of
+        # "the full suite". A positional path overrides `testpaths` entirely, so
+        # every fail-closed escalation (MAIN_BRANCH, MERGE_GROUP, SHARED_MODULE,
+        # TEST_INFRASTRUCTURE, THRESHOLD_MODULES, FEATURE_FLAG_OFF, SCHEDULED)
+        # collected 141 tests and ZERO of the 277 under the top-level `tests/`
+        # tree — including tests/unit/test_omn_15373_no_ungated_linear_done_policy.py
+        # and tests/unit/test_no_infra_edge.py. The escalation that exists to be
+        # the safety net when narrowing cannot be proven safe was collecting
+        # strictly LESS than the narrow fallback.
+        #
+        # With no positional argument pytest inherits `testpaths` from
+        # pyproject.toml verbatim, so there is exactly one place to add a root.
+        # scripts/validation/validate_test_root_collection.py fails closed if a
+        # positional path is re-introduced here. Use --ignore to exclude,
+        # never a positional include. Same fix as omnibase_infra's OMN-15410.
         run: |
-          uv run pytest src/omnibase_compat/tests/ \
+          uv run pytest \
             --splits ${{ needs.detect-changes.outputs.split_count }} \
             --group ${{ matrix.split }} \
             --tb=short \
