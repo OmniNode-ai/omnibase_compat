@@ -8,6 +8,7 @@ limited to third-party structural support packages listed in `pyproject.toml`.
 
 [![CI](https://github.com/OmniNode-ai/omnibase_compat/actions/workflows/ci.yml/badge.svg)](https://github.com/OmniNode-ai/omnibase_compat/actions/workflows/ci.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Who Uses It
 
