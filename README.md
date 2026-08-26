@@ -106,8 +106,11 @@ git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-The tag must match `[project].version` in `pyproject.toml`. See
-[Release Workflow](docs/runbooks/release.md) for the full runbook.
+The tag must match `[project].version` in `pyproject.toml`. On a successful
+non-`rc` release the workflow fast-forwards `main` to the released tag — there
+is no separate promotion pull request. See the
+[release runbook](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md)
+for the full procedure, the workflow's guarantees, and failure handling.
 
 ## Key Features
 
@@ -118,8 +121,19 @@ The tag must match `[project].version` in `pyproject.toml`. See
 
 ## Docs
 
-- [Documentation index](docs/README.md)
-- [Release workflow](docs/runbooks/release.md)
+This repository's prose documentation lives in the OmniNode knowledge base.
+What stays here is what must ship beside the code: this README, the
+agent-context files, and the convention files.
+
+Full documentation → https://github.com/OmniNode-ai/knowledge-base
+
+| Topic | Where |
+|---|---|
+| Structural inventory — subpackages, wire DTOs, enums, dependency boundary, validation scripts | [reference/omnibase-compat-structural-inventory.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md) |
+| Release procedure — tag, dispatch, workflow guarantees, failure handling | [runbooks/omnibase-compat-release.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md) |
+
+Kept in this repository:
+
 - [CLAUDE.md](CLAUDE.md) - developer conventions and repo context
 - [AGENT.md](AGENT.md) - LLM navigation guide
 - [Changelog](CHANGELOG.md)
