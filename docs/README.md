@@ -1,8 +1,8 @@
 # omnibase_compat Documentation
 
 **Owner:** `omnibase_compat`
-**Last verified:** 2026-06-21
-**Verification:** docs refresh (verified against code on this refresh)
+**Last verified:** 2026-08-26
+**Verification:** docs refresh (verified against code on this refresh, OMN-16549)
 
 This is the canonical docs map for `omnibase_compat`.
 
@@ -46,6 +46,8 @@ Current structural surfaces live under `src/omnibase_compat/`:
 - `metadata/` - artifact status and transitional metadata models (`artifact_status.py`, `transitional.py`).
 - `protocols/` - cross-repo protocol definitions: `protocol_project_tracker.py`, `protocol_projection_database.py`, `protocol_projection_database_sync.py`.
 - `tooling/` - TTL check shim (`shim_ttl_check.py`).
+- `config/` - contract/overlay config resolver (`overlay_resolver.py`, OMN-13564): zero-upstream-dep stand-in for `omnibase_core`'s `ModelRuntimeConfig`/`runtime/overlay`.
+- `learning/` - deterministic-learning-layer wire shapes: `model_learning_record.py` (`ModelLearningRecord`, `EnumLearningOutcome`), `enum_failure_class.py` (`EnumFailureClass`), `enum_learning_process_id.py` (`EnumLearningProcessId`).
 
 The `types/` and `primitives/` subpackages currently hold only their `__init__.py`
 placeholders; no JSON typing or primitive modules are present.
@@ -57,6 +59,7 @@ Domain-specific wire DTOs live under `src/omnibase_compat/contracts/`:
 - `contracts/delegation/` - delegation runtime profile, LLM backend config, datastore, event bus endpoint, projection API, security, and secret reference wire models.
 - `contracts/evidence/` - contract evidence proof, spec, and provenance models.
 - `contracts/evidence_pipeline/wire/` - evidence pipeline wire DTOs: dashboard events, pipeline commands, evidence bundles, correlation traces, gap reports, OCC PR references, raw payloads, readiness aggregates, topic constants, and wire types.
+- `contracts/pr_occ_stamp/` - canonical PR OCC metadata-stamp schema (OMN-14180/OMN-14223, relocated from `omnibase_core`): `ModelPrBodySection`, `ModelPrEvidenceSource`, `ModelPrOccMetadataStamp`, `ModelPrReceiptGateSkipToken`, the `EnumPrEvidenceSourceKind` discriminator, and the deterministic `parse_pr_occ_metadata_stamp`/`render_pr_occ_metadata_stamp` pair the receipt-gate and OCC autobind effect both consume.
 - `contracts/pricing/` - LLM pricing and pricing contract models.
 - `contracts/runtime_deployment/wire/` - runtime deployment proof, request, and type wire models.
 
@@ -77,6 +80,7 @@ Enums live under `src/omnibase_compat/enums/`:
 - `EnumExecutionStatus`
 - `EnumMessageCategory`
 - `EnumNodeKind`
+- `EnumPrEvidenceSourceKind` - discriminator for the `contracts/pr_occ_stamp/` metadata-stamp schema.
 
 Enum copies are intentionally minimal. They carry source provenance comments and
 must not copy helper behavior that belongs in `omnibase_core`.
