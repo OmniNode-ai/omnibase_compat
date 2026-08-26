@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/omninode-inline-white.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/brand/omninode-inline-full-color.svg">
+    <img alt="omninode" src="docs/assets/brand/omninode-inline-full-color.svg" width="420">
+  </picture>
+</p>
+
 # omnibase_compat
 
 `omnibase_compat` is the thin shared structural package for cross-repo enums,
@@ -8,6 +16,7 @@ limited to third-party structural support packages listed in `pyproject.toml`.
 
 [![CI](https://github.com/OmniNode-ai/omnibase_compat/actions/workflows/ci.yml/badge.svg)](https://github.com/OmniNode-ai/omnibase_compat/actions/workflows/ci.yml)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Who Uses It
 
@@ -105,8 +114,11 @@ git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-The tag must match `[project].version` in `pyproject.toml`. See
-[Release Workflow](docs/runbooks/release.md) for the full runbook.
+The tag must match `[project].version` in `pyproject.toml`. On a successful
+non-`rc` release the workflow fast-forwards `main` to the released tag — there
+is no separate promotion pull request. See the
+[release runbook](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md)
+for the full procedure, the workflow's guarantees, and failure handling.
 
 ## Key Features
 
@@ -117,8 +129,19 @@ The tag must match `[project].version` in `pyproject.toml`. See
 
 ## Docs
 
-- [Documentation index](docs/README.md)
-- [Release workflow](docs/runbooks/release.md)
+This repository's prose documentation lives in the OmniNode knowledge base.
+What stays here is what must ship beside the code: this README, the
+agent-context files, and the convention files.
+
+Full documentation → https://github.com/OmniNode-ai/knowledge-base
+
+| Topic | Where |
+|---|---|
+| Structural inventory — subpackages, wire DTOs, enums, dependency boundary, validation scripts | [reference/omnibase-compat-structural-inventory.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md) |
+| Release procedure — tag, dispatch, workflow guarantees, failure handling | [runbooks/omnibase-compat-release.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md) |
+
+Kept in this repository:
+
 - [CLAUDE.md](CLAUDE.md) - developer conventions and repo context
 - [AGENT.md](AGENT.md) - LLM navigation guide
 - [Changelog](CHANGELOG.md)

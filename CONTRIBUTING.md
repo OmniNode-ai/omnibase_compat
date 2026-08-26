@@ -29,7 +29,9 @@ Passing `src/omnibase_compat/tests/` explicitly silently drops the root
 - Do not copy implementation behavior from canonical owner repos.
 - Add `COMPAT_MIGRATION_TARGET` and `COMPAT_REMOVAL_DATE` to class-like compatibility artifacts.
 - Keep package-root exports non-authoritative; consumers should import explicit submodules.
-- Document new public compatibility surfaces in [docs/README.md](docs/README.md).
+- Document new public compatibility surfaces in the knowledge base's
+  [structural inventory](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md),
+  not in this repository — `docs/` holds pointers only.
 
 ## Release Changes
 
@@ -37,5 +39,5 @@ Release changes must update:
 
 - `[project].version` in `pyproject.toml`
 - [CHANGELOG.md](CHANGELOG.md)
-- Any changed docs under `docs/`
+- The knowledge-base page for any documented surface that changed
 
