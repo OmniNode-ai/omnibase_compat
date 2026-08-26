@@ -14,9 +14,14 @@ uv run python scripts/validate_no_upstream_deps.py
 uv run python scripts/check_compat_retention.py
 uv run ruff check src/
 uv run mypy src/omnibase_compat --strict
-uv run pytest src/omnibase_compat/tests/ -m unit --tb=short
+uv run pytest -m unit --tb=short
 uv build
 ```
+
+`pytest` must run with no positional path so it inherits `testpaths` from
+`pyproject.toml` (`src/omnibase_compat/tests` and the root `tests/` — OMN-15541).
+Passing `src/omnibase_compat/tests/` explicitly silently drops the root
+`tests/` directory from collection.
 
 ## Compatibility Rules
 

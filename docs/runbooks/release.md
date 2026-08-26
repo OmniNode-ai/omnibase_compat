@@ -1,8 +1,8 @@
 # Release Workflow
 
 **Owner:** `omnibase_compat`
-**Last verified:** 2026-06-16
-**Verification:** `.github/workflows/release.yml`, `pyproject.toml`, verified on docs refresh
+**Last verified:** 2026-08-26
+**Verification:** `.github/workflows/release.yml`, `pyproject.toml`, verified on docs refresh (OMN-16549)
 **Source plan:** `docs/plans/release-workflow.md`
 
 This is the canonical release runbook for publishing `omnibase_compat`.
@@ -36,9 +36,14 @@ stable release procedure.
    uv run python scripts/check_compat_retention.py
    uv run ruff check src/
    uv run mypy src/omnibase_compat --strict
-   uv run pytest src/omnibase_compat/tests/ -m unit --tb=short
+   uv run pytest -m unit --tb=short
    uv build
    ```
+
+   `pytest` must run with no positional path so it inherits `testpaths` from
+   `pyproject.toml` (`src/omnibase_compat/tests` and the root `tests/` — OMN-15541).
+   Passing `src/omnibase_compat/tests/` explicitly silently drops the root
+   `tests/` directory from collection.
 
 3. Create and push a matching version tag:
 
