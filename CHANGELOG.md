@@ -4,6 +4,12 @@ All notable changes to `omnibase_compat` should be recorded here.
 
 This project follows semantic versioning for published package versions.
 
+## v0.5.7 (2026-09-01)
+
+### Added
+- feat(OMN-17013): add strict v2 delegation terminal transport DTOs with a
+  closed routed/unrouted disposition and route-time provenance.
+
 ## v0.5.5 (2026-06-30)
 
 ### Added

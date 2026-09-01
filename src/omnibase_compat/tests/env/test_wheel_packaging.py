@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
+# compat-skip-retention: test-only wheel packaging regression fixture
 
 """Wheel-build content-parity regression test (OMN-14636).
 
