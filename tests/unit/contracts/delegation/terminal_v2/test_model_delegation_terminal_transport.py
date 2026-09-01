@@ -26,6 +26,8 @@ def _common_payload() -> dict[str, Any]:
     return {
         "correlation_id": str(uuid4()),
         "task_type": "code_review",
+        "model_used": "qwen3-coder",
+        "endpoint_url": "https://diagnostic.example/v1",
         "content": "review complete",
         "quality_passed": True,
         "quality_score": 0.95,
@@ -107,6 +109,9 @@ def test_transport_schema_exposes_closed_routing_discriminator() -> None:
     [
         ("backend_ref", "   ", "nonblank"),
         ("backend_ref", "https://backend.example/v1", "not a URL"),
+        ("backend_ref", "//backend.example", "not a URL"),
+        ("backend_ref", "mailto:ops@example.com", "not a URL"),
+        ("backend_ref", "backend.example:8443", "not a URL"),
         ("pricing_manifest_version", 0, "greater than 0"),
     ],
 )
@@ -117,6 +122,14 @@ def test_routed_terminal_rejects_unstable_or_missing_provenance(
     payload[field] = value
 
     with pytest.raises(ValidationError, match=match):
+        ModelDelegationTerminalRoutedV2.model_validate(payload)
+
+
+def test_backend_ref_is_not_derived_from_diagnostic_fields() -> None:
+    payload = _routed_payload()
+    del payload["backend_ref"]
+
+    with pytest.raises(ValidationError, match="backend_ref"):
         ModelDelegationTerminalRoutedV2.model_validate(payload)
 
 

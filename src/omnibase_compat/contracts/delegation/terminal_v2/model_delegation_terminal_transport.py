@@ -12,9 +12,9 @@ pricing-manifest version that produced the terminal record.
 
 from __future__ import annotations
 
-import re
 from enum import StrEnum, unique
 from typing import Annotated, Literal, Self
+from urllib.parse import urlparse
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -62,9 +62,6 @@ class EnumQualityScoreComparison(StrEnum):
     AT_OR_ABOVE_BAR = "at_or_above_bar"
 
 
-_URL_PREFIX_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*://")
-
-
 class _ModelDelegationTerminalCommonV2(BaseModel):
     """Fields shared by every v2 terminal, retained from the v1 terminal seam."""
 
@@ -72,6 +69,14 @@ class _ModelDelegationTerminalCommonV2(BaseModel):
 
     correlation_id: UUID = Field(..., description="Delegation correlation identity.")
     task_type: str = Field(..., min_length=1, description="Original task classification.")
+    model_used: str = Field(
+        ...,
+        description="Producer-stamped model diagnostic; never routing authority.",
+    )
+    endpoint_url: str = Field(
+        ...,
+        description="Producer-stamped endpoint diagnostic; never routing authority.",
+    )
     terminal_outcome: EnumDelegationTerminalOutcome = Field(
         ..., description="Producer-stamped terminal outcome."
     )
@@ -179,12 +184,13 @@ class ModelDelegationTerminalRoutedV2(_ModelDelegationTerminalCommonV2):
     @field_validator("backend_ref")
     @classmethod
     def validate_backend_ref(cls, value: str) -> str:
-        """Reject raw URLs and whitespace-only/non-canonical backend identities."""
+        """Reject URI-shaped values and preserve stable backend-id references."""
         if value != value.strip() or not value:
             msg = "backend_ref must be nonblank and must not have surrounding whitespace"
             raise ValueError(msg)
-        if _URL_PREFIX_RE.match(value):
-            msg = "backend_ref must be a stable backend reference, not a URL"
+        parsed = urlparse(value)
+        if parsed.scheme or parsed.netloc:
+            msg = "backend_ref must be a stable backend reference, not a URL or URI"
             raise ValueError(msg)
         return value
 
