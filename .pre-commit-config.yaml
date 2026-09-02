@@ -7,7 +7,14 @@ repos:
     rev: v0.21.0
     hooks:
       - id: yamlfmt
-        exclude: ^\.github/
+        # .kb-doc-gate.yaml is excluded because this repo's .yamlfmt sets
+        # include_document_start:true, and the KB doc gate's stdlib-only
+        # restricted-YAML parser (omniclaude/scripts/kb_doc_gate.py load_config)
+        # rejects a bare '---' document marker as an unrecognized line and exits
+        # 2 ("the gate did not run"). Formatting that file would wedge the
+        # required kb-doc-gate/kb-doc-gate context. OMN-16602; the parser fix
+        # belongs to the OMN-17172 fleet-rollout lane that owns the validator.
+        exclude: ^(\.github/|\.kb-doc-gate\.yaml$)
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.6

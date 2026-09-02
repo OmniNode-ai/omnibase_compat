@@ -1,5 +1,7 @@
 # Contributing
 
+Full documentation → https://github.com/OmniNode-ai/knowledge-base
+
 ## Development Setup
 
 ```bash
@@ -31,13 +33,15 @@ Passing `src/omnibase_compat/tests/` explicitly silently drops the root
 - Keep package-root exports non-authoritative; consumers should import explicit submodules.
 - Document new public compatibility surfaces in the knowledge base's
   [structural inventory](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md),
-  not in this repository — `docs/` holds pointers only.
+  not in this repository. This repo has no `docs/` prose directory; the KB doc
+  gate (`.github/workflows/kb-doc-gate.yml`, `strict` mode) fails any PR that
+  reintroduces one.
 
 ## Release Changes
 
 Release changes must update:
 
 - `[project].version` in `pyproject.toml`
-- [CHANGELOG.md](CHANGELOG.md)
+- [CHANGELOG.md](../CHANGELOG.md)
 - The knowledge-base page for any documented surface that changed
 
