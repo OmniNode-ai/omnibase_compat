@@ -127,11 +127,11 @@ for the full procedure, the workflow's guarantees, and failure handling.
 - Provenance-tracked enum seeding from upstream canonical sources
 - Strict mypy + ruff + AST-based import validation
 
-## Docs
+## Documentation
 
-This repository's prose documentation lives in the OmniNode knowledge base.
-What stays here is what must ship beside the code: this README, the
-agent-context files, and the convention files.
+This repository holds no documentation directory. Every prose document about
+`omnibase_compat` — architecture, structural inventory, runbooks, guides — lives
+in the OmniNode knowledge base, which is its single home.
 
 Full documentation → https://github.com/OmniNode-ai/knowledge-base
 
@@ -140,13 +140,19 @@ Full documentation → https://github.com/OmniNode-ai/knowledge-base
 | Structural inventory — subpackages, wire DTOs, enums, dependency boundary, validation scripts | [reference/omnibase-compat-structural-inventory.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md) |
 | Release procedure — tag, dispatch, workflow guarantees, failure handling | [runbooks/omnibase-compat-release.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md) |
 
-Kept in this repository:
+Internal-only material — anything the public knowledge base excludes by
+taxonomy (our own cloud deployment topology, restricted operational notes) —
+lives in the internal knowledge base:
+https://github.com/OmniNode-ai/knowledge-base-internal
 
-- [CLAUDE.md](CLAUDE.md) - developer conventions and repo context
-- [AGENT.md](AGENT.md) - LLM navigation guide
-- [Changelog](CHANGELOG.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security](SECURITY.md)
+What remains in this repository is only what must physically ship beside the
+code, and the [KB doc gate](.github/workflows/kb-doc-gate.yml) enforces that set
+in `strict` mode:
+
+- [CLAUDE.md](CLAUDE.md) — agent operating context and repo conventions
+- [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md) — contribution flow
+- [CHANGELOG.md](CHANGELOG.md)
+- [SECURITY.md](SECURITY.md)
 
 ## License
 

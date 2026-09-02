@@ -62,15 +62,38 @@ Canonical spec: `omnibase_core/docs/conventions/FILE_HEADERS.md`
 ## Development Setup
 
 ```bash
-# Install dev dependencies (includes omnibase_core as dev-only dep)
-uv sync --dev
+# Install dev dependencies
+uv sync --dev --frozen
 
 # Install pre-commit hooks
 pre-commit install
-
-# Run tests
-uv run pytest
 ```
+
+## Commands
+
+```bash
+uv run pytest -m unit                      # unit tests
+uv run ruff check src/                     # lint
+uv run mypy src/omnibase_compat --strict   # type check
+uv build && uv pip install dist/*.whl      # build + install check
+pre-commit run --all-files                 # full local gate
+```
+
+Run `pytest` with no positional path so it inherits `testpaths` from
+`pyproject.toml` (`src/omnibase_compat/tests` and the root `tests/` —
+OMN-15541). Passing `src/omnibase_compat/tests/` explicitly silently drops the
+root `tests/` directory from collection.
+
+## Navigation
+
+- Package structure: `src/omnibase_compat/`
+- Role vs `omnibase_spi`, install, and usage: `README.md`
+- Contribution flow (setup, required checks, release changes):
+  [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md)
+- Shared cross-repo development standards: `~/.claude/CLAUDE.md`
+- Everything else — structural inventory, release runbook, architecture — is in
+  the knowledge base, not in this repository. See the Documentation section of
+  `README.md`.
 
 ---
 
@@ -78,3 +101,7 @@ uv run pytest
 
 - **Zero runtime upstream deps**: `[project.dependencies]` contains only `pydantic` and `typing-extensions`. Never add OmniNode packages there.
 - `omnibase_core` is **not in `pyproject.toml`** at all — neither as a runtime dep nor in `[dependency-groups] dev`. It appears only as an `additional_dependencies` entry (an isolated git-pinned hook environment, not a `pyproject.toml`/`uv.lock` edge) inside two `.pre-commit-config.yaml` hooks: `normalization-symmetry` and `no-noncanonical-lifecycle-classes` (OMN-14350). Do not add it to pyproject; the no-infra-edge guard (`scripts/check_no_infra_edge.py`, wired as a pre-commit hook) will fail if any OmniNode upstream package appears in `pyproject.toml` or `uv.lock`.
+- **Import from explicit submodules**, not the package root. Package-root
+  exports are convenience only, not the stable compatibility surface.
+- **Document new public compatibility surfaces in the knowledge base**, not in
+  this repository. This repo holds no prose documentation directory.
