@@ -44,7 +44,7 @@ from omnibase_compat.contracts.delegation.model_delegation_security import (
 def minimal_event_bus() -> ModelDelegationEventBusEndpoint:
     return ModelDelegationEventBusEndpoint(
         provider="redpanda",
-        bootstrap_servers=["192.168.86.201:19092"],
+        bootstrap_servers=["broker.invalid:19092"],
         topic_policy_ref="onex.topics.v1",
         consumer_groups=["delegation-consumer-group"],
     )
@@ -90,7 +90,7 @@ class TestMinimalValidProfile:
     def test_event_bus_fields(self, minimal_profile: ModelDelegationRuntimeProfile) -> None:
         eb = minimal_profile.event_bus
         assert eb.provider == "redpanda"
-        assert eb.bootstrap_servers == ["192.168.86.201:19092"]
+        assert eb.bootstrap_servers == ["broker.invalid:19092"]
         assert eb.topic_policy_ref == "onex.topics.v1"
         assert eb.consumer_groups == ["delegation-consumer-group"]
 
