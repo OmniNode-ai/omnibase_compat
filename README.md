@@ -140,11 +140,6 @@ Full documentation → https://github.com/OmniNode-ai/knowledge-base
 | Structural inventory — subpackages, wire DTOs, enums, dependency boundary, validation scripts | [reference/omnibase-compat-structural-inventory.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md) |
 | Release procedure — tag, dispatch, workflow guarantees, failure handling | [runbooks/omnibase-compat-release.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md) |
 
-Internal-only material — anything the public knowledge base excludes by
-taxonomy (our own cloud deployment topology, restricted operational notes) —
-lives in the internal knowledge base:
-https://github.com/OmniNode-ai/knowledge-base-internal
-
 What remains in this repository is only what must physically ship beside the
 code, and the [KB doc gate](.github/workflows/kb-doc-gate.yml) enforces that set
 in `strict` mode:
