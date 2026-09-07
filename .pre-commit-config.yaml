@@ -14,7 +14,7 @@ repos:
         # 2 ("the gate did not run"). Formatting that file would wedge the
         # required kb-doc-gate/kb-doc-gate context. OMN-16602; the parser fix
         # belongs to the OMN-17172 fleet-rollout lane that owns the validator.
-        exclude: ^(\.github/|\.kb-doc-gate\.yaml$)
+        exclude: ^(\.github/|\.kb-doc-gate\.yaml$|\.public-repo-hygiene\.yaml$)
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.6
