@@ -343,29 +343,9 @@ playwright-report/
 __pycache__/
 *.py[cod]
 *$py.class
-# Anchored to repo root (OMN-14636) — see note above; an unanchored `env/`
-# here collides with the real src/omnibase_compat/env/ submodule the same
-# way the primary block's pattern did.
 /.venv/
 /venv/
 /env/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-dist/
-build/
-*.egg-info/
-# === end onex-managed: python ===
-
-# === onex-managed: python ===
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-env/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
