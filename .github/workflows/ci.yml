@@ -311,17 +311,22 @@ jobs:
   # write.
   #
   # The comparison is NOT copied into this repository: it lives once, in the
-  # image gate, and the reusable resolves the workflow and the scripts
-  # together at the single pinned commit. A CI-time checkout is not a runtime
-  # dependency -- nothing is added to this project's metadata, lock file or
-  # import graph, which matters more here than anywhere because this
-  # repository's whole point is having zero upstream runtime deps, and its
-  # own no-infra-edge gate above scans pyproject and the frozen lock closure
-  # rather than workflow files.
+  # omnibase_infra image gate, and the ACTION carries it -- an action's
+  # repository is checked out at the ref pinned below, so one pin fixes the
+  # action and the comparison together, never a branch. A CI-time action is
+  # not a runtime dependency: nothing is added to this project's metadata,
+  # lock file or import graph, which matters more here than anywhere because
+  # this repository's whole point is having zero upstream runtime deps, and
+  # its own no-infra-edge gate above scans pyproject and the frozen lock
+  # closure rather than workflow files.
   wheel-content-parity:
-    uses: OmniNode-ai/omnibase_infra/.github/workflows/wheel-content-parity-reusable.yml@344d834bbe372704019e30e7f8bc6d3e4a9a0c8f
-    with:
-      package: omnibase_compat
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Judge wheel content parity
+        uses: OmniNode-ai/omnibase_infra/.github/actions/wheel-content-parity@62337b2fdc3235efe6eb63acdf3c2ce40c02b206
+        with:
+          package: omnibase_compat
 
   ci-summary:
     name: CI Summary
