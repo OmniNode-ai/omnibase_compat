@@ -290,10 +290,44 @@ jobs:
             --allowlist .onex_ratchets/noncanonical_class_allowlist.yaml \
             src/omnibase_compat
 
+  # OMN-18865: the pre-merge twin of the OMN-14631 workspace content-parity
+  # gate. It proves this repository's built wheel carries byte-for-byte the
+  # tracked source tree under src/omnibase_compat plus any declared
+  # force-includes.
+  #
+  # WHY IT IS HERE RATHER THAN ONLY ON THE LAB. This repository has already
+  # produced this exact defect once: under OMN-14636 a bare `env/` in
+  # .gitignore matched the real, git-tracked package directory
+  # src/omnibase_compat/env/ at any depth, and hatchling applies the VCS
+  # ignore file as a build-time exclude, so the wheel silently dropped it.
+  # Replayed against this check, the tree before that fix reds on four files
+  # under env/. It recurred in omnimarket on 2026-09-19 with a bare
+  # `merge-sweep/` and took the .201 dev lane down for hours.
+  #
+  # IT IS A JOB IN THIS FILE, not a workflow of its own, because this
+  # repository's required `CI Summary` is an in-workflow `needs:` aggregation
+  # and cannot see a separate workflow file. Adding it to `ci-summary.needs`
+  # below is what gives it merge-blocking force, with no branch-protection
+  # write.
+  #
+  # The comparison is NOT copied into this repository: it lives once, in the
+  # image gate, and the reusable resolves the workflow and the scripts
+  # together at the single pinned commit. A CI-time checkout is not a runtime
+  # dependency -- nothing is added to this project's metadata, lock file or
+  # import graph, which matters more here than anywhere because this
+  # repository's whole point is having zero upstream runtime deps, and its
+  # own no-infra-edge gate above scans pyproject and the frozen lock closure
+  # rather than workflow files.
+  wheel-content-parity:
+    uses: OmniNode-ai/omnibase_infra/.github/workflows/wheel-content-parity-reusable.yml@344d834bbe372704019e30e7f8bc6d3e4a9a0c8f
+    with:
+      package: omnibase_compat
+
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate, tests-gate, contract-compliance, no-noncanonical-lifecycle-classes]
+    needs: [validate, tests-gate, contract-compliance, no-noncanonical-lifecycle-classes,
+            wheel-content-parity]
     if: always()
     steps:
       - name: Check all jobs passed
@@ -303,6 +337,14 @@ jobs:
           # in needs: so this job WAITS for it (no race).
           if [[ "${{ needs.no-noncanonical-lifecycle-classes.result }}" != "success" ]]; then
             echo "::error::no-noncanonical-lifecycle-classes ratchet did not pass (result: ${{ needs.no-noncanonical-lifecycle-classes.result }}) - fail-closed (OMN-14350)"
+            exit 1
+          fi
+          # OMN-18865: strict fail-closed on the wheel content-parity gate, on
+          # the same reasoning as the ratchet above - only 'success' passes.
+          # The job carries no `if:`, so it cannot legitimately skip; a skip
+          # here is a failure-to-run, and a failure-to-run is not a pass.
+          if [[ "${{ needs.wheel-content-parity.result }}" != "success" ]]; then
+            echo "::error::wheel-content-parity did not pass (result: ${{ needs.wheel-content-parity.result }}) - fail-closed (OMN-18865)"
             exit 1
           fi
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
