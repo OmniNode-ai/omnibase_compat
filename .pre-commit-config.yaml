@@ -80,7 +80,7 @@ repos:
         entry: python -m omnibase_core.validation.checker_normalization_symmetry src
         language: python
         additional_dependencies:
-          - "omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core.git@187871b3c3c84cc4c876781c6f160c0fde378978"
+          - "omnibase-core==0.40.1"  # First PyPI release containing normalization-symmetry.
         pass_filenames: false
 
       # OMN-14350: non-canonical lifecycle-class ratchet (fan-out). compat forbids a
@@ -95,7 +95,7 @@ repos:
           src/omnibase_compat
         language: python
         additional_dependencies:
-          - "omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core.git@63635097705d832e0ee9c4811093efb31349105c"
+          - "omnibase-core==0.46.9"  # First PyPI release containing the lifecycle-class validator.
         pass_filenames: false
         stages: [pre-commit]
 
@@ -231,15 +231,27 @@ repos:
         stages:
           - pre-commit
         additional_dependencies:
-          - omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core.git@5d562ab415bcbeb60eb852f5fb6d80b455da1624
+          - omnibase-core==0.47.18  # First PyPI release carrying gitignore-baseline wheel data.
 
 
-# Configuration
-# OMN-14669 (DRIFT-2a fix): every stage a hook uses MUST be installed by
-# `pre-commit install`. Previously [pre-commit, pre-push] only, so the
-# reject-deploy-gate-skip-token-commit-msg hook (stages:[commit-msg]) silently
-# never installed locally — a false-green. The precommit-fail-loud-meta-gate
-# above now fails closed if this drifts again.
+  # OMN-19666: VCS-backed additional_dependencies can inherit GIT_INDEX_FILE
+  # during a cold-cache commit and overwrite the committing worktree index.
+  - repo: local
+    # Configuration
+    # OMN-14669 (DRIFT-2a fix): every stage a hook uses MUST be installed by
+    # `pre-commit install`. Previously [pre-commit, pre-push] only, so the
+    # reject-deploy-gate-skip-token-commit-msg hook (stages:[commit-msg]) silently
+    # never installed locally — a false-green. The precommit-fail-loud-meta-gate
+    # above now fails closed if this drifts again.
+    hooks:
+      - id: no-git-precommit-additional-dependencies
+        name: Pre-commit additional dependencies come from package indexes (OMN-19666)
+        entry: bash tests/test_precommit_additional_dependencies_omn19666.sh
+        language: system
+        pass_filenames: false
+        files: ^(\.pre-commit-config\.yaml|scripts/validation/check_precommit_additional_dependencies\.sh|tests/test_precommit_additional_dependencies_omn19666\.sh|tests/fixtures/omn19666/.*)$
+        stages: [pre-commit]
+
 default_install_hook_types: [pre-commit, pre-push, commit-msg]
 default_stages: [pre-commit]
 fail_fast: false

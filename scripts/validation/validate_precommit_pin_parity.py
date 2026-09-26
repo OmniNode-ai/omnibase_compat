@@ -7,9 +7,9 @@ CI/pre-commit check: pin-parity ratchet between .pre-commit-config.yaml and
 .github/workflows/ci.yml (OMN-14669, WS7 fan-out #6 of OMN-14655; DRIFT-3
 recurrence guard).
 
-The problem this guards: a pre-commit hook pins an omnibase_core SHA that clones
-the validator at one commit, while the SAME validator's CI job pins a DIFFERENT
-SHA. Both surfaces then enforce a DIFFERENT frozen baseline, so a change that is
+The problem this guards: a pre-commit hook pins an omnibase_core release while
+the SAME validator's CI job pins a DIFFERENT release. Both surfaces then enforce
+a DIFFERENT frozen baseline, so a change that is
 green locally can be red in CI (or vice-versa) purely because the two pins
 drifted -- staleness by construction. This gate fails closed the moment a pinned
 pair diverges, on either side.
@@ -19,17 +19,12 @@ omnibase_compat the shared omnibase_core validator (`no-noncanonical-lifecycle-c
 OMN-14350) is a `repo: local`, `language: python` pre-commit hook that pins core
 via `additional_dependencies` (NOT a remote `repo:` block with a top-level
 `rev:`), because compat's no-infra-edge invariant forbids a real omnibase_core
-dependency edge in pyproject/uv.lock. So `_find_hook_pin` extracts the pinned
-SHA from the hook's `additional_dependencies` git-URL rather than from
-`repo.rev`. The CI counterpart is compat's single `.github/workflows/ci.yml`
-`no-noncanonical-lifecycle-classes` job, which pins the same validator via
-`uv run --with 'omnibase-core @ git+...@<sha>'`. Both must resolve to the
-identical SHA.
-
-Note the two surfaces spell the git URL slightly differently (`omnibase_core.git@`
-in the pre-commit additional_dependencies vs `omnibase_core@` in ci.yml); the
-extraction regex tolerates the optional `.git` suffix so a real SHA match is
-never masked by that cosmetic difference.
+dependency edge in pyproject/uv.lock. So `_find_hook_pin` extracts the exact
+PyPI version from the hook's `additional_dependencies`. The CI counterpart is
+compat's single `.github/workflows/ci.yml`
+`no-noncanonical-lifecycle-classes` job, which pins the same released package
+via `uv run --with 'omnibase-core==<version>'`. Both must resolve to the
+identical version.
 
 PIN_PAIRS below is a small, explicitly-verified table -- add a new pair only
 after confirming (by hand, via `git diff <old-rev> <new-rev>` in omnibase_core)
@@ -37,7 +32,7 @@ that both sides really do reference the same validator, not two independently
 pinned tools that happen to share an upstream repo.
 
 Intentionally NOT enforced here: the `normalization-symmetry` pre-commit hook
-also pins an omnibase_core SHA via `additional_dependencies`, but compat's ci.yml
+also pins an omnibase_core release via `additional_dependencies`, but compat's ci.yml
 has NO CI counterpart job for it (it is a pre-commit-only orphan), so there is no
 second pin to compare against -- adding it to PIN_PAIRS would false-fail on a
 missing CI pin. It stays out until a CI counterpart exists.
@@ -57,8 +52,8 @@ CONFIG_PATH = REPO_ROOT / ".pre-commit-config.yaml"
 CI_WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "ci.yml"
 
 # (pre-commit hook id, validator module the pair references [for humans/audit
-#  only]) -> the SHA the hook pins in `additional_dependencies` and the SHA
-# ci.yml pins for the same validator must be identical.
+#  only]) -> the release the hook pins in `additional_dependencies` and the
+# release ci.yml pins for the same validator must be identical.
 PIN_PAIRS: tuple[tuple[str, str], ...] = (
     (
         "no-noncanonical-lifecycle-classes",
@@ -66,17 +61,12 @@ PIN_PAIRS: tuple[tuple[str, str], ...] = (
     ),
 )
 
-# Matches an omnibase_core git-pin on either surface. The `.git` suffix is
-# optional (pre-commit writes `omnibase_core.git@<sha>`, ci.yml writes
-# `omnibase_core@<sha>`); both resolve to the same 40-hex SHA.
-_CORE_PIN_RE = re.compile(
-    r"omnibase[-_]core\s*@\s*git\+https://github\.com/OmniNode-ai/omnibase_core"
-    r"(?:\.git)?@([0-9a-f]{40})"
-)
+# Matches an exact omnibase_core PyPI version on either surface.
+_CORE_PIN_RE = re.compile(r"omnibase[-_]core\s*==\s*([0-9]+\.[0-9]+\.[0-9]+)")
 
 
 def _find_hook_pin(config: dict[str, Any], hook_id: str) -> str | None:
-    """Extract the omnibase_core SHA a `repo: local` hook pins via
+    """Extract the omnibase_core version a `repo: local` hook pins via
     `additional_dependencies`. Returns None if the hook or a core pin is
     absent."""
     for repo in config.get("repos", []):
@@ -122,7 +112,7 @@ def main() -> int:
         ci_pins = _find_ci_pins(ci_text)
         if not ci_pins:
             violations.append(
-                f"pin-parity: no CI-pinned omnibase_core SHA found in "
+                f"pin-parity: no CI-pinned omnibase_core version found in "
                 f"{CI_WORKFLOW_PATH.name} (hook {hook_id!r}, validator "
                 f"{validator!r}) -- update PIN_PAIRS or restore the CI pin."
             )
@@ -143,7 +133,7 @@ def main() -> int:
             print(f"  {v}\n")
         return 1
 
-    print("OK: all pinned SHAs in PIN_PAIRS match their CI-pinned counterpart.")
+    print("OK: all pinned versions in PIN_PAIRS match their CI-pinned counterpart.")
     return 0
 
 

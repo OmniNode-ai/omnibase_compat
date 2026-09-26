@@ -20,11 +20,11 @@ for f in "$@"; do
 
     # Check first 10 lines for SPDX markers
     HEAD=$(head -10 "$f" 2>/dev/null || true)
-    if ! echo "$HEAD" | grep -q "SPDX-FileCopyrightText"; then
+    if ! grep -q "SPDX-FileCopyrightText" <<<"$HEAD"; then
         echo "MISSING SPDX header: $f"
         FAILED=1
     fi
-    if ! echo "$HEAD" | grep -q "SPDX-License-Identifier"; then
+    if ! grep -q "SPDX-License-Identifier" <<<"$HEAD"; then
         echo "MISSING SPDX license: $f"
         FAILED=1
     fi
