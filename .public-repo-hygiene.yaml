@@ -38,6 +38,7 @@ allowed_top_level:
   - "README.md"
   - "SECURITY.md"
   - "architecture-handshakes"
+  - "config"
   - "contracts"
   - "docs"
   - "pyproject.toml"
