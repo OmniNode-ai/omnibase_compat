@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   call:
-    uses: OmniNode-ai/omnibase_core/.github/workflows/validate-docs.yml@main
+    # OMN-20001: pinned sha, bump via a PR that integration-tests the new sha
+    uses: OmniNode-ai/omnibase_core/.github/workflows/validate-docs.yml@52851458622f368c3b596c82bf810bc6acce1d5e
     with:
       standalone: true
