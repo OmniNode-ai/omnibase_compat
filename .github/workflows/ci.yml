@@ -412,7 +412,7 @@ jobs:
           version: "0.8.3"
       - name: Refuse shape-gate detectors that depend on the preflight
         run: |
-          uv run --no-project --with 'omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core@5220ecf1758b4475c2963ec13171b6431fdc2224' python -m omnibase_core.validators.shape_gate_independence
+          uv run --no-project --with 'omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core@d17f5be8be88a8d35fc6a69e13cb8c1896c3025b' python -m omnibase_core.handlers.handler_shape_gate_independence
 
   ci-summary:
     name: CI Summary

@@ -51,7 +51,7 @@ repos:
   # OMN-20298: shape-gate detectors must run as their own CI jobs, never behind
   # the change-control preflight (omnibase_core PR 1833).
   - repo: https://github.com/OmniNode-ai/omnibase_core
-    rev: 5220ecf1758b4475c2963ec13171b6431fdc2224
+    rev: d17f5be8be88a8d35fc6a69e13cb8c1896c3025b
     hooks:
       - id: check-shape-gate-independence
 
