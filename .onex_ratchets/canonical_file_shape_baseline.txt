@@ -1,0 +1,58 @@
+# canonical-file-shape baseline. Shrink-only.
+# Every line is a code file outside a canonical location that existed
+# when the ratchet was installed. Delete a line when its file is removed,
+# moved into a canonical location or rewritten as contract + node +
+# handler. A new line is refused.
+.pre-commit-hooks/reject-deploy-gate-skip-token.sh
+.pre-commit-hooks/reject-required-check-skip-vector.sh
+scripts/__init__.py
+scripts/check_compat_retention.py
+scripts/check_dep_provenance.py
+scripts/check_no_infra_edge.py
+scripts/ci/__init__.py
+scripts/ci/detect_test_paths.py
+scripts/ci/occ_manual_replay_precheck.py
+scripts/ci/test_selection_loader.py
+scripts/ci/test_selection_models.py
+scripts/ci/verify_pypi_pin_resolvability.py
+scripts/validate_no_upstream_deps.py
+scripts/validate_spdx_headers.sh
+scripts/validation/check_precommit_additional_dependencies.sh
+scripts/validation/validate_precommit_fail_loud.py
+scripts/validation/validate_precommit_pin_parity.py
+scripts/validation/validate_test_root_collection.py
+src/omnibase_compat/__init__.py
+src/omnibase_compat/adapters/__init__.py
+src/omnibase_compat/adapters/adapter_project_tracker_linear.py
+src/omnibase_compat/concurrency/__init__.py
+src/omnibase_compat/concurrency/util_run_coro_sync.py
+src/omnibase_compat/config/__init__.py
+src/omnibase_compat/config/overlay_resolver.py
+src/omnibase_compat/env/__init__.py
+src/omnibase_compat/env/util_is_strict_mode.py
+src/omnibase_compat/experimental/__init__.py
+src/omnibase_compat/experimental/_registry.py
+src/omnibase_compat/experimental/shims/__init__.py
+src/omnibase_compat/learning/__init__.py
+src/omnibase_compat/learning/enum_failure_class.py
+src/omnibase_compat/learning/enum_learning_process_id.py
+src/omnibase_compat/learning/model_learning_record.py
+src/omnibase_compat/metadata/__init__.py
+src/omnibase_compat/metadata/artifact_status.py
+src/omnibase_compat/metadata/transitional.py
+src/omnibase_compat/overseer/__init__.py
+src/omnibase_compat/overseer/model_agent_scope_presets.py
+src/omnibase_compat/overseer/model_routing_decision.py
+src/omnibase_compat/primitives/__init__.py
+src/omnibase_compat/registration/__init__.py
+src/omnibase_compat/registration/decorator_idempotent_register.py
+src/omnibase_compat/registration/decorator_injectable_optional.py
+src/omnibase_compat/routing/__init__.py
+src/omnibase_compat/routing/model_routing_degraded_event.py
+src/omnibase_compat/routing/model_routing_policy.py
+src/omnibase_compat/telemetry/__init__.py
+src/omnibase_compat/telemetry/model_sweep_result.py
+src/omnibase_compat/tooling/__init__.py
+src/omnibase_compat/tooling/shim_ttl_check.py
+src/omnibase_compat/types/__init__.py
+src/omnibase_compat/utils/__init__.py
