@@ -397,11 +397,28 @@ jobs:
               python -m omnibase_core.validators.canonical_file_shape --head HEAD
           fi
 
+  # OMN-20298: no shape-gate detector may be gated on the change-control
+  # preflight. This job has no needs: and no if:, so it fires on every run.
+  shape-gate-independence:
+    name: Shape-Gate Independence (OMN-20298)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.8.3"
+      - name: Refuse shape-gate detectors that depend on the preflight
+        run: |
+          uv run --no-project --with 'omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core@d17f5be8be88a8d35fc6a69e13cb8c1896c3025b' python -m omnibase_core.handlers.handler_shape_gate_independence
+
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
     needs: [validate, tests-gate, contract-compliance, no-noncanonical-lifecycle-classes,
-            wheel-content-parity, canonical-file-shape]
+            wheel-content-parity, canonical-file-shape, shape-gate-independence]
     if: always()
     steps:
       - name: Check all jobs passed
@@ -425,6 +442,11 @@ jobs:
           # the same reasoning as the two gates above - only 'success' passes.
           if [[ "${{ needs.canonical-file-shape.result }}" != "success" ]]; then
             echo "::error::canonical-file-shape ratchet did not pass (result: ${{ needs.canonical-file-shape.result }}) - fail-closed (OMN-20304)"
+            exit 1
+          fi
+          # OMN-20298: strict fail-closed on the shape-gate independence guard.
+          if [[ "${{ needs.shape-gate-independence.result }}" != "success" ]]; then
+            echo "::error::shape-gate-independence did not pass (result: ${{ needs.shape-gate-independence.result }}) - fail-closed (OMN-20298)"
             exit 1
           fi
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then

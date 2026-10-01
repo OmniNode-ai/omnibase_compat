@@ -48,6 +48,13 @@ repos:
     hooks:
       - id: check-hardcoded-model-config-compute
 
+  # OMN-20298: shape-gate detectors must run as their own CI jobs, never behind
+  # the change-control preflight (omnibase_core PR 1833).
+  - repo: https://github.com/OmniNode-ai/omnibase_core
+    rev: d17f5be8be88a8d35fc6a69e13cb8c1896c3025b
+    hooks:
+      - id: check-shape-gate-independence
+
   - repo: local
     hooks:
       - id: validate-spdx-headers
