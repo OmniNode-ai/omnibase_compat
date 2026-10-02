@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 # COMPAT_MIGRATION_TARGET: omnibase_spi.models.model_project_tracker
-# COMPAT_REMOVAL_DATE: 2026-10-01
+# COMPAT_REMOVAL_DATE: 2026-12-01
 # COMPAT_RETENTION_NOTE: extended 2026-09-01 -> 2026-10-01 under OMN-16602.
 # The original date expired mid-flight and hard-fails the required `validate`
 # job for EVERY PR on this repo, so extending is the retention policy's own

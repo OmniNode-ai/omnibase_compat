@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 # COMPAT_MIGRATION_TARGET: omnibase_infra.nodes.node_model_router.models.model_routing_decision
-# COMPAT_REMOVAL_DATE: 2026-10-01
+# COMPAT_REMOVAL_DATE: 2026-12-01
 
 """ModelRoutingDecision — output contract of the overseer routing policy engine.
 
