@@ -45,6 +45,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: OmniNode-ai/onex_change_control
+          # Pinned (OMN-20001); bump by integration-testing a new sha in a PR here.
+          ref: ebe30bc3589c9f803e8920b941ddaef07b17ed90
           path: onex_change_control
 
       - name: Install uv

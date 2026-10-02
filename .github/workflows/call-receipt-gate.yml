@@ -33,6 +33,7 @@ permissions:
 
 jobs:
   verify:
-    uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@main
+    # OMN-20001: pinned sha, bump via a PR that integration-tests the new sha
+    uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@52851458622f368c3b596c82bf810bc6acce1d5e
     with:
       branch-policy-mode: ${{ (github.event.pull_request.base.ref == 'main' || github.event.merge_group.base_ref == 'refs/heads/main') && 'main-release' || 'legacy' }}

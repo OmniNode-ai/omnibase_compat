@@ -237,7 +237,13 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
       - name: Clone onex_change_control
-        run: git clone --depth=1 https://github.com/OmniNode-ai/onex_change_control.git /tmp/onex_change_control
+        # Pinned to an OCC commit, never the live branch (OMN-20001). Bump it by
+        # integration-testing a new OCC sha in a PR here that edits this line.
+        run: |
+          set -euo pipefail
+          git init -q /tmp/onex_change_control
+          git -C /tmp/onex_change_control fetch --depth=1 https://github.com/OmniNode-ai/onex_change_control.git ebe30bc3589c9f803e8920b941ddaef07b17ed90
+          git -C /tmp/onex_change_control checkout -q FETCH_HEAD
       - name: Install onex_change_control and dependencies
         # Install the cloned OCC package so `from onex_change_control.integrations`
         # resolves. OCC depends on omnibase-core (on PyPI) + pyyaml + pydantic.

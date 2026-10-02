@@ -122,7 +122,7 @@ jobs:
       github.actor != 'renovate[bot]' &&
       (contains(github.event.pull_request.title, 'OMN-') ||
        contains(github.event.pull_request.head.ref, 'OMN-'))
-    uses: OmniNode-ai/omniclaude/.github/workflows/call-occ-companion-effect-reusable.yml@dev
+    uses: OmniNode-ai/omniclaude/.github/workflows/call-occ-companion-effect-reusable.yml@6ccd525e2b6390869d18f8e00d1b36294aa5550a
     # OMN-18012: the dev lane declares SASL_PLAINTEXT/SCRAM-SHA-256, so the
     # publisher needs the KAFKA_SASL_* credentials. The broker is still
     # resolved from omnimarket's committed overlay, never from a secret.
@@ -132,6 +132,7 @@ jobs:
     secrets: inherit  # pragma: allowlist secret
     with:
       lane: dev
+      omnimarket-ref: e11987165b960cb86cdeab7d0ad3fe1884bb2572  # OMN-20001 pin, not dev
 
   occ-companion-effect-manual-replay:
     # OMN-14993: manual re-publish entrypoint, gated to the workflow_dispatch
@@ -184,7 +185,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: OmniNode-ai/omnimarket
-          ref: dev
+          ref: e11987165b960cb86cdeab7d0ad3fe1884bb2572  # OMN-20001 pin, not dev
           path: .occ-companion-effect-src
           persist-credentials: false
           sparse-checkout: |
