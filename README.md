@@ -117,7 +117,7 @@ git push origin vX.Y.Z
 The tag must match `[project].version` in `pyproject.toml`. On a successful
 non-`rc` release the workflow fast-forwards `main` to the released tag — there
 is no separate promotion pull request. See the
-[release runbook](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md)
+[release runbook](https://github.com/OmniNode-ai/knowledge_base/blob/main/runbooks/omnibase-compat-release.md)
 for the full procedure, the workflow's guarantees, and failure handling.
 
 ## Key Features
@@ -137,8 +137,8 @@ Full documentation → https://github.com/OmniNode-ai/knowledge-base
 
 | Topic | Where |
 |---|---|
-| Structural inventory — subpackages, wire DTOs, enums, dependency boundary, validation scripts | [reference/omnibase-compat-structural-inventory.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md) |
-| Release procedure — tag, dispatch, workflow guarantees, failure handling | [runbooks/omnibase-compat-release.md](https://github.com/OmniNode-ai/knowledge-base/blob/main/runbooks/omnibase-compat-release.md) |
+| Structural inventory — subpackages, wire DTOs, enums, dependency boundary, validation scripts | [reference/omnibase-compat-structural-inventory.md](https://github.com/OmniNode-ai/knowledge_base/blob/main/reference/omnibase-compat-structural-inventory.md) |
+| Release procedure — tag, dispatch, workflow guarantees, failure handling | [runbooks/omnibase-compat-release.md](https://github.com/OmniNode-ai/knowledge_base/blob/main/runbooks/omnibase-compat-release.md) |
 
 What remains in this repository is only what must physically ship beside the
 code, and the [KB doc gate](.github/workflows/kb-doc-gate.yml) enforces that set
