@@ -101,7 +101,9 @@ def test_core_is_a_ci_tool_not_a_runtime_dependency() -> None:
         *[d for group in project.get("optional-dependencies", {}).values() for d in group],
     ]
     assert not [d for d in declared if re.match(r"omnibase[-_](core|spi)\b", d)], declared
-    assert "omnibase-core" not in (REPO_ROOT / "uv.lock").read_text(encoding="utf-8")
+    lock = (REPO_ROOT / "uv.lock").read_text(encoding="utf-8")
+    assert "omnibase-core" not in lock
+    assert "omnibase-spi" not in lock
 
 
 def test_repo_contracts_are_compatible_with_the_core_model() -> None:
