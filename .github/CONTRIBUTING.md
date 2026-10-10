@@ -32,7 +32,7 @@ Passing `src/omnibase_compat/tests/` explicitly silently drops the root
 - Add `COMPAT_MIGRATION_TARGET` and `COMPAT_REMOVAL_DATE` to class-like compatibility artifacts.
 - Keep package-root exports non-authoritative; consumers should import explicit submodules.
 - Document new public compatibility surfaces in the knowledge base's
-  [structural inventory](https://github.com/OmniNode-ai/knowledge-base/blob/main/reference/omnibase-compat-structural-inventory.md),
+  [structural inventory](https://github.com/OmniNode-ai/knowledge_base/blob/main/reference/omnibase-compat-structural-inventory.md),
   not in this repository. This repo has no `docs/` prose directory; the KB doc
   gate (`.github/workflows/kb-doc-gate.yml`, `strict` mode) fails any PR that
   reintroduces one.
