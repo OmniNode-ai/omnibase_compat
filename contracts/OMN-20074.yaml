@@ -44,6 +44,16 @@ requirements:
       - id: "AC7"
         statement: |-
           AC7: the caller passes occ-context equal to call-reject-skip-token / occ-preflight / eligibility, the nested name the reject-skip caller job reports, instead of the reusable's default occ-preflight / eligibility that this repository never reports -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k occ_context
+  - id: "req-contract-validation-from-core"
+    statement: |-
+      omnibase_compat's contract-validation workflow validates the branch ticket's contract with omnibase_core's ModelTicketContract at an exact pinned version instead of with the onex_change_control validators, and keeps the required context name contract-validation.
+    acceptance:
+      - id: "AC8"
+        statement: |-
+          AC8: .github/workflows/contract-validation.yml names no onex_change_control repository or validate-yaml command, checks out only the calling repository, and keeps the workflow name Contract Validation and the single job contract-validation -- falsifier: uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k "change_control or calling_repository or required_context"
+      - id: "AC9"
+        statement: |-
+          AC9: the workflow's validation step installs omnibase-core at one exact version at or above 0.47.39 and validates the branch ticket's contract with ModelTicketContract.model_validate, skipping when the branch names no ticket or no contract exists and failing when the contract is invalid -- falsifier: uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k validation_step
 evidence_requirements:
   - kind: "tests"
     description: "The caller workflow has the required base-branch trigger and read-only permissions."
@@ -66,6 +76,15 @@ evidence_requirements:
   - kind: "tests"
     description: "The shadow's OCC lookup names a job this repository reports."
     command: "uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k occ_context"
+  - kind: "tests"
+    description: "The contract-validation workflow names no change-control repository and keeps its context
+      name."
+    command: 'uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k "change_control
+      or calling_repository or required_context"'
+  - kind: "tests"
+    description: "The contract-validation step validates with ModelTicketContract at an exact omnibase_core
+      pin."
+    command: 'uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k validation_step'
 emergency_bypass:
   enabled: false
   justification: ""
@@ -130,3 +149,23 @@ dod_evidence:
         check_value: "uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k occ_context"
         cwd: "${OMNI_HOME}/omnibase_compat"
     binds_ac: ["AC7"]
+  - id: "dod-contract-validation-from-core-ac8"
+    description: "The contract-validation workflow names no change-control repository and keeps its context
+      name."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: 'uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k
+          "change_control or calling_repository or required_context"'
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC8"]
+  - id: "dod-contract-validation-from-core-ac9"
+    description: "The contract-validation step validates with ModelTicketContract at an exact omnibase_core
+      pin."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: 'uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k
+          validation_step'
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC9"]
