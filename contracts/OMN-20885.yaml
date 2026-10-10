@@ -1,0 +1,45 @@
+---
+schema_version: "1.0.0"
+ticket_id: "OMN-20885"
+title: "OCC retirement: rehome omnibase_compat's change-control verification checks into the product repositories"
+summary: "omnibase_compat's ONEX Change Control Schema Compatibility job checked out onex_change_control
+  as the schema authority, matched no file in this repository and compared that package's version with
+  a hardcoded reader version. The ticket-contract schema omnibase_compat reads is omnibase_core's ModelTicketContract.
+  The job now compares the schema_version of every contracts/OMN-*.yaml with the pinned omnibase_core
+  model through omnibase_spi's is_compatible, installed only inside the workflow step with uv run --with
+  and never in the package's dependencies, with no change-control checkout, under the same context name."
+is_seam_ticket: false
+interface_change: false
+interfaces_touched: []
+requirements:
+  - id: "req-schema-compat-core-owner"
+    statement: "The ONEX Change Control Schema Compatibility job reads the ticket-contract schema from
+      its owner, omnibase_core, with no onex_change_control checkout, fails on a major mismatch and adds
+      no omnibase_core dependency to the package."
+    acceptance:
+      - id: "AC3"
+        statement: "AC3: .github/workflows/onex-schema-compat.yml checks out no onex_change_control, installs
+          omnibase-core and omnibase-spi at exact pinned versions only inside its compatibility step,
+          and that step passes on this repository's contracts, fails on a planted contract whose schema_version
+          major differs from omnibase_core ModelTicketContract's, fails on an unparseable version and
+          on a contracts directory with no OMN-*.yaml -- falsifier: uv run pytest tests/ci/test_schema_compat_core_owner_omn20885.py
+          -q fails"
+evidence_requirements:
+  - kind: "tests"
+    description: "AC3: the workflow's own compatibility step, run against the repo contracts and planted
+      ones, admits the repo and refuses a major mismatch; omnibase_core is not a package dependency."
+    command: "uv run pytest tests/ci/test_schema_compat_core_owner_omn20885.py -q -p no:randomly"
+emergency_bypass:
+  enabled: false
+  justification: ""
+  follow_up_ticket_id: ""
+dod_evidence:
+  - id: "dod-omn20885-ac3-schema-compat-core-owner"
+    description: "AC3: the schema-compatibility step reads omnibase_core and fails on a planted major
+      mismatch."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_schema_compat_core_owner_omn20885.py -q -p no:randomly"
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC3"]
