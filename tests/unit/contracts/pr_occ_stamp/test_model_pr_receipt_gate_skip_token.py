@@ -14,11 +14,10 @@ from omnibase_compat.contracts.pr_occ_stamp.model_pr_receipt_gate_skip_token imp
     ModelPrReceiptGateSkipToken,
 )
 
-# Regression pins copied verbatim from
+# Regression pin copied verbatim from
 # omniclaude/.pre-commit-hooks/reject-deploy-gate-skip-token.sh so that any drift
-# in the rendered token / allowlist companion shape breaks this test.
+# in the rendered token shape breaks this test.
 _HOOK_SKIP_PATTERN = re.compile(r"\[skip-[a-zA-Z]", re.IGNORECASE)
-_HOOK_ALLOWLIST_PATTERN = re.compile(r"#\s*skip-token-allowed:\s*\S", re.IGNORECASE)
 
 
 @pytest.mark.unit
@@ -37,16 +36,14 @@ class TestModelPrReceiptGateSkipToken:
         with pytest.raises(ValidationError):
             ModelPrReceiptGateSkipToken(gate_name="")
 
-    def test_allowlist_default_none_not_allowlisted(self) -> None:
-        token = ModelPrReceiptGateSkipToken(gate_name="deploy-gate")
-        assert token.allowlist_receipt_id is None
-        assert token.is_allowlisted is False
-
-    def test_allowlist_set_is_allowlisted(self) -> None:
-        token = ModelPrReceiptGateSkipToken(
-            gate_name="deploy-gate", allowlist_receipt_id="approval-abc123"
-        )
-        assert token.is_allowlisted is True
+    def test_no_allowlist_state_exists(self) -> None:
+        """OMN-20074: the approvals registry is retired, so a token carries no receipt id."""
+        assert "allowlist_receipt_id" not in ModelPrReceiptGateSkipToken.model_fields
+        assert not hasattr(ModelPrReceiptGateSkipToken(gate_name="deploy-gate"), "is_allowlisted")
+        with pytest.raises(ValidationError):
+            ModelPrReceiptGateSkipToken.model_validate(
+                {"gate_name": "deploy-gate", "allowlist_receipt_id": "approval-abc123"}
+            )
 
     def test_render_token_exact_format(self) -> None:
         token = ModelPrReceiptGateSkipToken(gate_name="deploy-gate", reason="correctness fix")
@@ -57,16 +54,10 @@ class TestModelPrReceiptGateSkipToken:
         token = ModelPrReceiptGateSkipToken(gate_name="receipt-gate", reason="x")
         assert _HOOK_SKIP_PATTERN.search(token.render_token()) is not None
 
-    def test_allowlist_companion_line_matches_hook_pattern(self) -> None:
-        # The out-of-band companion line the hook scans for.
-        companion = "# skip-token-allowed: approval-abc123"
-        assert _HOOK_ALLOWLIST_PATTERN.search(companion) is not None
-
     def test_serialization_roundtrip(self) -> None:
         token = ModelPrReceiptGateSkipToken(
             gate_name="receipt-gate",
             reason="ticketless chore",
-            allowlist_receipt_id="rid-1",
         )
         restored = ModelPrReceiptGateSkipToken.model_validate(token.model_dump())
         assert restored == token
