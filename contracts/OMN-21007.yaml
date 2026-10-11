@@ -1,0 +1,65 @@
+# SPDX-FileCopyrightText: 2026 OmniNode.ai Inc.
+# SPDX-License-Identifier: MIT
+---
+schema_version: "1.0.0"
+ticket_id: "OMN-21007"
+title: "omnibase_compat: pr-title check runs the omnimarket node"
+summary: >-
+  Run node_pr_title_check_compute from omnimarket 0.4.310 under the existing pr-title / check-title context,
+  preserving the pinned reusable's verdicts.
+is_seam_ticket: false
+interface_change: false
+interfaces_touched: []
+requirements:
+  - id: "req-local-pr-title-node"
+    statement: >-
+      PR Title Check runs the published omnimarket compute node locally and preserves its context, triggers,
+      effective runner and title decision.
+    acceptance:
+      - id: "AC1"
+        statement: >-
+          AC1: The PR Title Check workflow produces `pr-title / check-title` by running node_pr_title_check_compute
+          from a pinned omnimarket release, and no line in .github/workflows/pr-title-check.yml references
+          onex_change_control -- falsifier: uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py
+          -q fails at the merge base when parsing the workflow.
+      - id: "AC2"
+        statement: >-
+          AC2: The installed node's verdicts equal the reusable at ebe30bc3589c9f803e8920b941ddaef07b17ed90
+          on a table of titles and authors covering every exempt prefix, the bot rule, empty title, an
+          OMN title and a failing title -- falsifier: uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py
+          -q fails on any case run through the installed node that differs from the old bash verdict.
+      - id: "AC3"
+        statement: >-
+          AC3: .github/required-checks.yaml names the `pr-title / check-title` row as a local producer
+          -- falsifier: uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py -q fails when that
+          row remains cross_repo.
+evidence_requirements:
+  - kind: "tests"
+    description: "Focused workflow, manifest and installed-node verdict checks."
+    command: "uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py -q"
+emergency_bypass:
+  enabled: false
+  justification: ""
+  follow_up_ticket_id: ""
+dod_evidence:
+  - id: "dod-workflow-local-node"
+    description: "Workflow runs the pinned node under the required context."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py -q"
+    binds_ac: ["AC1"]
+  - id: "dod-installed-node-parity"
+    description: "Installed node and frozen bash oracle agree on the title table."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py -q"
+    binds_ac: ["AC2"]
+  - id: "dod-manifest-local-producer"
+    description: "Required-check manifest declares the local title producer."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_pr_title_check_omnimarket_node.py -q"
+    binds_ac: ["AC3"]
