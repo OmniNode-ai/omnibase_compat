@@ -34,9 +34,10 @@ repos:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
 
-  # Cross-repo enforcement hooks from onex_change_control
-  - repo: https://github.com/OmniNode-ai/onex_change_control
-    rev: 8d7e85bc00e7f1b1306d1cb40949be1ab6e7e91a
+  # Ticketed TODO format — sourced from omnibase_core (OMN-20074, OCC retirement S8:
+  # same hook id, no longer pulled from the change-control repository)
+  - repo: https://github.com/OmniNode-ai/omnibase_core
+    rev: 4a4177335d11b138a29fe28e2f4c5575afa92b2b
     hooks:
       - id: no-untracked-todos
         stages: [pre-commit]
