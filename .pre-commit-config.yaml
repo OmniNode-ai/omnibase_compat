@@ -99,7 +99,7 @@ repos:
       # cannot slip in via pyproject or a re-lock.
       - id: compat-no-infra-edge
         name: compat no-infra-edge gate (OMN-12599)
-        entry: python scripts/check_no_infra_edge.py
+        entry: uv run --frozen python scripts/check_no_infra_edge.py
         language: system
         pass_filenames: false
         always_run: true
