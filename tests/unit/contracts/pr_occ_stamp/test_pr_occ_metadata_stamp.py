@@ -69,7 +69,8 @@ class TestParsePrOccMetadataStamp:
         ]
         assert "".join(section.content for section in stamp.body_sections) == body
 
-    def test_parses_skip_token_allowlist_binding(self) -> None:
+    def test_a_receipt_id_comment_binds_nothing_to_a_skip_token(self) -> None:
+        """OMN-20074: the receipt-id companion line is retired and is plain body text."""
         stamp = parse_pr_occ_metadata_stamp(
             "[skip-receipt-gate: appr-123]\n# skip-token-allowed: receipt-456\n"
         )
@@ -78,7 +79,7 @@ class TestParsePrOccMetadataStamp:
         token = stamp.skip_tokens[0]
         assert token.gate_name == "receipt-gate"
         assert token.reason == "appr-123"
-        assert token.allowlist_receipt_id == "receipt-456"
+        assert token.as_dict() == {"gate_name": "receipt-gate", "reason": "appr-123"}
 
     def test_invalid_evidence_source_is_not_typed_as_source(self) -> None:
         stamp = parse_pr_occ_metadata_stamp("Evidence-Source: OCC# nope\n")
@@ -144,15 +145,13 @@ class TestRenderPrOccMetadataStamp:
         body = "Summary only.\n\n"
         assert render_pr_occ_metadata_stamp(parse_pr_occ_metadata_stamp(body)) == body
 
-    def test_renders_skip_token_with_allowlist(self) -> None:
+    def test_renders_skip_token_without_a_receipt_id_line(self) -> None:
         stamp = parse_pr_occ_metadata_stamp(
             "Evidence-Ticket: OMN-14188\n"
             "[skip-receipt-gate: appr-123]\n"
             "# skip-token-allowed: receipt-456\n"
         )
 
-        assert render_pr_occ_metadata_stamp(stamp) == (
-            "Evidence-Ticket: OMN-14188\n"
-            "[skip-receipt-gate: appr-123]\n"
-            "# skip-token-allowed: receipt-456\n"
-        )
+        rendered = render_pr_occ_metadata_stamp(stamp)
+        assert "[skip-receipt-gate: appr-123]" in rendered
+        assert "Evidence-Ticket: OMN-14188" in rendered
