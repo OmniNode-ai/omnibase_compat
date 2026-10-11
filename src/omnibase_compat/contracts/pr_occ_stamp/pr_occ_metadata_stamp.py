@@ -48,7 +48,6 @@ _SKIP_TOKEN_RE = re.compile(
     r"\[skip-([a-zA-Z][a-zA-Z0-9_-]*):\s*([^\]<>]*)\]",
     re.IGNORECASE,
 )
-_ALLOWLIST_RE = re.compile(r"#\s*skip-token-allowed:\s*(\S+)", re.IGNORECASE)
 _STAMP_HEADING_TITLES = frozenset(
     {
         "evidence",
@@ -157,11 +156,7 @@ def _heading_from_line(line: str) -> str | None:
 
 
 def _is_stamp_line(line: str) -> bool:
-    if (
-        _EVIDENCE_LINE_RE.match(line) is not None
-        or _SKIP_TOKEN_RE.search(line) is not None
-        or _ALLOWLIST_RE.search(line) is not None
-    ):
+    if _EVIDENCE_LINE_RE.match(line) is not None or _SKIP_TOKEN_RE.search(line) is not None:
         return True
     heading = _heading_from_line(line)
     if heading is not None:
@@ -199,9 +194,6 @@ def _parse_evidence_source(pr_body: str) -> ModelPrEvidenceSource | None:
 def _parse_skip_tokens(pr_body: str) -> list[ModelPrReceiptGateSkipToken]:
     parsed: list[ModelPrReceiptGateSkipToken] = []
     for line in pr_body.splitlines():
-        if allowlist_match := _ALLOWLIST_RE.search(line):
-            parsed = _bind_allowlist_to_latest_token(parsed, allowlist_match.group(1))
-            continue
         for match in _SKIP_TOKEN_RE.finditer(line):
             parsed.append(
                 ModelPrReceiptGateSkipToken(
@@ -212,18 +204,6 @@ def _parse_skip_tokens(pr_body: str) -> list[ModelPrReceiptGateSkipToken]:
     return parsed
 
 
-def _bind_allowlist_to_latest_token(
-    tokens: list[ModelPrReceiptGateSkipToken],
-    allowlist_receipt_id: str,
-) -> list[ModelPrReceiptGateSkipToken]:
-    if not tokens:
-        return tokens
-    rebound = list(tokens)
-    latest = rebound[-1]
-    rebound[-1] = latest.model_copy(update={"allowlist_receipt_id": allowlist_receipt_id})
-    return rebound
-
-
 def _render_stamp_block(stamp: ModelPrOccMetadataStamp) -> str:
     lines: list[str] = []
     lines.extend(f"Evidence-Ticket: {ticket}" for ticket in stamp.evidence_tickets)
@@ -231,8 +211,6 @@ def _render_stamp_block(stamp: ModelPrOccMetadataStamp) -> str:
         lines.append(f"Evidence-Source: {stamp.evidence_source.render_token()}")
     for token in stamp.skip_tokens:
         lines.append(token.render_token())
-        if token.allowlist_receipt_id is not None:
-            lines.append(f"# skip-token-allowed: {token.allowlist_receipt_id}")
     return "\n".join(lines) + ("\n" if lines else "")
 
 
