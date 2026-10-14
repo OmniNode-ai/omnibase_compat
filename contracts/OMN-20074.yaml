@@ -40,6 +40,13 @@ requirements:
       - id: "AC9"
         statement: |-
           AC9: the workflow's validation step installs omnibase-core at one exact version at or above 0.47.39 and validates the branch ticket's contract with ModelTicketContract.model_validate, skipping when the branch names no ticket or no contract exists and failing when the contract is invalid -- falsifier: uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k validation_step
+  - id: "req-s6-comparison-off"
+    statement: |-
+      omnibase_compat's repo-evidence caller on dev stops comparing with OCC before the S6 change removes the OCC producer the comparison reads.
+    acceptance:
+      - id: "AC10"
+        statement: |-
+          AC10: the dev caller passes compare-with-occ "false" and keeps shadow "true", the full-sha reusable pin and every other input unchanged -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison or match_the_merge_base"
   - id: "req-s6-cutover-no-occ-callers"
     statement: |-
       omnibase_compat retires its OCC callers and contexts and enforces repo-owned evidence without comparing with OCC.
@@ -72,6 +79,10 @@ evidence_requirements:
     description: "The contract-validation step validates with ModelTicketContract at an exact omnibase_core
       pin."
     command: 'uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k validation_step'
+  - kind: "tests"
+    description: "The caller no longer compares with OCC and keeps every other input and the pin."
+    command: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
+      or match_the_merge_base"'
   - kind: "tests"
     description: "The S6 cut-over removes OCC callers, preflight dependencies and OCC required contexts."
     command: "uv run pytest tests/ci/test_no_occ_callers_omn20074.py -q"
@@ -140,6 +151,15 @@ dod_evidence:
           validation_step'
         cwd: "${OMNI_HOME}/omnibase_compat"
     binds_ac: ["AC9"]
+  - id: "dod-s6-comparison-off-ac10"
+    description: "The caller no longer compares with OCC and keeps every other input and the pin."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
+          or match_the_merge_base"'
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC10"]
   - id: "dod-s6-no-occ-callers-ac11"
     description: "The S6 cut-over removes OCC callers, preflight dependencies and OCC required contexts."
     source: "manual"
