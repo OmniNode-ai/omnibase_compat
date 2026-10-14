@@ -98,14 +98,6 @@ gates:
     skip_semantics: never
     rationale: "Live required status check on omnibase_compat dev branch protection."
 
-  - name: "Contract Compliance Check"
-    mode: REQUIRED
-    producer_kind: local
-    workflow: ci.yml
-    job_path: ["contract-compliance"]
-    skip_semantics: never
-    rationale: "Live required status check on omnibase_compat dev branch protection. Job-level `if:` references only github.event_name (pull_request/merge_group/push), provably true for both PR-reachable events declared on ci.yml — resolves ALWAYS_TRUE_FOR_PR, no finding."
-
   - name: "Tests Gate"
     mode: REQUIRED
     producer_kind: local
@@ -213,15 +205,6 @@ gates:
     job_path: ["receipt-honesty"]
     skip_semantics: never
     rationale: "Live required status check on omnibase_compat dev branch protection."
-
-  - name: "verify / verify"
-    mode: REQUIRED
-    producer_kind: cross_repo
-    caller_workflow: call-receipt-gate.yml
-    caller_job: verify
-    cross_repo_ref: "OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@main"
-    skip_semantics: never
-    rationale: "Enforcement by Receipt (OMN-10483, cross-repo reusable hosted in omnibase_core). Live required status check on omnibase_compat dev branch protection."
 
   - name: "required-check-skip-guard / check-skip-vectors"
     mode: ADVISORY

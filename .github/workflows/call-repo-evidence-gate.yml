@@ -24,25 +24,19 @@
 # repo-evidence / verify job in this mode as a success no-op (the OCC path,
 # switched off by the input); only repo-evidence / dod-verify carries a verdict.
 #
-# S5 shadow count (OMN-20074): shadow is "true", so no repo-evidence job
-# concludes anything but success and each run records one `Shadow verdict:` line
-# in the job summary and in a notice annotation. The comparison with OCC ended at
-# S6: compare-with-occ is "false" before the S6 change removes the OCC producers
-# it read. This caller runs from dev under pull_request_target, so the retiring
-# pull request cannot change the input used to judge itself. repo-evidence /
-# dod-verify is NOT a required context here yet. Every OCC context stays
-# required and no OCC caller is removed until the S6 change lands and the
-# separately approved protection change is applied.
+# OMN-20074 S6 cut-over: this caller enforces repo-owned evidence with shadow
+# "false". Admission no longer compares with OCC (compare-with-occ "false");
+# rollback is setting compare-with-occ back to "true".
+# repo-evidence / dod-verify is to be required by a dev ruleset, with no row in
+# required-checks.yaml.
 #
 # The reusable is pinned by full SHA to the squash commit of omnibase_core#1932
 # on dev, a descendant of #1914; it carries the `shadow` input. omnibase_compat
 # does not host receipt-gate.yml.
 #
 # The pinned reusable refuses a verifier-version below 0.4.303 before installing
-# it (VERIFIER_FLOOR, omnibase_core#1932; OMN-20032), the first release that
-# refuses a contract leaving a criterion unbound. While shadow is "true" that
-# install step is continue-on-error, so a refusal is recorded and blocks nothing;
-# the S6 change that sets shadow to "false" makes it block.
+# it (VERIFIER_FLOOR, omnibase_core#1932; OMN-20032). With shadow "false" that
+# refusal blocks.
 
 name: Repo Evidence Gate
 
@@ -64,8 +58,6 @@ jobs:
     uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa # OMN-20032: immutable full-SHA pin, the squash commit of omnibase_core#1932 on that repo's dev branch; descends from #1914 (carries the shadow input) and adds the VERIFIER_FLOOR 0.4.303 refusal to the verifier install step
     with:
       evidence-source: caller
-      verifier-version: 0.4.305
+      verifier-version: 0.4.310
       compare-with-occ: "false"
-      shadow: "true"
-      # OMN-20074: the nested name this repository reports; the default never resolves here.
-      occ-context: "call-reject-skip-token / occ-preflight / eligibility"
+      shadow: "false"

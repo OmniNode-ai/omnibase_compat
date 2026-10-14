@@ -41,7 +41,8 @@ def test_workflow_corpus_is_not_empty() -> None:
         for step in _steps(yaml.safe_load(wf.read_text(encoding="utf-8"))):
             if USES_SIBLING.match(str(step.get("uses", ""))):
                 reads += 1
-    assert reads >= 10
+    # OMN-20074 S6: deleting the OCC callers removed one sibling read (10 -> 9).
+    assert reads >= 9
 
 
 @pytest.mark.unit
