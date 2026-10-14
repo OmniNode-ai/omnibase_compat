@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
-"""OMN-20885: ``ONEX Change Control Schema Compatibility`` reads the schema owner.
+"""OMN-20885: ``ONEX Ticket Contract Schema Compatibility`` reads the schema owner.
 
 The job used to check out onex_change_control as "the upstream schema
 authority" and compare that package's version with a hardcoded reader version.
@@ -35,7 +35,7 @@ pytestmark = pytest.mark.unit
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = REPO_ROOT / ".github" / "workflows" / "onex-schema-compat.yml"
 PYPROJECT = REPO_ROOT / "pyproject.toml"
-JOB_NAME = "ONEX Change Control Schema Compatibility"
+JOB_NAME = "ONEX Ticket Contract Schema Compatibility"
 STEP_NAME = "Check ticket-contract schema compatibility"
 
 _GOOD = 'schema_version: "1.0.0"\nticket_id: "OMN-1"\ntitle: "planted"\n'

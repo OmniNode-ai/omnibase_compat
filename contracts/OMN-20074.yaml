@@ -60,6 +60,13 @@ requirements:
       - id: "AC12"
         statement: |-
           AC12: the repo-evidence caller enforces (shadow "false"), does not compare with OCC (compare-with-occ "false"), and pins receipt-gate.yml@4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa with verifier-version 0.4.310 -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison or s6_caller_enforces"
+  - id: "req-schema-gate-name"
+    statement: |-
+      omnibase_compat's ticket-contract schema compatibility gate is named for what it checks, not for change control, and stays required.
+    acceptance:
+      - id: "AC14"
+        statement: |-
+          AC14: the schema-compat job in onex-schema-compat.yml is named ONEX Ticket Contract Schema Compatibility, and the required-checks manifest names the same context as REQUIRED with no entry under the old change-control name -- falsifier: uv run pytest tests/ci/test_schema_compat_job_name_omn20074.py -q
 evidence_requirements:
   - kind: "tests"
     description: "The caller workflow has the required base-branch trigger and read-only permissions."
@@ -94,6 +101,10 @@ evidence_requirements:
       the S6 pins."
     command: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
       or s6_caller_enforces"'
+  - kind: "tests"
+    description: "The schema compatibility job and its required-checks entry carry the ticket-contract
+      name."
+    command: "uv run pytest tests/ci/test_schema_compat_job_name_omn20074.py -q"
 emergency_bypass:
   enabled: false
   justification: ""
@@ -189,3 +200,12 @@ dod_evidence:
           or s6_caller_enforces"'
         cwd: "${OMNI_HOME}/omnibase_compat"
     binds_ac: ["AC12"]
+  - id: "dod-schema-gate-name-ac14"
+    description: "The schema compatibility job and its required-checks entry carry the ticket-contract
+      name."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_schema_compat_job_name_omn20074.py -q"
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC14"]

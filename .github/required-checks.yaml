@@ -114,7 +114,7 @@ gates:
     skip_semantics: never
     rationale: "Live required status check on omnibase_compat dev branch protection."
 
-  - name: "ONEX Change Control Schema Compatibility"
+  - name: "ONEX Ticket Contract Schema Compatibility"
     mode: REQUIRED
     producer_kind: local
     workflow: onex-schema-compat.yml
