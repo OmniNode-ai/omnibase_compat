@@ -77,3 +77,21 @@ def test_caller_pins_reusable_to_an_exact_sha() -> None:
         f"ban-hardcoded-runner-ip must pin an exact 40-hex SHA, got {ref!r}. "
         "A branch or tag ref re-introduces the OMN-17993 inert-gate defect."
     )
+
+
+@pytest.mark.unit
+def test_caller_pins_occ_independent_reusable() -> None:
+    """OMN-20074: omniclaude#2656 removes the nested OCC preflight.
+
+    That merged reusable keeps the runner-IP scan and machine-pin scan, with
+    no preflight dependency. The older pin waits for an Evidence-Source stamp
+    even when the caller repository has retired OCC.
+    """
+    doc = yaml.safe_load(CALLER.read_text(encoding="utf-8"))
+    job = doc["jobs"]["ban-hardcoded-runner-ip"]
+    assert job["uses"] == (
+        "OmniNode-ai/omniclaude/.github/workflows/ban-hardcoded-runner-ip.yml"
+        "@a45ba68f053e9979c6edef21103c0e674e5f7630"
+    )
+    assert "if" not in job
+    assert "needs" not in job

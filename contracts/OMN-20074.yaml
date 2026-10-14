@@ -20,6 +20,9 @@ requirements:
       - id: "AC2"
         statement: |-
           AC2: the caller pins the reusable by the full sha of the omnibase_core#1914 squash commit, the pin omnibase_core's own caller uses, with a verifier-version of 0.4.305 or later -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k current_receipt_gate
+      - id: "AC13"
+        statement: |-
+          AC13: the runner-IP caller pins omniclaude#2656 at a45ba68f053e9979c6edef21103c0e674e5f7630, whose reusable runs both scans without OCC preflight, and has no job condition or dependency -- falsifier: uv run pytest tests/ci/test_ban_hardcoded_runner_ip_scope.py -q
       - id: "AC5"
         statement: |-
           AC5: every acceptance criterion of this contract names a falsifier that is also a dod_evidence check and runs an existing test file -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k falsifier_per_criterion
@@ -96,6 +99,14 @@ emergency_bypass:
   justification: ""
   follow_up_ticket_id: ""
 dod_evidence:
+  - id: "dod-runner-ip-occ-independence-ac13"
+    description: "The runner-IP caller adopts the merged OCC-independent reusable and keeps the scan scope."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_ban_hardcoded_runner_ip_scope.py -q"
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC13"]
   - id: "dod-repo-evidence-ac1"
     description: "The caller workflow has the required base-branch trigger and read-only permissions."
     source: "manual"
