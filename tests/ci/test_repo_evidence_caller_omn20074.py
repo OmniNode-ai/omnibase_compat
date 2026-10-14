@@ -88,14 +88,36 @@ def test_current_receipt_gate_verifier_version_is_at_or_above_the_floor() -> Non
     assert version >= VERIFIER_FLOOR
 
 
-def test_caller_is_in_shadow_mode_and_compares_with_occ() -> None:
+def test_caller_is_in_shadow_mode() -> None:
     inputs = _job()["with"]
     assert inputs["evidence-source"] == "caller"
     # Quoted strings: the reusable's boolean-like inputs are string inputs.
     assert inputs["shadow"] == "true"
-    assert inputs["compare-with-occ"] == "true"
     version = tuple(int(part) for part in inputs["verifier-version"].split("."))
     assert version >= VERIFIER_FLOOR
+
+
+def test_caller_disables_occ_comparison() -> None:
+    # OMN-20074 S6: the comparison ends on dev before the S6 change removes the
+    # OCC producer it reads. The caller runs from dev under pull_request_target,
+    # so the retiring pull request cannot change the input that judges it.
+    assert _job()["with"]["compare-with-occ"] == "false"
+
+
+def test_every_other_input_and_the_pin_match_the_merge_base() -> None:
+    # Merge base 9f7e868f2731: only compare-with-occ changes.
+    job = _job()
+    assert job["uses"] == (
+        "OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml"
+        "@4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa"
+    )
+    assert job["with"] == {
+        "evidence-source": "caller",
+        "verifier-version": "0.4.305",
+        "compare-with-occ": "false",
+        "shadow": "true",
+        "occ-context": "call-reject-skip-token / occ-preflight / eligibility",
+    }
 
 
 def test_shadow_occ_context_is_a_job_name_the_repo_reports() -> None:
@@ -106,10 +128,7 @@ def test_shadow_occ_context_is_a_job_name_the_repo_reports() -> None:
     jobs = _load(WORKFLOWS / "call-reject-skip.yml")["jobs"]
     assert "call-reject-skip-token" in jobs
     assert "/reject-deploy-gate-skip.yml@" in jobs["call-reject-skip-token"]["uses"]
-    assert (
-        _job()["with"]["occ-context"]
-        == "call-reject-skip-token / occ-preflight / eligibility"
-    )
+    assert _job()["with"]["occ-context"] == "call-reject-skip-token / occ-preflight / eligibility"
 
 
 def test_shadow_caller_removes_no_occ_caller() -> None:
