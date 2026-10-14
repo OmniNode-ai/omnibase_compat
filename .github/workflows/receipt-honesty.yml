@@ -43,8 +43,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Clone omnibase_core (provides the receipt-honesty validator)
-        # Pinned to the same omnibase_core sha as call-receipt-gate.yml (OMN-20001),
-        # never the live branch. Bump both together in a PR that integration-tests it.
+        # Pinned to an omnibase_core sha (OMN-20001), never the live branch. Bump it
+        # in a PR that integration-tests it. call-receipt-gate.yml, which shared the
+        # pin, was removed by the OMN-20074 S6 cut-over.
         run: |
           set -euo pipefail
           git init -q ../omnibase_core

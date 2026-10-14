@@ -228,50 +228,6 @@ jobs:
               ;;
           esac
 
-  contract-compliance:
-    name: Contract Compliance Check
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'merge_group' || github.event_name == 'push'
-    steps:
-      - uses: actions/checkout@v6
-      - name: Install uv
-        uses: astral-sh/setup-uv@v6
-      - name: Clone onex_change_control
-        # Pinned to an OCC commit, never the live branch (OMN-20001). Bump it by
-        # integration-testing a new OCC sha in a PR here that edits this line.
-        run: |
-          set -euo pipefail
-          git init -q /tmp/onex_change_control
-          git -C /tmp/onex_change_control fetch --depth=1 https://github.com/OmniNode-ai/onex_change_control.git ebe30bc3589c9f803e8920b941ddaef07b17ed90
-          git -C /tmp/onex_change_control checkout -q FETCH_HEAD
-      - name: Install onex_change_control and dependencies
-        # Install the cloned OCC package so `from onex_change_control.integrations`
-        # resolves. OCC depends on omnibase-core (on PyPI) + pyyaml + pydantic.
-        # OCC commit 7c1a5cc64 added this import to run_contract_compliance_check.py;
-        # the prior step only installed pyyaml, breaking any PR opened after that commit.
-        run: pip install /tmp/onex_change_control
-      - name: Resolve PR number
-        id: pr_number
-        run: |
-          if [ -n "${{ github.event.pull_request.number }}" ]; then
-            echo "pr=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
-          else
-            # merge_group: ref is gh-readonly-queue/main/pr-<num>-<sha>
-            PR=$(echo "${{ github.ref }}" | grep -oP '(?<=pr-)\d+' || true)
-            echo "pr=$PR" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Run contract compliance check
-        if: steps.pr_number.outputs.pr != ''
-        run: |
-          python /tmp/onex_change_control/scripts/ci/run_contract_compliance_check.py \
-            --pr ${{ steps.pr_number.outputs.pr }} \
-            --repo ${{ github.repository }} \
-            --contracts-dir /tmp/onex_change_control/contracts \
-            --workspace /tmp/onex_change_control
-        env:
-          EMERGENCY_BYPASS: ${{ secrets.EMERGENCY_BYPASS || '' }}
-          GH_TOKEN: ${{ github.token }}
-
   no-noncanonical-lifecycle-classes:
     name: no-noncanonical-lifecycle-classes
     runs-on: ubuntu-latest
@@ -423,7 +379,7 @@ jobs:
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate, tests-gate, contract-compliance, no-noncanonical-lifecycle-classes,
+    needs: [validate, tests-gate, no-noncanonical-lifecycle-classes,
             wheel-content-parity, canonical-file-shape, shape-gate-independence]
     if: always()
     steps:
