@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 OmniNode.ai Inc.
 # SPDX-License-Identifier: MIT
 #
-# Repo Evidence Gate caller (OMN-20074, OCC retirement OR.6) verifies
+# Repo Evidence Gate caller (OMN-20074, OR.6) verifies
 # omnibase_compat's own contracts/<OMN-N>.yaml at the PR head through
 # omnibase_core's receipt-gate reusable with evidence-source: caller.
 # This is the path omnimarket proved as the canary (OMN-20070, OMN-20072).
@@ -21,18 +21,18 @@
 #
 # The job id is the context prefix: repo-evidence / dod-verify carries the
 # verdict, so do not add a job name. The reusable also reports a
-# repo-evidence / verify job in this mode as a success no-op (the OCC path,
-# switched off by the input); only repo-evidence / dod-verify carries a verdict.
+# repo-evidence / verify job as a success no-op; only repo-evidence / dod-verify
+# carries a verdict.
 #
-# OMN-20074 S6 cut-over: this caller enforces repo-owned evidence with shadow
-# "false". Admission no longer compares with OCC (compare-with-occ "false");
-# rollback is setting compare-with-occ back to "true".
+# OMN-20074: this caller enforces repo-owned evidence with shadow "false".
 # repo-evidence / dod-verify is to be required by a dev ruleset, with no row in
 # required-checks.yaml.
 #
-# The reusable is pinned by full SHA to the squash commit of omnibase_core#1932
-# on dev, a descendant of #1914; it carries the `shadow` input. omnibase_compat
-# does not host receipt-gate.yml.
+# The reusable is pinned by full SHA to the squash commit of omnibase_core#1983
+# on dev. It descends from #1974, which leaves caller evidence as the reusable's
+# only mode, so the retired comparison input is no longer passed (the reusable
+# defaults it to "false" and fails dod-verify on any other value), and from
+# #1932. omnibase_compat does not host receipt-gate.yml.
 #
 # The pinned reusable refuses a verifier-version below 0.4.303 before installing
 # it (VERIFIER_FLOOR, omnibase_core#1932; OMN-20032). With shadow "false" that
@@ -55,9 +55,8 @@ permissions:
 
 jobs:
   repo-evidence:
-    uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa # OMN-20032: immutable full-SHA pin, the squash commit of omnibase_core#1932 on that repo's dev branch; descends from #1914 (carries the shadow input) and adds the VERIFIER_FLOOR 0.4.303 refusal to the verifier install step
+    uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@b192b64626e8aba609a261b3bec2e19b353195a1 # OMN-20074: immutable full-SHA pin, the squash commit of omnibase_core#1983 on that repo's dev branch; descends from #1974 (caller evidence is the only mode) and #1932 (VERIFIER_FLOOR 0.4.303 refusal in the verifier install step)
     with:
       evidence-source: caller
       verifier-version: 0.4.310
-      compare-with-occ: "false"
       shadow: "false"

@@ -4,10 +4,11 @@
 
 The caller verifies repo-owned evidence without shadowing or comparing with OCC.
 
-Failure modes this catches: the caller regained ``shadow`` or ``compare-with-occ``
-true; the pin moved to a branch name or an older reusable; the caller moved to
-``pull_request`` (a PR could then edit what judges it); a job name was added (the
-context prefix would change); the repo contract lost a falsifier.
+Failure modes this catches: the caller regained ``shadow`` true or passes the
+retired ``compare-with-occ`` input; the pin moved to a branch name or an older
+reusable; the caller moved to ``pull_request`` (a PR could then edit what judges
+it); a job name was added (the context prefix would change); the repo contract
+lost a falsifier.
 """
 
 from __future__ import annotations
@@ -26,12 +27,13 @@ WORKFLOWS = REPO_ROOT / ".github" / "workflows"
 CALLER = WORKFLOWS / "call-repo-evidence-gate.yml"
 CONTRACT = REPO_ROOT / "contracts" / "OMN-20074.yaml"
 
-# 8-character prefix of the squash commit of omnibase_core#1932 on that
-# repository's dev branch, a descendant of #1914 (OMN-20032). 0.4.305 is
+# 8-character prefix of the squash commit of omnibase_core#1983 on that
+# repository's dev branch, a descendant of #1974 (caller evidence is the only
+# mode) and of #1932 (OMN-20032). 0.4.305 is
 # the first omnimarket release carrying omnimarket#3563, the verifier half of
 # the contract-home marker, and it ships the node_dod_verify occ-difference
 # classifier (omnimarket#3277, 0.4.294).
-RECEIPT_GATE_PIN_PREFIX = "4e4f5e04"
+RECEIPT_GATE_PIN_PREFIX = "b192b646"
 VERIFIER_FLOOR = (0, 4, 310)
 
 
@@ -85,23 +87,22 @@ def test_current_receipt_gate_verifier_version_is_at_or_above_the_floor() -> Non
     assert version >= VERIFIER_FLOOR
 
 
-def test_caller_disables_occ_comparison() -> None:
-    # OMN-20074 S6: the comparison ended on dev before the S6 change removed the
-    # OCC producers it read.
-    assert _job()["with"]["compare-with-occ"] == "false"
+def test_caller_passes_no_retired_comparison_input() -> None:
+    # OMN-20074: the pinned reusable defaults the retired comparison input to
+    # "false" and fails dod-verify on any other value.
+    assert "compare-with-occ" not in _job()["with"]
 
 
-def test_s6_caller_enforces_with_the_pinned_inputs() -> None:
+def test_caller_enforces_with_the_pinned_inputs() -> None:
     job = _job()
     assert job["uses"] == (
         "OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml"
-        "@4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa"
+        "@b192b64626e8aba609a261b3bec2e19b353195a1"
     )
     # Quoted strings: the reusable's boolean-like inputs are string inputs.
     assert job["with"] == {
         "evidence-source": "caller",
         "verifier-version": "0.4.310",
-        "compare-with-occ": "false",
         "shadow": "false",
     }
 
