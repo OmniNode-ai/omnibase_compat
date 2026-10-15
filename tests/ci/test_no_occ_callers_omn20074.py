@@ -179,7 +179,9 @@ def test_no_occ_callers_ci_resolves_no_occ_evidence_source() -> None:
 def test_no_occ_callers_repo_evidence_caller_enforces_without_occ() -> None:
     job = yaml.safe_load(CALLER_PATH.read_text(encoding="utf-8"))["jobs"]["repo-evidence"]
     assert job["with"].get("shadow") == "false"
-    assert job["with"].get("compare-with-occ") == "false"
+    # The pinned reusable (omnibase_core#1983) defaults the retired comparison
+    # input to "false" and refuses any other value, so the caller passes none.
+    assert "compare-with-occ" not in job["with"]
 
 
 def test_no_occ_callers_reject_skip_pin_has_no_nested_occ_preflight() -> None:

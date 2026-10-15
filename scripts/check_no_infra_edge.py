@@ -39,10 +39,12 @@ from pathlib import Path
 # treats '-' and '_' as equivalent). omnibase_infra is the primary target of the
 # no-infra-edge invariant; the sibling upstream packages are included because the
 # compat package's zero-upstream-dependency contract forbids all of them.
+# onex-change-control is the retired change-control package (OMN-20074).
 FORBIDDEN_PACKAGES: tuple[str, ...] = (
     "omnibase-infra",
     "omnibase-core",
     "omnibase-spi",
+    "onex-change-control",
 )
 
 # The package itself is always allowed in its own lock/metadata.
@@ -133,7 +135,7 @@ def main() -> int:
         print("pyproject.toml and re-lock (uv lock) to restore the invariant.")
         return 1
 
-    print("OK — no omnibase_infra/core/spi edge in pyproject dependencies or uv.lock closure.")
+    print("OK — no omnibase_infra/core/spi or onex-change-control edge in pyproject or uv.lock.")
     return 0
 
 

@@ -43,13 +43,6 @@ requirements:
       - id: "AC9"
         statement: |-
           AC9: the workflow's validation step installs omnibase-core at one exact version at or above 0.47.39 and validates the branch ticket's contract with ModelTicketContract.model_validate, skipping when the branch names no ticket or no contract exists and failing when the contract is invalid -- falsifier: uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k validation_step
-  - id: "req-s6-comparison-off"
-    statement: |-
-      omnibase_compat's repo-evidence caller on dev stops comparing with OCC before the S6 change removes the OCC producer the comparison reads.
-    acceptance:
-      - id: "AC10"
-        statement: |-
-          AC10: the dev caller passes compare-with-occ "false" and keeps shadow "true", the full-sha reusable pin and every other input unchanged -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison or match_the_merge_base"
   - id: "req-s6-cutover-no-occ-callers"
     statement: |-
       omnibase_compat retires its OCC callers and contexts and enforces repo-owned evidence without comparing with OCC.
@@ -57,9 +50,6 @@ requirements:
       - id: "AC11"
         statement: |-
           AC11: no event-triggered workflow calls an OCC reusable or waits on occ-preflight, the OCC caller workflows (call-occ-autobind.yml, call-occ-companion-effect.yml, call-receipt-gate.yml, occ-autobind-mint-verify.yml) and scripts/ci/occ_manual_replay_precheck.py are gone, ci.yml has no contract-compliance job and CI Summary waits on none, and the required-checks manifest names no OCC context -- falsifier: uv run pytest tests/ci/test_no_occ_callers_omn20074.py -q
-      - id: "AC12"
-        statement: |-
-          AC12: the repo-evidence caller enforces (shadow "false"), does not compare with OCC (compare-with-occ "false"), and pins receipt-gate.yml@4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa with verifier-version 0.4.310 -- falsifier: uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison or s6_caller_enforces"
   - id: "req-schema-gate-name"
     statement: |-
       omnibase_compat's ticket-contract schema compatibility gate is named for what it checks, not for change control, and stays required.
@@ -67,6 +57,19 @@ requirements:
       - id: "AC14"
         statement: |-
           AC14: the schema-compat job in onex-schema-compat.yml is named ONEX Ticket Contract Schema Compatibility, and the required-checks manifest names the same context as REQUIRED with no entry under the old change-control name -- falsifier: uv run pytest tests/ci/test_schema_compat_job_name_omn20074.py -q
+  - id: "req-change-control-residue"
+    statement: |-
+      omnibase_compat's gates carry no change-control residue: the repo-evidence caller pins a receipt-gate reusable whose only mode is caller evidence and passes no retired comparison input, the no-infra-edge guard refuses a dependency on the retired change-control package, and the skip-token hook points receipt-gate remediation at this repository's contracts.
+    acceptance:
+      - id: "AC15"
+        statement: |-
+          AC15: the repo-evidence caller pins receipt-gate.yml@b192b64626e8aba609a261b3bec2e19b353195a1 (omnibase_core#1983, a descendant of #1974), passes exactly evidence-source caller, verifier-version 0.4.310 and shadow "false", and passes no compare-with-occ input -- falsifier: uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k caller
+      - id: "AC16"
+        statement: |-
+          AC16: scripts/check_no_infra_edge.py refuses onex-change-control declared in pyproject.toml or resolved in uv.lock -- falsifier: uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k no_infra_edge
+      - id: "AC17"
+        statement: |-
+          AC17: the skip-token pre-commit hook's receipt-gate remediation names contracts/OMN-<N>.yaml in this repository and no change-control step -- falsifier: uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k skip_token_hook
 evidence_requirements:
   - kind: "tests"
     description: "The caller workflow has the required base-branch trigger and read-only permissions."
@@ -90,21 +93,22 @@ evidence_requirements:
       pin."
     command: 'uv run pytest tests/ci/test_contract_validation_core_validator_omn20074.py -q -k validation_step'
   - kind: "tests"
-    description: "The caller no longer compares with OCC and keeps every other input and the pin."
-    command: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
-      or match_the_merge_base"'
-  - kind: "tests"
     description: "The S6 cut-over removes OCC callers, preflight dependencies and OCC required contexts."
     command: "uv run pytest tests/ci/test_no_occ_callers_omn20074.py -q"
-  - kind: "tests"
-    description: "The repo-evidence caller enforces repo-owned evidence without comparing with OCC at
-      the S6 pins."
-    command: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
-      or s6_caller_enforces"'
   - kind: "tests"
     description: "The schema compatibility job and its required-checks entry carry the ticket-contract
       name."
     command: "uv run pytest tests/ci/test_schema_compat_job_name_omn20074.py -q"
+  - kind: "tests"
+    description: "The caller pins the receipt-gate whose only mode is caller evidence and passes no retired
+      comparison input."
+    command: "uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k caller"
+  - kind: "tests"
+    description: "The no-infra-edge guard refuses a change-control dependency."
+    command: "uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k no_infra_edge"
+  - kind: "tests"
+    description: "The skip-token hook names this repository's contracts in its receipt-gate remediation."
+    command: "uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k skip_token_hook"
 emergency_bypass:
   enabled: false
   justification: ""
@@ -173,15 +177,6 @@ dod_evidence:
           validation_step'
         cwd: "${OMNI_HOME}/omnibase_compat"
     binds_ac: ["AC9"]
-  - id: "dod-s6-comparison-off-ac10"
-    description: "The caller no longer compares with OCC and keeps every other input and the pin."
-    source: "manual"
-    checks:
-      - check_type: "test_passes"
-        check_value: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
-          or match_the_merge_base"'
-        cwd: "${OMNI_HOME}/omnibase_compat"
-    binds_ac: ["AC10"]
   - id: "dod-s6-no-occ-callers-ac11"
     description: "The S6 cut-over removes OCC callers, preflight dependencies and OCC required contexts."
     source: "manual"
@@ -190,16 +185,6 @@ dod_evidence:
         check_value: "uv run pytest tests/ci/test_no_occ_callers_omn20074.py -q"
         cwd: "${OMNI_HOME}/omnibase_compat"
     binds_ac: ["AC11"]
-  - id: "dod-s6-repo-evidence-enforces-ac12"
-    description: "The repo-evidence caller enforces repo-owned evidence without comparing with OCC at
-      the S6 pins."
-    source: "manual"
-    checks:
-      - check_type: "test_passes"
-        check_value: 'uv run pytest tests/ci/test_repo_evidence_caller_omn20074.py -q -k "disables_occ_comparison
-          or s6_caller_enforces"'
-        cwd: "${OMNI_HOME}/omnibase_compat"
-    binds_ac: ["AC12"]
   - id: "dod-schema-gate-name-ac14"
     description: "The schema compatibility job and its required-checks entry carry the ticket-contract
       name."
@@ -209,3 +194,28 @@ dod_evidence:
         check_value: "uv run pytest tests/ci/test_schema_compat_job_name_omn20074.py -q"
         cwd: "${OMNI_HOME}/omnibase_compat"
     binds_ac: ["AC14"]
+  - id: "dod-change-control-residue-caller-pin-ac15"
+    description: "The caller pins the receipt-gate whose only mode is caller evidence and passes no retired
+      comparison input."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k caller"
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC15"]
+  - id: "dod-change-control-residue-no-infra-edge-ac16"
+    description: "The no-infra-edge guard refuses a change-control dependency."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k no_infra_edge"
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC16"]
+  - id: "dod-change-control-residue-skip-token-hook-ac17"
+    description: "The skip-token hook names this repository's contracts in its receipt-gate remediation."
+    source: "manual"
+    checks:
+      - check_type: "test_passes"
+        check_value: "uv run pytest tests/ci/test_occ_residue_omn20074.py -q -k skip_token_hook"
+        cwd: "${OMNI_HOME}/omnibase_compat"
+    binds_ac: ["AC17"]
