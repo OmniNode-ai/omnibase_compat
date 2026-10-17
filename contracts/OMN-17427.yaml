@@ -1,0 +1,42 @@
+---
+schema_version: 1.0.0
+ticket_id: OMN-17427
+title: omnibase_compat runs its CI on GitHub-hosted runners only
+summary: 'Operator RULING 2026-10-16T07:07:09Z: "Ci runners should be for private repos only." omnibase_compat
+  is public, so six workflow jobs that fell back to the self-hosted omnibase-ci fleet now run on the literal
+  label ubuntu-latest, and omnibase_core''s check-public-runner-placement runs as a CI Summary required
+  job and as a pre-commit hook at one core release, installed isolated because this repository forbids
+  a core dependency.'
+is_seam_ticket: false
+interface_change: false
+interfaces_touched: []
+requirements:
+  - id: req-public-runner-placement
+    statement: Every workflow job in omnibase_compat runs on a literal GitHub-hosted label, and the omnibase_core
+      placement check refuses a job added back that does not.
+    acceptance:
+      - id: AC1
+        statement: 'AC1: no workflow names the self-hosted fleet or computes a runs-on label from a variable,
+          the Public Runner Placement job is unconditional, hosted, carries a positive control and the
+          same core release as the pre-commit hook, and CI Summary requires its success -- falsifier:
+          uv run pytest tests/ci/test_public_runner_placement_omn17427.py -q fails at the merge base,
+          where six workflow jobs fall back to the omnibase-ci fleet and neither the job nor the hook
+          exists'
+evidence_requirements:
+  - kind: tests
+    description: The placement tests read every workflow file for the fleet fallback and a computed runs-on,
+      the ci.yml job, .pre-commit-config.yaml and the CI Summary wiring.
+    command: uv run pytest tests/ci/test_public_runner_placement_omn17427.py -q
+emergency_bypass:
+  enabled: false
+  justification: ''
+  follow_up_ticket_id: ''
+dod_evidence:
+  - id: dod-omn17427-ac1-public-runner-placement
+    description: AC1 tests read the workflows, the CI job, the pre-commit hook and the CI Summary wiring.
+    source: manual
+    checks:
+      - check_type: test_passes
+        check_value: uv run pytest tests/ci/test_public_runner_placement_omn17427.py -q
+    binds_ac:
+      - AC1

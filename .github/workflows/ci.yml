@@ -246,7 +246,7 @@ jobs:
       - name: Ratchet non-canonical lifecycle-word classes against frozen allowlist (OMN-14350)
         run: |
           uv run --no-project \
-            --with 'omnibase-core==0.46.9' \
+            --with 'omnibase-core==0.47.46' \
             python -m omnibase_core.validators.no_noncanonical_lifecycle_classes \
             --check-stale \
             --allowlist .onex_ratchets/noncanonical_class_allowlist.yaml \
@@ -376,11 +376,66 @@ jobs:
         run: |
           uv run --no-project --with 'omnibase-core @ git+https://github.com/OmniNode-ai/omnibase_core@d17f5be8be88a8d35fc6a69e13cb8c1896c3025b' python -m omnibase_core.handlers.handler_shape_gate_independence
 
+  # Public-repository runner placement (OMN-17427). RULING 2026-10-16T07:07:09Z:
+  # "Ci runners should be for private repos only." omnibase_compat is public, so the
+  # omnibase_core check refuses any job whose runs-on is not a literal GitHub-hosted
+  # label (this repository has no entry in the core baseline) and, against the
+  # merge base, a job added back. Same core release as the
+  # check-public-runner-placement pre-commit hook (omnibase-core==0.47.46).
+  # compat forbids a core dep, so the release is installed isolated (--no-project).
+  # Unconditional: no `if:`, no `needs:`; CI Summary requires its success.
+  public-runner-placement:
+    name: Public Runner Placement (OMN-17427)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RUNNER_PLACEMENT_CORE: "omnibase-core==0.47.46"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.8.3"
+      - name: Positive control (planted self-hosted job refused)
+        run: |
+          set -u
+          printf 'on: push\njobs:\n  planted:\n    runs-on: [self-hosted, omnibase-ci]\n    steps:\n      - run: "true"\n' \
+            > .github/workflows/zz-canary-planted.yml
+          git add .github/workflows/zz-canary-planted.yml
+          if uv run --no-project --with "$RUNNER_PLACEMENT_CORE" \
+            python -m omnibase_core.handlers.handler_public_runner_placement_cli --repo omnibase_compat --visibility public \
+            .github/workflows/zz-canary-planted.yml; then
+            echo "POSITIVE CONTROL FAILED: planted self-hosted job was accepted"
+            exit 1
+          fi
+          echo "positive control: planted self-hosted job refused"
+          git rm -q --cached .github/workflows/zz-canary-planted.yml
+          rm .github/workflows/zz-canary-planted.yml
+      - name: Refuse new self-hosted jobs in this public repository
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          MQ_BASE: ${{ github.event.merge_group.base_sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          set -u
+          base="${PR_BASE:-${MQ_BASE:-${PUSH_BEFORE:-}}}"
+          args=(--repo omnibase_compat --visibility public)
+          if [ -n "$base" ] && git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            args+=(--base-ref "$(git merge-base "$base" HEAD)")
+          else
+            echo "no base revision on this event; checking the tree against the baseline only"
+          fi
+          uv run --no-project --with "$RUNNER_PLACEMENT_CORE" \
+            python -m omnibase_core.handlers.handler_public_runner_placement_cli "${args[@]}"
+
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
     needs: [validate, tests-gate, no-noncanonical-lifecycle-classes,
-            wheel-content-parity, canonical-file-shape, shape-gate-independence]
+            wheel-content-parity, canonical-file-shape, shape-gate-independence, public-runner-placement]
     if: always()
     steps:
       - name: Check all jobs passed
@@ -409,6 +464,11 @@ jobs:
           # OMN-20298: strict fail-closed on the shape-gate independence guard.
           if [[ "${{ needs.shape-gate-independence.result }}" != "success" ]]; then
             echo "::error::shape-gate-independence did not pass (result: ${{ needs.shape-gate-independence.result }}) - fail-closed (OMN-20298)"
+            exit 1
+          fi
+          # OMN-17427: strict fail-closed on public-repository runner placement.
+          if [[ "${{ needs.public-runner-placement.result }}" != "success" ]]; then
+            echo "::error::public-runner-placement did not pass (result: ${{ needs.public-runner-placement.result }}) - fail-closed (OMN-17427)"
             exit 1
           fi
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then

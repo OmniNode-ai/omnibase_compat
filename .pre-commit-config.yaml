@@ -118,8 +118,24 @@ repos:
         entry: python -m omnibase_core.validation.checker_normalization_symmetry src
         language: python
         additional_dependencies:
-          - "omnibase-core==0.40.1"  # First PyPI release containing normalization-symmetry.
+          - "omnibase-core==0.47.46"  # Same release as the other two core hooks, so pre-commit builds one environment (OMN-17427).
         pass_filenames: false
+
+      # OMN-17427: public-repository runner placement (RULING 2026-10-16T07:07:09Z,
+      # "Ci runners should be for private repos only"). CI twin job
+      # public-runner-placement in .github/workflows/ci.yml; keep this release
+      # equal to that job's. Isolated additional_dependencies, no core pyproject edge.
+      - id: check-public-runner-placement
+        name: Public repositories add no self-hosted CI job (OMN-17427)
+        entry: python -m omnibase_core.handlers.handler_public_runner_placement_cli --repo omnibase_compat
+          --visibility public
+        language: python
+        additional_dependencies:
+          - "omnibase-core==0.47.46"
+        files: ^\.github/workflows/[^/]+\.ya?ml$
+        pass_filenames: true
+        require_serial: true
+        stages: [pre-commit]
 
       # OMN-14350: non-canonical lifecycle-class ratchet (fan-out). compat forbids a
       # core dep (compat-no-infra-edge gate), so — exactly like normalization-symmetry
@@ -133,7 +149,7 @@ repos:
           src/omnibase_compat
         language: python
         additional_dependencies:
-          - "omnibase-core==0.46.9"  # First PyPI release containing the lifecycle-class validator.
+          - "omnibase-core==0.47.46"  # One core release for the lifecycle-class, normalization-symmetry and runner-placement hooks (OMN-17427); pin-parity compares it with ci.yml.
         pass_filenames: false
         stages: [pre-commit]
 
