@@ -4,6 +4,14 @@ All notable changes to `omnibase_compat` should be recorded here.
 
 This project follows semantic versioning for published package versions.
 
+## Unreleased
+
+### Added
+- feat(OMN-17427): add the runner-fleet observation wire models
+  (`ModelRunnerFleetObservationWire`, `ModelRunnerObservationWire`) and
+  `EnumRunnerStatus`, so the emitter and the projection consumer share one
+  wire shape. Migration target `omnibase_core`, removal date 2027-01-31.
+
 ## v0.5.7 (2026-09-01)
 
 ### Added
