@@ -8,9 +8,17 @@ from omnibase_compat.models.model_project_tracker import (
     ModelLabel,
     ModelTeam,
 )
+from omnibase_compat.models.model_runner_fleet_observation_wire import (
+    ModelRunnerFleetObservationWire,
+)
+from omnibase_compat.models.model_runner_observation_wire import (
+    ModelRunnerObservationWire,
+)
 
 __all__: list[str] = [
     "ModelTeam",
     "ModelLabel",
     "ModelIssueStatus",
+    "ModelRunnerFleetObservationWire",
+    "ModelRunnerObservationWire",
 ]
