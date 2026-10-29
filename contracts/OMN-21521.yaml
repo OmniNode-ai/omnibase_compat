@@ -1,0 +1,74 @@
+---
+schema_version: 1.0.0
+ticket_id: OMN-21521
+title: omnibase_compat switches to the canonical-file-shape node entry with a ticketed first-install baseline
+summary: 'omnibase_compat runs omnibase_core''s canonical-file-shape hook through the node entry (rule
+  group file-shape) in pre-commit and in the CI job, both at the dev-merge tag dev-20261029151319-6e0a5eee541a.
+  The one finding the node entry''s rules report beyond the repository''s existing shrink-only baseline
+  is installed once in .onex_ratchets/canonical_file_shape_burndown_baseline.txt, whose header names this
+  ticket. The existing baseline is not edited.'
+is_seam_ticket: false
+interface_change: false
+interfaces_touched: []
+requirements:
+  - id: req-node-entry-switch
+    statement: The pre-commit hook and the CI job run the canonical-file-shape node entry at one omnibase_core
+      dev-merge tag, and the findings the new rules report at the switch commit are held by a burn-down
+      baseline that names this ticket.
+    acceptance:
+      - id: AC1
+        statement: 'AC1: the hook and the CI job are wired to the node entry at the tag dev-20261029151319-6e0a5eee541a,
+          and the whole tree passes with the existing baseline plus a burn-down baseline whose header
+          names OMN-21521 and whose entries are existing files the existing baseline does not list --
+          falsifier: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py -q -k "TestSwitchWiring
+          or TestBurndownBaseline"'
+      - id: AC2
+        statement: 'AC2: the pinned hook refuses a new unbound handler as handler_outside_node and a burn-down
+          line added after the install as baseline-growth -- falsifier: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py
+          -q -k TestRatchetHolds'
+      - id: AC3
+        statement: 'AC3: the burn-down baseline only holds files that still exist, so it can only shrink
+          toward the zero target of 2026-11-12 -- falsifier: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py
+          -q -k test_entries_are_existing_files_the_baseline_does_not_list'
+evidence_requirements:
+  - kind: tests
+    description: The wiring and burn-down tests read ci.yml, .pre-commit-config.yaml and both baseline
+      files.
+    command: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py -q -k "TestSwitchWiring
+      or TestBurndownBaseline"
+  - kind: tests
+    description: The canary tests run the pinned hook over throwaway repositories.
+    command: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py -q -k TestRatchetHolds
+emergency_bypass:
+  enabled: false
+  justification: ''
+  follow_up_ticket_id: ''
+dod_evidence:
+  - id: dod-omn21521-ac1-node-entry-wiring
+    description: AC1 tests read the CI job, the pre-commit hook, the existing baseline and the burn-down
+      baseline.
+    source: manual
+    checks:
+      - check_type: test_passes
+        check_value: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py -q -k "TestSwitchWiring
+          or TestBurndownBaseline"
+    binds_ac:
+      - AC1
+  - id: dod-omn21521-ac2-ratchet-holds
+    description: AC2 canary tests run the pinned hook on a new unbound handler and on a burn-down line
+      added after the install.
+    source: manual
+    checks:
+      - check_type: test_passes
+        check_value: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py -q -k TestRatchetHolds
+    binds_ac:
+      - AC2
+  - id: dod-omn21521-ac3-burndown-shrinks
+    description: AC3 test checks every burn-down entry is an existing file the existing baseline does
+      not list.
+    source: manual
+    checks:
+      - check_type: test_passes
+        check_value: uv run pytest tests/ci/test_canonical_file_shape_switch_omn21521.py -q -k test_entries_are_existing_files_the_baseline_does_not_list
+    binds_ac:
+      - AC3
