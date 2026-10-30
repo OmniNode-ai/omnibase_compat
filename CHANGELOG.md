@@ -7,6 +7,10 @@ This project follows semantic versioning for published package versions.
 ## Unreleased
 
 ### Added
+- ci(OMN-17427): tag every push to dev as `dev-<UTC YYYYMMDDHHMMSS>-<sha12>`
+  (`.github/workflows/dev-merge-tag.yml`), so a consumer resolves
+  omnibase_compat from a dev-merge tag instead of a sha, a branch, a release
+  or an exact version.
 - feat(OMN-17427): add the runner-fleet observation wire models
   (`ModelRunnerFleetObservationWire`, `ModelRunnerObservationWire`) and
   `EnumRunnerStatus`, so the emitter and the projection consumer share one
