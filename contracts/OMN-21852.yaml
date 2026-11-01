@@ -1,0 +1,61 @@
+---
+schema_version: "1.0.0"
+ticket_id: "OMN-21852"
+title: "omnibase_compat repo-evidence caller installs its verifier from the omnimarket dev-merge tag"
+summary: "Operator ruling 2026-10-31T21:49:54Z (OMN-21676): the definition-of-done check installs its
+  verifier from the omnimarket dev-merge tag, not from a released package version. omnibase_core#2203
+  made receipt-gate.yml accept verifier-tag, resolve it to a commit and refuse a moved tag, a tag not
+  on omnimarket dev, or one not descending from floor commit e565ba5ba00c. omnibase_compat's call-repo-evidence-gate.yml
+  moves to the omnibase_core dev-merge tag dev-20261101005012-ac2f26e3e5bf, passes verifier-tag dev-20261101000200-949993edf3b7
+  and drops verifier-version; the tests that asserted the version assert the tag."
+is_seam_ticket: false
+interface_change: false
+interfaces_touched: []
+requirements:
+  - id: "req-omn21852-caller-verifier-tag"
+    statement: |-
+      omnibase_compat's repo-evidence caller must call the receipt-gate reusable by an omnibase_core dev-merge tag and pass the verifier as an omnimarket dev-merge tag, with no verifier-version input.
+    acceptance:
+      - id: "AC1"
+        statement: |-
+          AC1: .github/workflows/call-repo-evidence-gate.yml in omnibase_compat calls OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@dev-20261101005012-ac2f26e3e5bf with verifier-tag dev-20261101000200-949993edf3b7 and no verifier-version key -- falsifier: uv run pytest tests/ci -q -k repo_evidence_caller
+      - id: "AC2"
+        statement: |-
+          AC2: every test in omnibase_compat that asserted verifier-version now asserts verifier-tag and passes, and no test in tests/ names verifier-version as a required caller input -- falsifier: uv run pytest tests/ci -q and grep -rn verifier-version tests/ returning no caller assertion
+      - id: "AC3"
+        statement: |-
+          AC3: lab proof: the real install of tag dev-20261101000200-949993edf3b7 on the lab (clone at the tag commit, uv sync --frozen --no-dev --no-editable from its uv.lock) exits 0, and the repo caller tests run as an /omni:lab-run unit exit 0 -- falsifier: the /omni:lab-run receipt for the caller test command and the tag install command, each exit code 0
+evidence_requirements:
+  - kind: "tests"
+    description: "The caller tests assert the dev-merge tag shape, the absent verifier-version key and
+      the tagged reusable ref."
+    command: "uv run pytest tests/ci -q -k repo_evidence_caller"
+emergency_bypass:
+  enabled: false
+  justification: ""
+  follow_up_ticket_id: ""
+dod_evidence:
+  - id: "dod-omn21852-ac1"
+    description: "The caller calls the omnibase_core receipt-gate at its dev-merge tag and passes the
+      omnimarket verifier-tag with no verifier-version."
+    source: "manual"
+    checks:
+      - check_type: "command"
+        check_value: "uv run pytest tests/ci -q -k repo_evidence_caller"
+    binds_ac: ["AC1"]
+  - id: "dod-omn21852-ac2"
+    description: "The tests under tests/ pass and none names verifier-version as a required caller input."
+    source: "manual"
+    checks:
+      - check_type: "command"
+        check_value: |-
+          uv run pytest tests/ci -q && ! grep -rnE '\["verifier-version"\]|"verifier-version":' tests/
+    binds_ac: ["AC2"]
+  - id: "dod-omn21852-ac3"
+    description: "The caller tests run green on the pushed revision; the tag install receipt (exit 0)
+      is quoted in the PR body Lab: line."
+    source: "manual"
+    checks:
+      - check_type: "command"
+        check_value: "uv run pytest tests/ci -q -k repo_evidence_caller"
+    binds_ac: ["AC3"]

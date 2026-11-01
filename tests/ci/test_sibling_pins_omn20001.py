@@ -5,6 +5,13 @@
 Ruling: each repo checks only itself; any read of a sibling uses the version this
 repo has pinned, so a merge in one repo cannot turn another repo red. A new
 sibling version is integration-tested by the consumer in a PR that moves the pin.
+
+OMN-21852: a reusable-workflow ``uses`` ref may also be a dev-merge tag
+(``dev-<UTC YYYYMMDDHHMMSS>-<sha12>``), the tag a sibling's dev merge mints. The
+repo-evidence caller reads omnibase_core's receipt-gate by that tag, and the
+reusable refuses a verifier tag whose sha12 suffix does not prefix its commit. A branch
+name, a bare ``dev`` or a floating tag is still refused, and checkout and fetch refs stay
+sha-only.
 """
 
 from __future__ import annotations
@@ -18,6 +25,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = sorted((REPO_ROOT / ".github" / "workflows").glob("*.yml"))
 SHA = re.compile(r"^[0-9a-f]{40}$")
+DEV_MERGE_TAG = re.compile(r"^dev-[0-9]{14}-[0-9a-f]{12}$")
 USES_SIBLING = re.compile(r"^OmniNode-ai/(?!omnibase_compat/)[^/@]+/[^@]+@(?P<ref>\S+)$")
 CLONE_SIBLING = re.compile(r"git\s+clone\b[^\n]*github\.com/OmniNode-ai/(?!omnibase_compat\b)\S+")
 FETCH_SHA = re.compile(r"fetch\b[^\n]*github\.com/OmniNode-ai/\S+\s+(?P<ref>\S+)")
@@ -52,7 +60,7 @@ def test_sibling_reads_are_pinned_to_a_sha(wf: Path) -> None:
     for step in _steps(yaml.safe_load(wf.read_text(encoding="utf-8"))):
         uses = str(step.get("uses", ""))
         m = USES_SIBLING.match(uses)
-        if m and not SHA.match(m.group("ref")):
+        if m and not (SHA.match(m.group("ref")) or DEV_MERGE_TAG.match(m.group("ref"))):
             offenders.append(f"uses {uses}")
         with_ = step.get("with") or {}
         repo = str(with_.get("repository", ""))
@@ -70,3 +78,22 @@ def test_sibling_reads_are_pinned_to_a_sha(wf: Path) -> None:
             if not SHA.match(fm.group("ref")):
                 offenders.append(f"fetch ref {fm.group('ref')}")
     assert offenders == [], f"{wf.name}: " + "; ".join(offenders)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("ref", "expected"),
+    [
+        ("dev", False),
+        ("main", False),
+        ("v1", False),
+        ("dev-latest", False),
+        ("dev-20261101005012-AC2F26E3E5BF", False),
+        ("dev-2026110100501-ac2f26e3e5bf", False),
+        ("dev-20261101005012-ac2f26e3e5bf", True),
+        ("b192b64626e8aba609a261b3bec2e19b353195a1", True),
+    ],
+)
+def test_uses_ref_shape_has_a_refusing_and_an_admitting_case(ref: str, expected: bool) -> None:
+    """Positive and negative control for the ``uses`` pin shape."""
+    assert bool(SHA.match(ref) or DEV_MERGE_TAG.match(ref)) is expected

@@ -27,10 +27,11 @@ CALLER = REPO_ROOT / ".github" / "workflows" / "call-repo-evidence-gate.yml"
 HOOK = REPO_ROOT / ".pre-commit-hooks" / "reject-deploy-gate-skip-token.sh"
 GUARD = REPO_ROOT / "scripts" / "check_no_infra_edge.py"
 
-# Squash commit of omnibase_core#1983 on that repository's dev branch. It
-# descends from omnibase_core#1974, which removes the change-control evidence
-# mode from receipt-gate.yml, and from #1932 (VERIFIER_FLOOR).
-RECEIPT_GATE_PIN = "b192b64626e8aba609a261b3bec2e19b353195a1"
+# The omnibase_core dev-merge tag the caller pins (OMN-21852). Its history holds
+# omnibase_core#1974, which removes the change-control evidence mode from
+# receipt-gate.yml, and #1932 (VERIFIER_FLOOR).
+RECEIPT_GATE_PIN = "dev-20261101005012-ac2f26e3e5bf"
+VERIFIER_TAG = "dev-20261101000200-949993edf3b7"
 # Pins whose receipt-gate.yml still carries the change-control evidence mode.
 PRE_REMOVAL_PINS = (
     "4e4f5e0404d364e296c5d37db6aa3ab9e07f8ffa",
@@ -63,7 +64,7 @@ def test_caller_passes_no_retired_comparison_input() -> None:
     assert "compare-with-occ" not in inputs
     assert inputs == {
         "evidence-source": "caller",
-        "verifier-version": "0.4.310",
+        "verifier-tag": VERIFIER_TAG,
         "shadow": "false",
     }
 

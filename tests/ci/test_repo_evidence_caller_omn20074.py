@@ -6,9 +6,9 @@ The caller verifies repo-owned evidence without shadowing or comparing with OCC.
 
 Failure modes this catches: the caller regained ``shadow`` true or passes the
 retired ``compare-with-occ`` input; the pin moved to a branch name or an older
-reusable; the caller moved to ``pull_request`` (a PR could then edit what judges
-it); a job name was added (the context prefix would change); the repo contract
-lost a falsifier.
+reusable; the verifier moved back to a released version; the caller moved to
+``pull_request`` (a PR could then edit what judges it); a job name was added
+(the context prefix would change); the repo contract lost a falsifier.
 """
 
 from __future__ import annotations
@@ -27,14 +27,13 @@ WORKFLOWS = REPO_ROOT / ".github" / "workflows"
 CALLER = WORKFLOWS / "call-repo-evidence-gate.yml"
 CONTRACT = REPO_ROOT / "contracts" / "OMN-20074.yaml"
 
-# 8-character prefix of the squash commit of omnibase_core#1983 on that
-# repository's dev branch, a descendant of #1974 (caller evidence is the only
-# mode) and of #1932 (OMN-20032). 0.4.305 is
-# the first omnimarket release carrying omnimarket#3563, the verifier half of
-# the contract-home marker, and it ships the node_dod_verify occ-difference
-# classifier (omnimarket#3277, 0.4.294).
-RECEIPT_GATE_PIN_PREFIX = "b192b646"
-VERIFIER_FLOOR = (0, 4, 310)
+# The omnibase_core dev-merge tag the caller pins (OMN-21852). Its history holds
+# omnibase_core#2203, which adds verifier-tag, and descends from #1983 (caller
+# evidence is the only mode) and #1932 (OMN-20032). The verifier is installed from
+# the omnimarket dev-merge tag, not from a released version.
+DEV_MERGE_TAG = r"dev-[0-9]{14}-[0-9a-f]{12}"
+RECEIPT_GATE_TAG = "dev-20261101005012-ac2f26e3e5bf"
+VERIFIER_TAG = "dev-20261101000200-949993edf3b7"
 
 
 def _load(path: Path) -> dict[Any, Any]:
@@ -73,18 +72,20 @@ def test_caller_job_is_a_bare_call_with_no_secrets() -> None:
     assert "secrets: inherit" not in CALLER.read_text(encoding="utf-8")
 
 
-def test_caller_pins_the_current_receipt_gate_by_full_sha() -> None:
+def test_caller_pins_the_current_receipt_gate_by_dev_merge_tag() -> None:
     uses = _job()["uses"]
     assert re.fullmatch(
-        r"OmniNode-ai/omnibase_core/\.github/workflows/receipt-gate\.yml@[0-9a-f]{40}",
+        r"OmniNode-ai/omnibase_core/\.github/workflows/receipt-gate\.yml@" + DEV_MERGE_TAG,
         uses,
     )
-    assert uses.split("@", 1)[1].startswith(RECEIPT_GATE_PIN_PREFIX)
+    assert uses.split("@", 1)[1] == RECEIPT_GATE_TAG
 
 
-def test_current_receipt_gate_verifier_version_is_at_or_above_the_floor() -> None:
-    version = tuple(int(part) for part in _job()["with"]["verifier-version"].split("."))
-    assert version >= VERIFIER_FLOOR
+def test_current_receipt_gate_verifier_tag_is_a_dev_merge_tag_and_no_version() -> None:
+    inputs = _job()["with"]
+    assert re.fullmatch(DEV_MERGE_TAG, inputs["verifier-tag"])
+    assert inputs["verifier-tag"] == VERIFIER_TAG
+    assert "verifier-version" not in inputs
 
 
 def test_caller_passes_no_retired_comparison_input() -> None:
@@ -96,13 +97,12 @@ def test_caller_passes_no_retired_comparison_input() -> None:
 def test_caller_enforces_with_the_pinned_inputs() -> None:
     job = _job()
     assert job["uses"] == (
-        "OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml"
-        "@b192b64626e8aba609a261b3bec2e19b353195a1"
+        f"OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@{RECEIPT_GATE_TAG}"
     )
     # Quoted strings: the reusable's boolean-like inputs are string inputs.
     assert job["with"] == {
         "evidence-source": "caller",
-        "verifier-version": "0.4.310",
+        "verifier-tag": VERIFIER_TAG,
         "shadow": "false",
     }
 
