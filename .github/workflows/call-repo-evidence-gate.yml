@@ -16,8 +16,12 @@
 # Per-PR concurrency cancels superseded runs so the latest event gets a verdict.
 # Read-only contents and pull-requests permissions are all this caller needs;
 # checkout and verification belong to the reusable, with no caller secrets.
-# The full-SHA pin makes the reusable immutable; verifier-version pins the
-# released verifier used to read the caller's contracts.
+# The reusable is pinned by an omnibase_core dev-merge tag, and verifier-tag
+# names the omnimarket dev-merge tag the verifier that reads the caller's
+# contracts is installed from (OMN-21852; operator ruling 2026-10-31: the
+# gate iterates with tags, not with releases). The reusable resolves the tag
+# to its commit and refuses a moved tag, a tag not on omnimarket dev, or one
+# not descending from its floor commit.
 #
 # The job id is the context prefix: repo-evidence / dod-verify carries the
 # verdict, so do not add a job name. The reusable also reports a
@@ -28,15 +32,11 @@
 # repo-evidence / dod-verify is to be required by a dev ruleset, with no row in
 # required-checks.yaml.
 #
-# The reusable is pinned by full SHA to the squash commit of omnibase_core#1983
-# on dev. It descends from #1974, which leaves caller evidence as the reusable's
-# only mode, so the retired comparison input is no longer passed (the reusable
-# defaults it to "false" and fails dod-verify on any other value), and from
-# #1932. omnibase_compat does not host receipt-gate.yml.
-#
-# The pinned reusable refuses a verifier-version below 0.4.303 before installing
-# it (VERIFIER_FLOOR, omnibase_core#1932; OMN-20032). With shadow "false" that
-# refusal blocks.
+# The pinned reusable descends from omnibase_core#1983 (caller evidence is the
+# only mode, so the retired comparison input is no longer passed; the reusable
+# defaults it to "false" and fails dod-verify on any other value) and from
+# omnibase_core#2203 (verifier-tag). omnibase_compat does not host
+# receipt-gate.yml.
 
 name: Repo Evidence Gate
 
@@ -55,8 +55,8 @@ permissions:
 
 jobs:
   repo-evidence:
-    uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@b192b64626e8aba609a261b3bec2e19b353195a1 # OMN-20074: immutable full-SHA pin, the squash commit of omnibase_core#1983 on that repo's dev branch; descends from #1974 (caller evidence is the only mode) and #1932 (VERIFIER_FLOOR 0.4.303 refusal in the verifier install step)
+    uses: OmniNode-ai/omnibase_core/.github/workflows/receipt-gate.yml@dev-20261101005012-ac2f26e3e5bf # OMN-21852: an omnibase_core dev-merge tag whose history contains omnibase_core#2203 (verifier-tag)
     with:
       evidence-source: caller
-      verifier-version: 0.4.310
+      verifier-tag: dev-20261101000200-949993edf3b7
       shadow: "false"
